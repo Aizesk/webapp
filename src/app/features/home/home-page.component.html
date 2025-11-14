@@ -1,0 +1,32 @@
+<section class="home">
+  <header class="home__header">
+    <div class="brand">
+      <div class="brand__logo">A</div>
+      <div class="brand__copy">
+        <span class="brand__name">Aizesk</span>
+        <span class="brand__tagline">Control financiero inteligente</span>
+      </div>
+    </div>
+    <div class="home__actions">
+      <button type="button" class="ghost-button ghost-button--subtle">Iniciar sesión</button>
+      <button type="button" class="primary-button">Registro de sesión</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <p class="hero__eyebrow">Plataforma SaaS para finanzas</p>
+    <h1>
+      Bienvenido a Aizesk, tu plataforma SaaS donde podrás gestionar fácilmente tus ingresos y gastos
+    </h1>
+    <p class="hero__subtitle">
+      Organiza tu flujo de caja, anticipa escenarios y mantén a tu equipo alineado con reportes claros y colaborativos.
+    </p>
+    <div class="hero__actions">
+      <button type="button" class="ghost-button">Ver características</button>
+    </div>
+  </section>
+
+  <section class="home__features">
+    <app-feature-card-list [cards]="featureCards"></app-feature-card-list>
+  </section>
+</section>

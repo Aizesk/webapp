@@ -1,0 +1,7 @@
+<section class="feature-card-list" *ngIf="cards?.length">
+  <article class="feature-card" *ngFor="let card of cards">
+    <div class="feature-card__icon">{{ card.code }}</div>
+    <h3>{{ card.title }}</h3>
+    <p>{{ card.description }}</p>
+  </article>
+</section>
