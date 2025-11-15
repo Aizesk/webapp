@@ -1,0 +1,47 @@
+<form class="login-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <label class="field">
+    <span class="field-label">Correo electrónico</span>
+    <input
+      type="email"
+      formControlName="email"
+      placeholder="Correo electrónico"
+      autocomplete="email"
+    />
+    @if (hasError('email')) {
+      <span class="field-error">Ingresa un correo válido.</span>
+    }
+  </label>
+
+  <label class="field">
+    <span class="field-label">Contraseña</span>
+    <input
+      type="password"
+      formControlName="password"
+      placeholder="Contraseña"
+      autocomplete="current-password"
+    />
+    @if (hasError('password')) {
+      <span class="field-error">La contraseña debe tener al menos 6 caracteres.</span>
+    }
+  </label>
+
+  <div class="form-footer">
+    <label class="remember">
+      <input type="checkbox" formControlName="rememberSession" />
+      <span>{{ rememberLabel }}</span>
+    </label>
+
+    <button type="button" class="forgot" (click)="onForgotPassword()">
+      {{ forgotPasswordLabel }}
+    </button>
+  </div>
+
+  <app-button
+    class="submit-button"
+    variant="primary"
+    type="submit"
+    [block]="true"
+  >
+    {{ submitLabel }}
+  </app-button>
+</form>

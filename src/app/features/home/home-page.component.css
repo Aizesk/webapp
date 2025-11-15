@@ -87,51 +87,8 @@
   flex-wrap: wrap;
 }
 
-.home__actions .ghost-button,
-.home__actions .primary-button {
-  min-width: 150px;
-  height: 44px;
-  padding: 0 1.25rem;
-}
-
-.ghost-button--subtle {
-  border-color: var(--border-subtle);
-  color: var(--text-muted);
-}
-
 .home__features {
   margin-top: 2.5rem;
-}
-
-.primary-button,
-.ghost-button {
-  min-width: 180px;
-  height: 48px;
-  border-radius: 999px;
-  padding: 0 1.5rem;
-  font-weight: 600;
-  border: 1px solid transparent;
-  cursor: pointer;
-  background: transparent;
-  color: inherit;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.primary-button {
-  background: linear-gradient(135deg, var(--brand-dark), var(--brand-light));
-  color: #fff;
-  box-shadow: 0 15px 35px rgba(3, 21, 73, 0.18);
-}
-
-.ghost-button {
-  border-color: var(--border-strong);
-  color: var(--text-primary);
-}
-
-.primary-button:hover,
-.ghost-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 18px 40px rgba(3, 21, 73, 0.15);
 }
 
 @media (max-width: 720px) {
