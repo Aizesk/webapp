@@ -1,0 +1,29 @@
+<article class="login-card">
+  <app-login-header
+    [brandName]="brandName"
+    [brandInitials]="brandInitials"
+    [title]="title"
+    [description]="description"
+  />
+
+  @if (providers.length) {
+    <div class="providers">
+      @for (provider of providers; track provider.id) {
+        <app-social-login-button
+          [provider]="provider"
+          (selectProvider)="onProviderSelected($event)"
+        />
+      }
+    </div>
+  }
+
+  <app-login-divider label="o" />
+
+  <app-login-form
+    [rememberLabel]="rememberLabel"
+    [forgotPasswordLabel]="forgotPasswordLabel"
+    [submitLabel]="submitLabel"
+    (submitCredentials)="onCredentialsSubmitted($event)"
+    (forgotPassword)="onForgotPassword()"
+  />
+</article>

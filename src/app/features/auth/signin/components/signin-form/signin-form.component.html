@@ -1,0 +1,116 @@
+<form class="signin-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="fields-grid">
+    <label class="field" for="fullName">
+      <span class="field-label">Nombre completo *</span>
+      <input
+        id="fullName"
+        type="text"
+        formControlName="fullName"
+        placeholder="Nombre completo"
+        autocomplete="name"
+      />
+      @if (hasError('fullName')) {
+      <span class="field-error">Ingresa tu nombre completo.</span>
+      }
+    </label>
+
+    <label class="field" for="address">
+      <span class="field-label">Dirección</span>
+      <input
+        id="address"
+        type="text"
+        formControlName="address"
+        placeholder="Dirección"
+        autocomplete="street-address"
+      />
+    </label>
+
+    <label class="field" for="email">
+      <span class="field-label">Correo electrónico *</span>
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        placeholder="Correo electrónico"
+        autocomplete="email"
+      />
+      @if (hasError('email')) {
+      <span class="field-error">Ingresa un correo válido.</span>
+      }
+    </label>
+
+    <label class="field" for="country">
+      <span class="field-label">País *</span>
+      <select id="country" formControlName="country">
+        <option value="" disabled>Selecciona tu país</option>
+        @for (country of countries; track country) {
+        <option [value]="country">{{ country }}</option>
+        }
+      </select>
+      @if (hasError('country')) {
+      <span class="field-error">Selecciona un país.</span>
+      }
+    </label>
+
+    <label class="field">
+      <span class="field-label">Contraseña *</span>
+      <div class="field-control">
+        <input
+          [type]="passwordVisible ? 'text' : 'password'"
+          formControlName="password"
+          placeholder="Contraseña"
+          autocomplete="new-password"
+        />
+        <button type="button" class="visibility" (click)="toggleVisibility('password')">
+          {{ passwordVisible ? 'Ocultar' : 'Mostrar' }}
+        </button>
+      </div>
+      @if (hasError('password')) {
+      <span class="field-error">Mínimo 8 caracteres.</span>
+      }
+    </label>
+
+    <label class="field">
+      <span class="field-label">Teléfono</span>
+      <input type="tel" formControlName="phone" placeholder="+52 123 456 7890" autocomplete="tel" />
+    </label>
+
+    <label class="field">
+      <span class="field-label">Repetir contraseña *</span>
+      <div class="field-control">
+        <input
+          [type]="confirmPasswordVisible ? 'text' : 'password'"
+          formControlName="confirmPassword"
+          placeholder="Repite tu contraseña"
+          autocomplete="new-password"
+        />
+        <button type="button" class="visibility" (click)="toggleVisibility('confirmPassword')">
+          {{ confirmPasswordVisible ? 'Ocultar' : 'Mostrar' }}
+        </button>
+      </div>
+      @if (!passwordsMatch() && form.get('confirmPassword')?.touched) {
+      <span class="field-error">Las contraseñas deben coincidir.</span>
+      }
+    </label>
+
+    <label class="field">
+      <span class="field-label">Trabajo</span>
+      <input type="text" formControlName="jobTitle" placeholder="Ej: Desarrollador Web" />
+    </label>
+  </div>
+
+  <label class="terms" for="acceptTerms">
+    <input id="acceptTerms" type="checkbox" formControlName="acceptTerms" />
+    <span>
+      Acepto los <a href="#" rel="noopener">términos y condiciones</a> y la
+      <a href="#" rel="noopener">política de privacidad</a>
+    </span>
+  </label>
+  @if (hasError('acceptTerms')) {
+  <span class="field-error">Debes aceptar los términos para continuar.</span>
+  }
+
+  <app-button class="submit" variant="primary" type="submit" [block]="true">
+    Registrarse
+  </app-button>
+</form>

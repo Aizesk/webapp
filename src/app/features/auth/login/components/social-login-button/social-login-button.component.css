@@ -1,0 +1,95 @@
+:host {
+  display: block;
+}
+
+.social-button {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border-subtle);
+  background-color: #fff;
+  color: var(--text-primary);
+  padding: 0.75rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.social-button:hover:not(:disabled) {
+  border-color: var(--brand-light);
+  box-shadow: 0 10px 30px rgba(15, 45, 128, 0.12);
+}
+
+.social-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.google-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border: 2px solid #4285f4;
+  color: #4285f4;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.google-icon::after {
+  content: 'G';
+  font-weight: 600;
+}
+
+.google-accent {
+  position: absolute;
+  width: 0.45rem;
+  height: 0.2rem;
+  border-radius: 0.2rem;
+}
+
+.google-accent--red {
+  background-color: #ea4335;
+  top: -0.15rem;
+  right: 0.15rem;
+}
+
+.google-accent--yellow {
+  background-color: #fbbc05;
+  bottom: 0.1rem;
+  right: -0.1rem;
+  transform: rotate(45deg);
+}
+
+.google-accent--green {
+  background-color: #34a853;
+  bottom: -0.15rem;
+  left: 0.35rem;
+  transform: rotate(-45deg);
+}
+
+.generic-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.4rem;
+  background: rgba(79, 125, 252, 0.15);
+  color: var(--brand-dark);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
