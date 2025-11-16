@@ -1,0 +1,123 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #eef2f7;
+  padding: 2rem;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #0f1c3d;
+}
+
+.dashboard {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.dashboard__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border-radius: 18px;
+  padding: 1.25rem 1.75rem;
+  box-shadow: 0 12px 25px rgba(15, 23, 42, 0.08);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand__logo {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #0f62fe, #70a4ff);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: #fff;
+}
+
+.brand__name {
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.brand__tagline {
+  display: block;
+  font-size: 0.85rem;
+  color: #6c7791;
+}
+
+.dashboard__nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.dashboard__nav-link {
+  text-decoration: none;
+  font-weight: 600;
+  color: #6c7791;
+  position: relative;
+  padding-bottom: 0.2rem;
+}
+
+.dashboard__nav-link--active {
+  color: #0f62fe;
+}
+
+.dashboard__nav-link--active::after {
+  content: '';
+  position: absolute;
+  bottom: -0.35rem;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #0f62fe, #4e8dff);
+}
+
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.icon-button {
+  min-width: 90px;
+  height: 40px;
+  border-radius: 999px;
+  border: none;
+  background: #f2f5fa;
+  color: #4a5c89;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #f3f0ff;
+  color: #6a3ef5;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+}
+
+.dashboard__content {
+  margin-top: 1.75rem;
+  display: grid;
+  grid-template-columns: 220px 1fr 320px;
+  gap: 1.5rem;
+}
+
+.dashboard__loading {
+  margin-top: 2rem;
+  text-align: center;
+  color: #6c7791;
+  font-weight: 600;
+}
