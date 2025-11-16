@@ -1,0 +1,289 @@
+.summary-column,
+.main-column,
+.side-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.summary-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 15px 25px rgba(15, 23, 42, 0.05);
+}
+
+.summary-card__label {
+  font-size: 0.95rem;
+  color: #6c7791;
+}
+
+.summary-card__value {
+  display: block;
+  margin: 0.45rem 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f1c3d;
+}
+
+.summary-card__trend {
+  font-weight: 600;
+}
+
+.summary-card__trend.positive {
+  color: #0f9b57;
+}
+
+.summary-card__trend.negative {
+  color: #ff5470;
+}
+
+.panel {
+  background: #fff;
+  border-radius: 24px;
+  padding: 1.5rem;
+  box-shadow: 0 20px 35px rgba(15, 23, 42, 0.08);
+}
+
+.panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.panel__eyebrow {
+  font-size: 0.85rem;
+  color: #6c7791;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.panel__title {
+  margin: 0.35rem 0 0;
+  font-size: 1.2rem;
+  color: #111d32;
+}
+
+.panel__badge {
+  background: rgba(23, 201, 100, 0.15);
+  color: #139b4c;
+  border-radius: 999px;
+  padding: 0.25rem 0.85rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.panel__legend {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #6c7791;
+  font-weight: 500;
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 0.35rem;
+}
+
+.legend-dot--income {
+  background: #4f8bff;
+}
+
+.legend-dot--expense {
+  background: #a855f7;
+}
+
+.bar-chart {
+  margin-top: 1.25rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+  gap: 1rem;
+  align-items: end;
+}
+
+.bar-chart__item {
+  text-align: center;
+}
+
+.bar-chart__bar {
+  width: 100%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #4f8bff, #3c59f6);
+  min-height: 40px;
+}
+
+.bar-chart__label {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #6c7791;
+}
+
+.line-chart {
+  margin-top: 1.25rem;
+}
+
+.line-chart svg {
+  width: 100%;
+  height: 220px;
+}
+
+.line {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.line--income {
+  stroke: #4f8bff;
+}
+
+.line--expense {
+  stroke: #a855f7;
+}
+
+.line-chart__labels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: #6c7791;
+  text-align: center;
+}
+
+.side-column .panel {
+  box-shadow: 0 18px 30px rgba(15, 23, 42, 0.06);
+}
+
+.panel--list {
+  padding: 1.25rem 1.5rem;
+}
+
+.transaction-list,
+.account-list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.transaction-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.transaction-item__title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.transaction-item__meta {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #6c7791;
+}
+
+.transaction-item__amount {
+  font-weight: 600;
+  color: #ff5470;
+}
+
+.transaction-item__amount.positive {
+  color: #0f9b57;
+}
+
+.account-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.account-item:last-child {
+  border-bottom: none;
+}
+
+.account-item__name {
+  font-weight: 600;
+}
+
+.account-item__status {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.15rem 0.65rem;
+  border-radius: 999px;
+}
+
+.account-item__status.success {
+  background: rgba(19, 155, 76, 0.12);
+  color: #138347;
+}
+
+.account-item__status.info {
+  background: rgba(79, 139, 255, 0.12);
+  color: #1f5bff;
+}
+
+.account-item__status.warning {
+  background: rgba(255, 168, 0, 0.12);
+  color: #b56100;
+}
+
+.ghost-button {
+  min-width: 0;
+  border: 1px solid #d5ddea;
+  border-radius: 20px;
+  background: transparent;
+  color: #4f5d7a;
+  font-weight: 600;
+  padding: 0.35rem 0.9rem;
+  cursor: pointer;
+}
+
+.ghost-button--small {
+  padding: 0.2rem 0.65rem;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 1100px) {
+  .dashboard__content {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-column {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .summary-card {
+    min-width: 220px;
+  }
+}
+
+@media (max-width: 720px) {
+  :host {
+    padding: 1rem;
+  }
+
+  .dashboard__header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .dashboard__nav {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
