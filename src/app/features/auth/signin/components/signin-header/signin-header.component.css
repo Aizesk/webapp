@@ -1,0 +1,31 @@
+:host {
+  display: block;
+}
+
+.signin-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.15rem;
+  font-size: 0.75rem;
+  color: var(--brand-dark);
+  font-weight: 600;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.85rem, 3vw, 2.25rem);
+  color: var(--text-primary);
+}
+
+.description {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 1rem;
+}
