@@ -1,29 +1,9 @@
 <section class="api-connections">
-  <header class="api-connections__header">
-    <div class="brand">
-      <div class="brand__logo">A</div>
-      <div>
-        <p class="brand__name">Aizesk</p>
-        <p class="brand__tagline">Integraciones seguras</p>
-      </div>
-    </div>
-
-    <nav class="api-connections__nav">
-      <a
-        class="api-connections__nav-link"
-        *ngFor="let item of navItems"
-        [class.api-connections__nav-link--active]="item.active"
-        [routerLink]="item.path"
-        >{{ item.label }}</a
-      >
-    </nav>
-
-    <div class="header-actions">
-      <button type="button" class="icon-button">🔔<span class="badge">5</span></button>
-      <button type="button" class="icon-button">❓</button>
-      <div class="avatar">A</div>
-    </div>
-  </header>
+  <app-top-navbar
+    [navItems]="navItems"
+    brandTagline="Integraciones seguras"
+    [notificationCount]="5"
+  ></app-top-navbar>
 
   <section class="hero">
     <div>

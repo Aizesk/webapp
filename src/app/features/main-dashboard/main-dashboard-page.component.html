@@ -1,30 +1,5 @@
 <section class="dashboard">
-  <header class="dashboard__header">
-    <div class="brand">
-      <div class="brand__logo" aria-hidden="true">A</div>
-      <div class="brand__copy">
-        <span class="brand__name">Aizesk</span>
-        <span class="brand__tagline">Tu control financiero</span>
-      </div>
-    </div>
-
-    <nav class="dashboard__nav">
-      <a
-        class="dashboard__nav-link"
-        *ngFor="let item of navItems"
-        [class.dashboard__nav-link--active]="item.active"
-        [attr.aria-current]="item.active ? 'page' : null"
-        [href]="item.href"
-        >{{ item.label }}</a
-      >
-    </nav>
-
-    <div class="header__actions">
-      <button type="button" class="icon-button">Buscar</button>
-      <button type="button" class="icon-button">Alertas</button>
-      <div class="avatar" aria-hidden="true">A</div>
-    </div>
-  </header>
+  <app-top-navbar [navItems]="navItems" brandTagline="Tu control financiero" [notificationCount]="2"></app-top-navbar>
   <ng-container *ngIf="dashboardVm$ | async as vm; else dashboardLoading">
     <div class="dashboard__content">
       <aside class="summary-column">

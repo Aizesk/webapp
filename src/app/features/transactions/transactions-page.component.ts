@@ -7,11 +7,13 @@ import {
   TransactionMetric
 } from '../../shared/models/transactions.model';
 import { TransactionsDataService } from './data/transactions-data.service';
+import { TopNavbarComponent } from '../../shared/components/top-navbar/top-navbar.component';
+import { MAIN_NAV_ITEMS } from '../../shared/models/navigation.model';
 
 @Component({
   selector: 'app-transactions-page',
   standalone: true,
-  imports: [NgFor, NgClass, NgIf, AsyncPipe, CurrencyPipe, DatePipe, DecimalPipe, RouterLink],
+  imports: [NgFor, NgClass, NgIf, AsyncPipe, CurrencyPipe, DatePipe, DecimalPipe, RouterLink, TopNavbarComponent],
   templateUrl: './transactions-page.component.html',
   styleUrls: ['./transactions-page.component.css', './transactions-page.tables.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -19,12 +21,7 @@ import { TransactionsDataService } from './data/transactions-data.service';
 export class TransactionsPageComponent {
   private readonly dataService = inject(TransactionsDataService);
 
-  protected readonly navItems = [
-    { label: 'Inicio', active: false, path: '/' },
-    { label: 'Transacciones', active: true, path: '/transactions' },
-    { label: 'Servicios', active: false, path: '/services' },
-    { label: 'Informes', active: false, path: '/reports' }
-  ];
+  protected readonly navItems = MAIN_NAV_ITEMS;
 
   protected readonly vm$ = this.dataService.getSnapshot().pipe(
     map((snapshot) => ({

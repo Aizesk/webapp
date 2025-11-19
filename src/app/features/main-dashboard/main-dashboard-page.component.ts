@@ -3,18 +3,19 @@ import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { combineLatest, map, shareReplay } from 'rxjs';
 import {
   ConnectedAccount,
-  DashboardNavItem,
   MonthlyIncomeVsExpensePoint,
   SummaryCard,
   TransactionItem,
   WeeklyIncomePoint
 } from '../../shared/models/dashboard.model';
 import { DashboardDataService } from './data/dashboard-data.service';
+import { TopNavbarComponent } from '../../shared/components/top-navbar/top-navbar.component';
+import { MAIN_NAV_ITEMS } from '../../shared/models/navigation.model';
 
 @Component({
   selector: 'app-main-dashboard-page',
   standalone: true,
-  imports: [NgFor, NgClass, NgIf, AsyncPipe, CurrencyPipe],
+  imports: [NgFor, NgClass, NgIf, AsyncPipe, CurrencyPipe, TopNavbarComponent],
   templateUrl: './main-dashboard-page.component.html',
   styleUrls: ['./main-dashboard-page.component.css', './main-dashboard-page.panels.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -22,12 +23,7 @@ import { DashboardDataService } from './data/dashboard-data.service';
 export class MainDashboardPageComponent {
   private readonly dataService = inject(DashboardDataService);
 
-  protected readonly navItems: DashboardNavItem[] = [
-    { label: 'Inicio', href: '#', active: true },
-    { label: 'Transacciones', href: '#', active: false },
-    { label: 'Servicios', href: '#', active: false },
-    { label: 'Informes', href: '#', active: false }
-  ];
+  protected readonly navItems = MAIN_NAV_ITEMS;
 
   protected readonly dashboardVm$ = combineLatest({
     summaryCards: this.dataService.getSummaryCards(),

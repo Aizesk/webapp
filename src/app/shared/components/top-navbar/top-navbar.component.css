@@ -1,0 +1,142 @@
+:host {
+  display: block;
+  margin-bottom: 2rem;
+}
+
+.app-navbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.75rem;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand__logo {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #0f62fe, #70a4ff);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #fff;
+}
+
+.brand__name {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.brand__tagline {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.app-navbar__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.app-navbar__nav-link {
+  text-decoration: none;
+  font-weight: 600;
+  color: #7a849d;
+  position: relative;
+  padding-bottom: 0.2rem;
+  transition: color 0.2s ease;
+}
+
+.app-navbar__nav-link--active,
+.app-navbar__nav-link:hover {
+  color: #0f62fe;
+}
+
+.app-navbar__nav-link--active::after {
+  content: '';
+  position: absolute;
+  bottom: -0.35rem;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #0f62fe, #4e8dff);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.icon-button {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: none;
+  background: #f2f5fa;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.icon-button:hover {
+  transform: translateY(-2px);
+  background: #e3e8f0;
+}
+
+.badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ff5470;
+  color: #fff;
+  font-size: 0.7rem;
+  display: grid;
+  place-items: center;
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #f3f0ff;
+  color: #6a3ef5;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .app-navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .app-navbar__nav {
+    width: 100%;
+  }
+
+  .header-actions {
+    align-self: stretch;
+    justify-content: flex-end;
+    width: 100%;
+  }
+}

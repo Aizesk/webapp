@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { NgFor } from '@angular/common';
 import { ButtonComponent } from '../../shared/components/button/button.component';
+import { TopNavbarComponent } from '../../shared/components/top-navbar/top-navbar.component';
+import { MAIN_NAV_ITEMS } from '../../shared/models/navigation.model';
 
 interface GeneratedReport {
   readonly id: string;
@@ -32,12 +34,13 @@ interface SuggestedTemplate {
 @Component({
   selector: 'app-reports-page',
   standalone: true,
-  imports: [NgFor, ButtonComponent],
+  imports: [NgFor, ButtonComponent, TopNavbarComponent],
   templateUrl: './reports-page.component.html',
   styleUrls: ['./reports-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ReportsPageComponent {
+  protected readonly navItems = MAIN_NAV_ITEMS;
   protected readonly periodFilters = [
     { value: 'last-7', label: '7 días' },
     { value: 'last-30', label: '30 días' },

@@ -1,29 +1,5 @@
 <section class="transactions">
-  <header class="transactions__header">
-    <div class="brand">
-      <div class="brand__logo">A</div>
-      <div>
-        <span class="brand__name">Aizesk</span>
-      </div>
-    </div>
-
-    <nav class="transactions__nav">
-      <a
-        class="transactions__nav-link"
-        *ngFor="let item of navItems"
-        [class.transactions__nav-link--active]="item.active"
-        [routerLink]="item.path"
-        >{{ item.label }}</a
-      >
-    </nav>
-
-    <div class="header-actions">
-      <button type="button" class="icon-button">🔍</button>
-      <button type="button" class="icon-button">🔔<span class="badge">3</span></button>
-      <button type="button" class="icon-button">❓</button>
-      <div class="avatar">A</div>
-    </div>
-  </header>
+  <app-top-navbar [navItems]="navItems" [notificationCount]="3"></app-top-navbar>
 
   <ng-container *ngIf="vm$ | async as vm">
     <section class="metrics">

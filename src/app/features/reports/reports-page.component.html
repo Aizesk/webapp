@@ -1,19 +1,15 @@
 <section class="reports">
-  <header class="reports__header">
-    <div class="brand">
-      <div class="brand__logo">R</div>
-      <div>
-        <p class="brand__name">Report Hub</p>
-        <p class="brand__tagline">Escenarios claros para decidir</p>
-      </div>
-    </div>
+  <app-top-navbar
+    [navItems]="navItems"
+    brandTagline="Escenarios claros para decidir"
+    [notificationCount]="1"
+  ></app-top-navbar>
 
-    <div class="reports__actions">
-      <button type="button" class="icon-button" aria-label="Notificaciones">🔔</button>
-      <app-button variant="ghost" size="sm">Exportar todo</app-button>
-      <app-button variant="primary" size="sm">Nuevo informe</app-button>
-    </div>
-  </header>
+  <div class="reports__actions">
+    <button type="button" class="icon-button" aria-label="Notificaciones">🔔</button>
+    <app-button variant="ghost" size="sm">Exportar todo</app-button>
+    <app-button variant="primary" size="sm">Nuevo informe</app-button>
+  </div>
 
   <section class="hero">
     <div class="hero__copy">

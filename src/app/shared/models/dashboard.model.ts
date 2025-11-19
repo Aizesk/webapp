@@ -1,9 +1,3 @@
-export interface DashboardNavItem {
-  readonly label: string;
-  readonly href: string;
-  readonly active?: boolean;
-}
-
 export interface SummaryCard {
   readonly label: string;
   readonly value: number;

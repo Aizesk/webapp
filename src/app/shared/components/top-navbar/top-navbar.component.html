@@ -1,0 +1,30 @@
+<header class="app-navbar">
+  <div class="brand">
+    <div class="brand__logo" aria-hidden="true">{{ brandLogoText }}</div>
+    <div>
+      <p class="brand__name">{{ brandName }}</p>
+      <p *ngIf="brandTagline" class="brand__tagline">{{ brandTagline }}</p>
+    </div>
+  </div>
+
+  <nav class="app-navbar__nav" aria-label="Primary">
+    <a
+      class="app-navbar__nav-link"
+      *ngFor="let item of navItems"
+      [routerLink]="item.path"
+      routerLinkActive="app-navbar__nav-link--active"
+      [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+      >{{ item.label }}</a
+    >
+  </nav>
+
+  <div class="header-actions">
+    <button type="button" class="icon-button" aria-label="Buscar">🔍</button>
+    <button type="button" class="icon-button" aria-label="Notificaciones">
+      🔔
+      <span *ngIf="notificationCount > 0" class="badge">{{ notificationCount }}</span>
+    </button>
+    <button type="button" class="icon-button" aria-label="Centro de ayuda">❓</button>
+    <div class="avatar" aria-hidden="true">{{ brandLogoText }}</div>
+  </div>
+</header>

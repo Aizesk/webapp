@@ -1,9 +1,11 @@
 import { AsyncPipe, CurrencyPipe, DatePipe, NgClass, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { map, of, shareReplay, switchMap } from 'rxjs';
 import { DetailedTransaction } from '../../../shared/models/transactions.model';
 import { TransactionsDataService } from '../data/transactions-data.service';
+import { TopNavbarComponent } from '../../../shared/components/top-navbar/top-navbar.component';
+import { MAIN_NAV_ITEMS } from '../../../shared/models/navigation.model';
 
 interface TransactionDetailViewModel {
   readonly transactionId: string | null;
@@ -16,7 +18,7 @@ interface TransactionDetailViewModel {
 @Component({
   selector: 'app-transaction-detail-page',
   standalone: true,
-  imports: [AsyncPipe, CurrencyPipe, DatePipe, NgIf, NgClass, RouterLink],
+  imports: [AsyncPipe, CurrencyPipe, DatePipe, NgIf, NgClass, TopNavbarComponent],
   templateUrl: './transaction-detail-page.component.html',
   styleUrls: ['./transaction-detail-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -26,12 +28,7 @@ export class TransactionDetailPageComponent {
   private readonly router = inject(Router);
   private readonly dataService = inject(TransactionsDataService);
 
-  protected readonly navItems = [
-    { label: 'Inicio', active: false, path: '/' },
-    { label: 'Transacciones', active: true, path: '/transactions' },
-    { label: 'Servicios', active: false, path: '/services' },
-    { label: 'Informes', active: false, path: '/reports' }
-  ];
+  protected readonly navItems = MAIN_NAV_ITEMS;
 
   protected readonly vm$ = this.route.paramMap.pipe(
     map((params) => params.get('transactionId')),

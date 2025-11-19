@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { NgClass, NgFor, NgIf } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { ButtonComponent } from '../../shared/components/button/button.component';
+import { TopNavbarComponent } from '../../shared/components/top-navbar/top-navbar.component';
+import { MAIN_NAV_ITEMS } from '../../shared/models/navigation.model';
 
 interface ApiConnection {
   readonly id: string;
@@ -17,18 +18,13 @@ interface ApiConnection {
 @Component({
   selector: 'app-api-connections-page',
   standalone: true,
-  imports: [NgFor, NgIf, NgClass, RouterLink, ButtonComponent],
+  imports: [NgFor, NgIf, NgClass, ButtonComponent, TopNavbarComponent],
   templateUrl: './api-connections-page.component.html',
   styleUrls: ['./api-connections-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ApiConnectionsPageComponent {
-  protected readonly navItems = [
-    { label: 'Inicio', path: '/', active: false },
-    { label: 'Transacciones', path: '/transactions', active: false },
-    { label: 'Conexiones API', path: '/api-connections', active: true },
-    { label: 'Informes', path: '/reports', active: false }
-  ];
+  protected readonly navItems = MAIN_NAV_ITEMS;
 
   protected readonly connections: readonly ApiConnection[] = [
     {
