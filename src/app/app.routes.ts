@@ -9,6 +9,7 @@ import { EditTransactionPageComponent } from './features/transactions/edit-trans
 import { TransactionDetailPageComponent } from './features/transactions/transaction-detail/transaction-detail-page.component';
 import { AddManualTransactionPageComponent } from './features/transactions/add-manual-transaction/add-manual-transaction-page.component';
 import { ApiConnectionsPageComponent } from './features/api-connections/api-connections-page.component';
+import { ReportsPageComponent } from './features/reports/reports-page.component';
 
 export const routes: Routes = [
   {
@@ -60,6 +61,11 @@ export const routes: Routes = [
     path: 'api-connections',
     component: ApiConnectionsPageComponent,
     title: 'Aizesk | Conexiones API'
+  },
+  {
+    path: 'reports',
+    component: ReportsPageComponent,
+    title: 'Aizesk | Informes'
   },
   {
     path: '**',

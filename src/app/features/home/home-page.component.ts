@@ -47,4 +47,8 @@ export class HomePageComponent {
   protected handleApiConnections(): void {
     this.router.navigate(['/api-connections']);
   }
+
+  protected handleReports(): void {
+    this.router.navigate(['/reports']);
+  }
 }
