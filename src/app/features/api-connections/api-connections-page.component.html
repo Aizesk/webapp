@@ -1,0 +1,118 @@
+<section class="api-connections">
+  <header class="api-connections__header">
+    <div class="brand">
+      <div class="brand__logo">A</div>
+      <div>
+        <p class="brand__name">Aizesk</p>
+        <p class="brand__tagline">Integraciones seguras</p>
+      </div>
+    </div>
+
+    <nav class="api-connections__nav">
+      <a
+        class="api-connections__nav-link"
+        *ngFor="let item of navItems"
+        [class.api-connections__nav-link--active]="item.active"
+        [routerLink]="item.path"
+        >{{ item.label }}</a
+      >
+    </nav>
+
+    <div class="header-actions">
+      <button type="button" class="icon-button">🔔<span class="badge">5</span></button>
+      <button type="button" class="icon-button">❓</button>
+      <div class="avatar">A</div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div>
+      <p class="eyebrow">Integraciones oficiales</p>
+      <h1>Gestiona tus conexiones API</h1>
+      <p class="subtitle">
+        Conecta tus plataformas favoritas para mantener tus ingresos sincronizados, automatizar
+        conciliaciones y desbloquear reportes avanzados.
+      </p>
+    </div>
+    <div class="hero__actions">
+      <app-button variant="ghost" size="sm">Ver documentación</app-button>
+      <app-button variant="primary" size="sm">Crear nueva clave</app-button>
+    </div>
+  </section>
+
+  <section class="content">
+    <div class="connections">
+      <h2>Conexiones disponibles</h2>
+      <div class="connections__grid">
+        <article class="connection-card" *ngFor="let connection of connections">
+          <div class="connection-card__header">
+            <div class="icon" [style.background-color]="connection.accent">{{ connection.icon }}</div>
+            <div>
+              <p class="connection-name">{{ connection.name }}</p>
+              <span class="connection-tier">{{ connection.tier }}</span>
+            </div>
+            <span class="chip" [ngClass]="connection.status.toLowerCase().replace(' ', '-')">
+              {{ connection.status }}
+            </span>
+          </div>
+          <p class="connection-description">{{ connection.description }}</p>
+
+          <div class="connection-meta">
+            <span>Última sincronización: {{ connection.lastSync }}</span>
+          </div>
+
+          <div class="connection-actions">
+            <app-button
+              *ngIf="connection.status === 'Conectado'; else connectBtn"
+              variant="ghost"
+              size="sm"
+              (click)="handleAction(connection, 'sync')"
+            >
+              Sincronizar ahora
+            </app-button>
+            <ng-template #connectBtn>
+              <app-button variant="primary" size="sm" (click)="handleAction(connection, 'connect')">
+                Conectar
+              </app-button>
+            </ng-template>
+
+            <button
+              type="button"
+              class="text-button"
+              (click)="handleAction(connection, connection.status === 'Conectado' ? 'disconnect' : 'connect')"
+            >
+              {{ connection.status === 'Conectado' ? 'Desconectar' : 'Ir a marketplace' }}
+            </button>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <aside class="sidebar">
+      <article class="card">
+        <p class="eyebrow">Automatizaciones</p>
+        <h3>Sincronización inteligente</h3>
+        <ul class="automation-list">
+          <li *ngFor="let automation of automations">
+            <span>{{ automation.label }}</span>
+            <span class="toggle" [class.toggle--on]="automation.enabled">
+              <span class="toggle__dot"></span>
+            </span>
+          </li>
+        </ul>
+      </article>
+
+      <article class="card plan">
+        <p class="eyebrow">Plan actual</p>
+        <h3>{{ subscriptionPlan.name }}</h3>
+        <p class="plan__price">
+          {{ subscriptionPlan.price }} <span>{{ subscriptionPlan.period }}</span>
+        </p>
+        <ul>
+          <li *ngFor="let feature of subscriptionPlan.features">{{ feature }}</li>
+        </ul>
+        <app-button variant="primary" [block]="true">Mejorar suscripción</app-button>
+      </article>
+    </aside>
+  </section>
+</section>

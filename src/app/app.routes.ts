@@ -8,6 +8,7 @@ import { TransactionsPageComponent } from './features/transactions/transactions-
 import { EditTransactionPageComponent } from './features/transactions/edit-transaction/edit-transaction-page.component';
 import { TransactionDetailPageComponent } from './features/transactions/transaction-detail/transaction-detail-page.component';
 import { AddManualTransactionPageComponent } from './features/transactions/add-manual-transaction/add-manual-transaction-page.component';
+import { ApiConnectionsPageComponent } from './features/api-connections/api-connections-page.component';
 
 export const routes: Routes = [
   {
@@ -54,6 +55,11 @@ export const routes: Routes = [
     path: 'transactions/:transactionId/edit',
     component: EditTransactionPageComponent,
     title: 'Aizesk | Editar transacción'
+  },
+  {
+    path: 'api-connections',
+    component: ApiConnectionsPageComponent,
+    title: 'Aizesk | Conexiones API'
   },
   {
     path: '**',

@@ -1,0 +1,97 @@
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { NgClass, NgFor, NgIf } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { ButtonComponent } from '../../shared/components/button/button.component';
+
+interface ApiConnection {
+  readonly id: string;
+  readonly name: string;
+  readonly description: string;
+  readonly status: 'Conectado' | 'No conectado' | 'Error';
+  readonly lastSync: string;
+  readonly icon: string;
+  readonly accent: string;
+  readonly tier: 'Premium' | 'Standard';
+}
+
+@Component({
+  selector: 'app-api-connections-page',
+  standalone: true,
+  imports: [NgFor, NgIf, NgClass, RouterLink, ButtonComponent],
+  templateUrl: './api-connections-page.component.html',
+  styleUrls: ['./api-connections-page.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class ApiConnectionsPageComponent {
+  protected readonly navItems = [
+    { label: 'Inicio', path: '/', active: false },
+    { label: 'Transacciones', path: '/transactions', active: false },
+    { label: 'Conexiones API', path: '/api-connections', active: true },
+    { label: 'Informes', path: '/reports', active: false }
+  ];
+
+  protected readonly connections: readonly ApiConnection[] = [
+    {
+      id: 'youtube',
+      name: 'YouTube',
+      description: 'Sincroniza ingresos por anuncios, membresías y super chats.',
+      status: 'Conectado',
+      lastSync: 'Hace 15 minutos',
+      icon: '▶️',
+      accent: '#ef4444',
+      tier: 'Premium'
+    },
+    {
+      id: 'twitch',
+      name: 'Twitch',
+      description: 'Recopila suscripciones, bits y donaciones en tiempo real.',
+      status: 'Conectado',
+      lastSync: 'Hace 2 horas',
+      icon: '🟣',
+      accent: '#a855f7',
+      tier: 'Premium'
+    },
+    {
+      id: 'amazon',
+      name: 'Amazon',
+      description: 'Integra ventas de productos físicos y digitales.',
+      status: 'No conectado',
+      lastSync: 'Nunca',
+      icon: '🛒',
+      accent: '#f97316',
+      tier: 'Standard'
+    },
+    {
+      id: 'shopify',
+      name: 'Shopify',
+      description: 'Centraliza pedidos, inventario y comisiones.',
+      status: 'Conectado',
+      lastSync: 'Hace 6 minutos',
+      icon: '🛍️',
+      accent: '#22c55e',
+      tier: 'Premium'
+    }
+  ];
+
+  protected readonly automations = [
+    { label: 'Sincronización automática', enabled: true },
+    { label: 'Alertas por correo', enabled: true },
+    { label: 'Reintentos inteligentes', enabled: false }
+  ];
+
+  protected readonly subscriptionPlan = {
+    name: 'Plan Scale',
+    price: '$39',
+    period: '/mes',
+    features: [
+      'Hasta 5 plataformas conectadas',
+      'Histórico ilimitado de transacciones',
+      'Reportes colaborativos en tiempo real',
+      'Soporte prioritario 24/7'
+    ]
+  };
+
+  protected handleAction(connection: ApiConnection, action: 'connect' | 'disconnect' | 'sync'): void {
+    console.log(action, connection.id);
+  }
+}

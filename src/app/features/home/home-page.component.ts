@@ -43,4 +43,8 @@ export class HomePageComponent {
   protected handleSignin(): void {
     this.router.navigate(['/signin']);
   }
+
+  protected handleApiConnections(): void {
+    this.router.navigate(['/api-connections']);
+  }
 }
