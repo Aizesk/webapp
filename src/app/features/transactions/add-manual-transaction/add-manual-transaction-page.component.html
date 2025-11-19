@@ -1,0 +1,176 @@
+<section class="add-transaction">
+  <header class="page-header">
+    <button type="button" class="back-button" (click)="handleCancel()">←</button>
+    <div>
+      <p class="eyebrow">Transacciones</p>
+      <h1>Registrar transacción manual</h1>
+      <p class="subtitle">Completa los datos de la operación para mantener el historial sincronizado.</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="ghost-button" (click)="handleCancel()">Cancelar</button>
+      <button type="button" class="primary-button" (click)="handleSubmit()">Guardar transacción</button>
+    </div>
+  </header>
+
+  <form class="page-content" [formGroup]="form" (ngSubmit)="handleSubmit()">
+    <div class="form-columns">
+      <article class="form-card">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">Información general</p>
+            <h2>Datos principales</h2>
+          </div>
+          <span class="badge">Manual</span>
+        </div>
+
+        <div class="form-grid">
+          <label class="form-field">
+            <span>Descripción</span>
+            <input type="text" formControlName="description" placeholder="Ej. Pedido #52005 (Servicio A)" />
+            <small *ngIf="form.get('description')?.invalid && form.get('description')?.touched">
+              Ingresa una descripción válida.
+            </small>
+          </label>
+
+          <label class="form-field">
+            <span>Categoría</span>
+            <select formControlName="category">
+              <option *ngFor="let option of categoryOptions" [value]="option">{{ option }}</option>
+            </select>
+          </label>
+
+          <label class="form-field">
+            <span>Plataforma</span>
+            <select formControlName="platform">
+              <option *ngFor="let option of platformOptions" [value]="option">{{ option }}</option>
+            </select>
+          </label>
+
+          <label class="form-field">
+            <span>Estado</span>
+            <select formControlName="status">
+              <option *ngFor="let option of statusOptions" [value]="option">{{ option }}</option>
+            </select>
+          </label>
+
+          <label class="form-field">
+            <span>Monto</span>
+            <div class="currency-input">
+              <span>$</span>
+              <input type="number" formControlName="amount" step="0.01" min="0.01" />
+            </div>
+          </label>
+
+          <label class="form-field">
+            <span>Comisión</span>
+            <div class="currency-input">
+              <span>$</span>
+              <input type="number" formControlName="fee" step="0.01" min="0" />
+            </div>
+          </label>
+        </div>
+      </article>
+
+      <article class="form-card">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">Pago y referencia</p>
+            <h2>Detalles financieros</h2>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <label class="form-field">
+            <span>Método de pago</span>
+            <select formControlName="paymentMethod">
+              <option *ngFor="let method of paymentMethodOptions" [value]="method">{{ method }}</option>
+            </select>
+          </label>
+
+          <label class="form-field">
+            <span>Referencia</span>
+            <input type="text" formControlName="reference" placeholder="Ej. REF-2024-06-01-001" />
+          </label>
+
+          <label class="form-field">
+            <span>Fecha</span>
+            <input type="date" formControlName="date" />
+          </label>
+
+          <label class="form-field">
+            <span>Hora</span>
+            <input type="time" formControlName="time" />
+            <small>{{ timezone }}</small>
+          </label>
+        </div>
+      </article>
+
+      <article class="form-card">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">Cliente</p>
+            <h2>Información del cliente</h2>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <label class="form-field">
+            <span>Nombre</span>
+            <input type="text" formControlName="customerName" />
+          </label>
+
+          <label class="form-field">
+            <span>Email</span>
+            <input type="email" formControlName="customerEmail" />
+          </label>
+
+          <label class="form-field">
+            <span>ID de Cliente</span>
+            <input type="text" formControlName="customerId" />
+          </label>
+        </div>
+      </article>
+
+      <article class="form-card">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">Notas internas</p>
+            <h2>Contexto adicional</h2>
+          </div>
+        </div>
+
+        <label class="form-field">
+          <textarea rows="4" formControlName="notes" placeholder="Agrega indicaciones para tu equipo"></textarea>
+        </label>
+      </article>
+    </div>
+
+    <aside class="summary-panel">
+      <div class="summary-card">
+        <p class="eyebrow">Resumen</p>
+        <h3>Montos estimados</h3>
+        <ul>
+          <li>
+            <span>Cantidad Total</span>
+            <strong>{{ form.get('amount')?.value || 0 | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
+          </li>
+          <li>
+            <span>Comisión</span>
+            <strong>-{{ form.get('fee')?.value || 0 | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
+          </li>
+          <li>
+            <span>Cantidad Neta</span>
+            <strong class="success">{{ netAmount | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
+          </li>
+        </ul>
+      </div>
+
+      <div class="summary-card quick-actions">
+        <h3>Acciones rápidas</h3>
+        <p>Podrás generar recibos o enviar confirmaciones una vez guardes la transacción.</p>
+        <button type="submit" class="primary-button">Guardar ahora</button>
+        <button type="button" class="ghost-button" (click)="handleCancel()">Descartar</button>
+      </div>
+    </aside>
+  </form>
+</section>

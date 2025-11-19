@@ -1,0 +1,171 @@
+<section class="edit-transaction">
+  <header class="page-header">
+    <button type="button" class="back-button" (click)="navigateBack()">←</button>
+    <div>
+      <p class="eyebrow">Transacciones</p>
+      <h1>Editar transacción</h1>
+      <p class="subtitle">Ajusta los datos manuales y sincronizados de la operación.</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="ghost-button" (click)="handleCancel()">Descartar</button>
+      <button type="button" class="primary-button" (click)="handleSubmit()">Guardar cambios</button>
+    </div>
+  </header>
+
+  <ng-container *ngIf="vm$ | async as vm">
+    <ng-container *ngIf="vm.transaction; else notFound">
+      <ng-container *ngIf="vm.canEdit; else notEditable">
+        <div class="page-content">
+        <form class="form-card" [formGroup]="form" (ngSubmit)="handleSubmit()">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow">Detalles principales</p>
+              <h2>Información general</h2>
+            </div>
+            <span class="chip" [ngClass]="vm.transaction.manual ? 'chip--manual' : 'chip--third'">
+              {{ vm.transaction.manual ? 'Manual' : 'Terceros' }}
+            </span>
+          </div>
+
+          <div class="form-grid">
+            <label class="form-field">
+              <span>Descripción</span>
+              <input type="text" formControlName="description" placeholder="Ej. Pedido #52003 (Curso Online)" />
+              <small *ngIf="form.get('description')?.invalid && form.get('description')?.touched">
+                La descripción es obligatoria.
+              </small>
+            </label>
+
+            <label class="form-field">
+              <span>Categoría</span>
+              <select formControlName="category">
+                <option *ngFor="let option of categoryOptions" [value]="option">{{ option }}</option>
+              </select>
+            </label>
+
+            <label class="form-field">
+              <span>Plataforma</span>
+              <select formControlName="platform">
+                <option *ngFor="let option of platformOptions" [value]="option">{{ option }}</option>
+              </select>
+            </label>
+
+            <label class="form-field">
+              <span>Fecha</span>
+              <input type="date" formControlName="date" />
+            </label>
+
+            <label class="form-field">
+              <span>Monto</span>
+              <div class="currency-input">
+                <span>$</span>
+                <input type="number" formControlName="amount" step="0.01" min="0" />
+              </div>
+            </label>
+
+            <label class="form-field">
+              <span>Estado</span>
+              <select formControlName="status">
+                <option *ngFor="let option of statusOptions" [value]="option">{{ option }}</option>
+              </select>
+            </label>
+
+            <label class="form-field">
+              <span>Origen</span>
+              <select formControlName="origin">
+                <option *ngFor="let option of originOptions" [value]="option">{{ option }}</option>
+              </select>
+            </label>
+
+            <label class="form-field switch-field">
+              <span>Marcar como manual</span>
+              <input type="checkbox" formControlName="manual" />
+            </label>
+          </div>
+
+          <label class="form-field">
+            <span>Notas internas</span>
+            <textarea rows="4" formControlName="notes" placeholder="Agrega contexto adicional para el equipo"></textarea>
+          </label>
+
+          <div class="form-actions">
+            <button type="button" class="ghost-button" (click)="handleCancel()">Cancelar</button>
+            <button type="submit" class="primary-button">Guardar transacción</button>
+          </div>
+        </form>
+
+        <aside class="summary-card">
+          <div class="summary-header">
+            <p class="eyebrow">Resumen</p>
+            <h3>Transacción {{ vm.transaction.id }}</h3>
+            <p class="summary-amount">{{ vm.transaction.amount | currency: 'USD' : 'symbol' : '1.2-2' }}</p>
+          </div>
+          <dl class="summary-list">
+            <div>
+              <dt>Estado</dt>
+              <dd>
+                <span class="status" [ngClass]="vm.transaction.status.toLowerCase()">{{ vm.transaction.status }}</span>
+              </dd>
+            </div>
+            <div>
+              <dt>Plataforma</dt>
+              <dd>{{ vm.transaction.platform }}</dd>
+            </div>
+            <div>
+              <dt>Fecha</dt>
+              <dd>{{ vm.transaction.date | date: 'longDate' }}</dd>
+            </div>
+            <div>
+              <dt>Categoría</dt>
+              <dd>{{ vm.transaction.category }}</dd>
+            </div>
+          </dl>
+
+          <section class="activity">
+            <h4>Actividad reciente</h4>
+            <ul>
+              <li>
+                <span class="dot"></span>
+                <div>
+                  <p class="activity-title">Sincronización exitosa</p>
+                  <p class="activity-meta">Hace 2h • Shopify API</p>
+                </div>
+              </li>
+              <li>
+                <span class="dot"></span>
+                <div>
+                  <p class="activity-title">Ajuste manual del equipo</p>
+                  <p class="activity-meta">Hace 1d • José García</p>
+                </div>
+              </li>
+              <li>
+                <span class="dot"></span>
+                <div>
+                  <p class="activity-title">Ingreso registrado</p>
+                  <p class="activity-meta">Hace 3d • Automatización</p>
+                </div>
+              </li>
+            </ul>
+          </section>
+        </aside>
+      </div>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+
+  <ng-template #notFound>
+    <div class="empty-state">
+      <h2>No encontramos la transacción solicitada</h2>
+      <p>Verifica el enlace o regresa al listado de transacciones para seleccionarla nuevamente.</p>
+      <button type="button" class="primary-button" (click)="navigateBack()">Volver al listado</button>
+    </div>
+  </ng-template>
+
+  <ng-template #notEditable>
+    <div class="empty-state">
+      <h2>Esta transacción no es editable</h2>
+      <p>Solo puedes editar operaciones creadas manualmente. Selecciona una transacción manual desde el listado.</p>
+      <button type="button" class="primary-button" (click)="navigateBack()">Volver al listado</button>
+    </div>
+  </ng-template>
+</section>
