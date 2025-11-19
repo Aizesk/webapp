@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { SigninCardComponent } from './components/signin-card/signin-card.component';
 import { AuthProvider } from '../../../shared/models/auth-provider.model';
 import { SignUpRequest } from '../../../shared/models/sign-up-request.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-signin-page',
@@ -12,6 +13,8 @@ import { SignUpRequest } from '../../../shared/models/sign-up-request.model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SigninPageComponent {
+  private readonly router = inject(Router);
+
   protected readonly brandName = 'Aizesk';
   protected readonly title = 'Registro';
   protected readonly subtitle = 'Crea tu cuenta en Aizesk';
@@ -31,6 +34,6 @@ export class SigninPageComponent {
   }
 
   protected onNavigateToLogin(): void {
-    console.log('navigate to login');
+    this.router.navigate(['/login']);
   }
 }

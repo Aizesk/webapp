@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FeatureCard } from '../../shared/models/feature-card.model';
 import { FeatureCardListComponent } from '../../shared/components/feature-card-list/feature-card-list.component';
 import { ButtonComponent } from '../../shared/components/button/button.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home-page',
@@ -12,6 +13,8 @@ import { ButtonComponent } from '../../shared/components/button/button.component
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomePageComponent {
+  private readonly router = inject(Router);
+
   protected readonly featureCards: FeatureCard[] = [
     {
       code: 'GI',
@@ -32,4 +35,12 @@ export class HomePageComponent {
         'Tus datos están protegidos con los más altos estándares de seguridad de la industria. Utilizamos cifrado de extremo a extremo, autenticación multifactor y copias de seguridad automatizadas para garantizar que tu información financiera se mantenga segura y disponible cuando la necesites. Tu privacidad es nuestra prioridad máxima.'
     }
   ];
+
+  protected handleLogin(): void {
+    this.router.navigate(['/login']);
+  }
+
+  protected handleSignin(): void {
+    this.router.navigate(['/signin']);
+  }
 }

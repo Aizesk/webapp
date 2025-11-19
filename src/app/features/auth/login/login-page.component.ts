@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { LoginCardComponent } from './components/login-card/login-card.component';
 import { AuthProvider } from '../../../shared/models/auth-provider.model';
 import { LoginCredentials } from '../../../shared/models/login-credentials.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login-page',
@@ -12,6 +13,8 @@ import { LoginCredentials } from '../../../shared/models/login-credentials.model
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginPageComponent {
+  private readonly router = inject(Router);
+
   protected readonly brandName = 'Aizesk';
   protected readonly title = 'Inicio de sesión';
   protected readonly cardDescription =
@@ -30,6 +33,6 @@ export class LoginPageComponent {
   }
 
   protected onForgotPassword(): void {
-    console.log('forgot password');
+    this.router.navigate(['/recovery-password']);
   }
 }
