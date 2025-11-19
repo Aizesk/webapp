@@ -1,0 +1,151 @@
+<section class="transactions">
+  <header class="transactions__header">
+    <div class="brand">
+      <div class="brand__logo">A</div>
+      <div>
+        <span class="brand__name">Aizesk</span>
+      </div>
+    </div>
+
+    <nav class="transactions__nav">
+      <a
+        class="transactions__nav-link"
+        *ngFor="let item of navItems"
+        [class.transactions__nav-link--active]="item.active"
+        [routerLink]="item.path"
+        >{{ item.label }}</a
+      >
+    </nav>
+
+    <div class="header-actions">
+      <button type="button" class="icon-button">🔍</button>
+      <button type="button" class="icon-button">🔔<span class="badge">3</span></button>
+      <button type="button" class="icon-button">❓</button>
+      <div class="avatar">A</div>
+    </div>
+  </header>
+
+  <ng-container *ngIf="vm$ | async as vm">
+    <section class="metrics">
+      <article class="metric-card" *ngFor="let metric of vm.metrics; trackBy: trackByMetric">
+        <div class="metric-card__label">{{ metric.label }}</div>
+        <div class="metric-card__value">
+          <span *ngIf="metric.currency">{{ metric.currency === 'USD' ? '$' : metric.currency }}</span>
+          {{ metric.value | number: '1.0-0' }}
+        </div>
+        <div class="metric-card__trend" [ngClass]="metric.isPositive ? 'positive' : 'negative'">
+          {{ metric.trend }}
+        </div>
+      </article>
+    </section>
+
+    <section class="content">
+      <div class="table-panel">
+        <div class="table-panel__toolbar">
+          <button type="button" class="filter-button">Todas las transacciones</button>
+          <label class="search-field">
+            <input type="search" placeholder="Buscar transacciones..." />
+          </label>
+          <div class="toolbar-actions">
+            <button type="button" class="ghost-button">Exportar</button>
+            <button type="button" class="primary-button" [routerLink]="'/transactions/manual/new'">
+              Añadir transacción manual
+            </button>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Origen</th>
+                <th>Fecha</th>
+                <th>Descripción</th>
+                <th>Plataforma</th>
+                <th>Cantidad</th>
+                <th>Estado</th>
+                <th>Categoría</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let tx of vm.transactions">
+                <td>
+                  <span class="chip" [ngClass]="tx.manual ? 'chip--manual' : 'chip--third'">
+                    {{ tx.origin }}
+                  </span>
+                </td>
+                <td>{{ tx.date | date: 'yyyy-MM-dd' }}</td>
+                <td>{{ tx.description }}</td>
+                <td>{{ tx.platform }}</td>
+                <td>{{ tx.amount | currency: 'USD' : 'symbol' : '1.2-2' }}</td>
+                <td>
+                  <span class="status" [ngClass]="tx.status.toLowerCase()">{{ tx.status }}</span>
+                </td>
+                <td>{{ tx.category }}</td>
+                <td>
+                  <button
+                    type="button"
+                    class="table-icon"
+                    [routerLink]="['/transactions', tx.id]"
+                    aria-label="Ver detalle"
+                    title="Ver detalle"
+                  >
+                    👁️
+                  </button>
+                  <ng-container *ngIf="tx.manual; else disabledEdit">
+                    <button
+                      type="button"
+                      class="table-icon"
+                      [routerLink]="['/transactions', tx.id, 'edit']"
+                      aria-label="Editar transacción manual"
+                    >
+                      ✏️
+                    </button>
+                  </ng-container>
+                  <ng-template #disabledEdit>
+                    <button
+                      type="button"
+                      class="table-icon table-icon--disabled"
+                      disabled
+                      title="Solo se pueden editar transacciones manuales"
+                      aria-label="Edición no disponible"
+                    >
+                      ✏️
+                    </button>
+                  </ng-template>
+                  <button type="button" class="table-icon">🗑️</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <footer class="table-footer">
+          <span>Mostrando {{ vm.transactions.length }} transacciones</span>
+          <div class="pagination">
+            <button type="button" disabled>«</button>
+            <button type="button" class="active">2</button>
+            <button type="button">3</button>
+            <button type="button">4</button>
+            <button type="button">5</button>
+            <button type="button">…</button>
+            <button type="button">»</button>
+          </div>
+        </footer>
+      </div>
+
+      <aside class="side-panel">
+        <h3>Distribución por Plataforma</h3>
+        <div class="donut" [style.background-image]="vm.distributionGradient"></div>
+        <ul class="distribution-list">
+          <li *ngFor="let item of vm.distribution; trackBy: trackByPlatform">
+            <span class="dot" [style.background-color]="item.color"></span>
+            <span class="platform">{{ item.platform }}</span>
+            <span class="amount">{{ item.amount | currency: 'USD' : 'symbol' : '1.0-0' }}</span>
+          </li>
+        </ul>
+      </aside>
+    </section>
+  </ng-container>
+</section>
