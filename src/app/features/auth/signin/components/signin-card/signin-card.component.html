@@ -1,0 +1,27 @@
+<article class="signin-card">
+  <app-signin-header
+    [brandName]="brandName"
+    [title]="title"
+    [description]="description"
+  />
+
+  @if (providers.length) {
+    <div class="providers">
+      @for (provider of providers; track provider.id) {
+        <app-signin-social-button
+          [provider]="provider"
+          (selectProvider)="onProviderSelected($event)"
+        />
+      }
+    </div>
+  }
+
+  <app-signin-divider label="o continúa con" />
+
+  <app-signin-form (submitRequest)="onFormSubmitted($event)" />
+
+  <footer class="card-footer">
+    <span>{{ loginCtaLabel }}</span>
+    <button type="button" (click)="onLoginRequested()">{{ loginLinkLabel }}</button>
+  </footer>
+</article>
