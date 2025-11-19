@@ -1,0 +1,136 @@
+<section class="reports">
+  <header class="reports__header">
+    <div class="brand">
+      <div class="brand__logo">R</div>
+      <div>
+        <p class="brand__name">Report Hub</p>
+        <p class="brand__tagline">Escenarios claros para decidir</p>
+      </div>
+    </div>
+
+    <div class="reports__actions">
+      <button type="button" class="icon-button" aria-label="Notificaciones">🔔</button>
+      <app-button variant="ghost" size="sm">Exportar todo</app-button>
+      <app-button variant="primary" size="sm">Nuevo informe</app-button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero__copy">
+      <p class="eyebrow">Inteligencia de ingresos</p>
+      <h1>Informes generados y recomendaciones listos para tu equipo</h1>
+      <p class="subtitle">
+        Filtra por periodo, automatiza el envío y comparte con stakeholders en segundos. Las
+        plantillas inteligentes se adaptan a tus fuentes de datos conectadas.
+      </p>
+      <div class="hero__cta">
+        <app-button variant="primary" size="sm">Programar briefing semanal</app-button>
+        <app-button variant="ghost" size="sm">Ver historial completo</app-button>
+      </div>
+    </div>
+    <div class="hero__filters">
+      <p class="label">Periodo de análisis</p>
+      <div class="filter-chips">
+        <button
+          *ngFor="let filter of periodFilters"
+          type="button"
+          class="filter-chip"
+          [class.filter-chip--active]="selectedPeriod === filter.value"
+          (click)="handlePeriodChange(filter.value)"
+        >
+          {{ filter.label }}
+        </button>
+      </div>
+      <p class="helper">Los cálculos se regeneran automáticamente cuando actualices tus transacciones.</p>
+    </div>
+  </section>
+
+  <section class="content">
+    <section class="generated">
+      <div class="section-header">
+        <div>
+          <p class="eyebrow">Informes activos</p>
+          <h2>Listos para descargar o automatizar</h2>
+        </div>
+        <app-button variant="ghost" size="sm">Ver plantillas guardadas</app-button>
+      </div>
+
+      <div class="reports-grid">
+        <article class="report-card" *ngFor="let report of generatedReports">
+          <header class="report-card__header">
+            <div>
+              <p class="report-title">{{ report.name }}</p>
+              <p class="report-description">{{ report.description }}</p>
+            </div>
+            <span class="report-format">{{ report.format }}</span>
+          </header>
+
+          <div class="report-stats">
+            <p class="report-amount" [class.report-amount--down]="report.trend === 'down'">
+              {{ report.amount }}
+            </p>
+            <span>{{ report.frequency }}</span>
+            <span>{{ report.updatedAt }}</span>
+          </div>
+
+          <ul class="report-highlights">
+            <li *ngFor="let highlight of report.highlights">{{ highlight }}</li>
+          </ul>
+
+          <footer class="report-card__footer">
+            <div class="report-meta">
+              <span>{{ report.sharedWith }} colaboradores</span>
+            </div>
+            <div class="report-actions">
+              <app-button variant="primary" size="sm" (click)="handleDownload(report)">
+                Descargar
+              </app-button>
+              <button type="button" class="text-button" (click)="handleSchedule(report)">
+                Programar envío
+              </button>
+            </div>
+          </footer>
+        </article>
+      </div>
+    </section>
+
+    <aside class="sidebar">
+      <article class="panel metrics">
+        <p class="eyebrow">Estado general</p>
+        <h3>Métricas rápidas</h3>
+        <ul>
+          <li *ngFor="let metric of quickMetrics">
+            <div>
+              <p class="metric-label">{{ metric.label }}</p>
+              <p class="metric-value">{{ metric.value }}</p>
+            </div>
+            <span
+              class="metric-trend"
+              [class.metric-trend--positive]="metric.positive"
+              [class.metric-trend--negative]="!metric.positive"
+            >
+              {{ metric.trendLabel }}
+            </span>
+          </li>
+        </ul>
+      </article>
+
+      <article class="panel suggestions">
+        <p class="eyebrow">Siguientes pasos</p>
+        <h3>Nuevos informes sugeridos</h3>
+        <div class="suggestions__list">
+          <article class="suggestion" *ngFor="let template of suggestedTemplates">
+            <header>
+              <p class="suggestion-title">{{ template.title }}</p>
+              <span class="chip">{{ template.complexity }}</span>
+            </header>
+            <p class="suggestion-description">{{ template.benefit }}</p>
+            <app-button variant="ghost" size="sm" (click)="handleTemplate(template)">
+              Probar plantilla
+            </app-button>
+          </article>
+        </div>
+      </article>
+    </aside>
+  </section>
+</section>
