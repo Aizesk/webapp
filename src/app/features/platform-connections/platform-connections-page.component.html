@@ -1,4 +1,4 @@
-<section class="api-connections">
+<section class="platform-connections">
   <app-top-navbar
     [navItems]="navItems"
     brandTagline="Integraciones seguras"
@@ -8,7 +8,7 @@
   <section class="hero">
     <div>
       <p class="eyebrow">Integraciones oficiales</p>
-      <h1>Gestiona tus conexiones API</h1>
+      <h1>Gestiona tus conexiones a plataformas</h1>
       <p class="subtitle">
         Conecta tus plataformas favoritas para mantener tus ingresos sincronizados, automatizar
         conciliaciones y desbloquear reportes avanzados.
@@ -26,7 +26,9 @@
       <div class="connections__grid">
         <article class="connection-card" *ngFor="let connection of connections">
           <div class="connection-card__header">
-            <div class="icon" [style.background-color]="connection.accent">{{ connection.icon }}</div>
+            <div class="icon" [style.background-color]="connection.accent">
+              {{ connection.icon }}
+            </div>
             <div>
               <p class="connection-name">{{ connection.name }}</p>
               <span class="connection-tier">{{ connection.tier }}</span>
@@ -59,7 +61,12 @@
             <button
               type="button"
               class="text-button"
-              (click)="handleAction(connection, connection.status === 'Conectado' ? 'disconnect' : 'connect')"
+              (click)="
+                handleAction(
+                  connection,
+                  connection.status === 'Conectado' ? 'disconnect' : 'connect'
+                )
+              "
             >
               {{ connection.status === 'Conectado' ? 'Desconectar' : 'Ir a marketplace' }}
             </button>

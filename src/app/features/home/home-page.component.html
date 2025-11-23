@@ -8,7 +8,9 @@
       </div>
     </div>
     <div class="home__actions">
-      <app-button variant="ghost-subtle" size="sm" (click)="handleLogin()">Iniciar sesión</app-button>
+      <app-button variant="ghost-subtle" size="sm" (click)="handleLogin()"
+        >Iniciar sesión</app-button
+      >
       <app-button variant="primary" size="sm" (click)="handleSignin()">Registro</app-button>
     </div>
   </header>
@@ -24,8 +26,12 @@
       claros y colaborativos.
     </p>
     <div class="hero__actions">
-      <app-button variant="primary" (click)="handleApiConnections()">Explorar conexiones API</app-button>
-      <app-button variant="ghost-subtle" (click)="handleReports()">Ver informes preconstruidos</app-button>
+      <app-button variant="primary" (click)="handlePlatformConnections()"
+        >Explorar conexiones a Plataformas</app-button
+      >
+      <app-button variant="ghost-subtle" (click)="handleReports()"
+        >Ver informes preconstruidos</app-button
+      >
       <app-button variant="ghost">Ver características</app-button>
     </div>
   </section>

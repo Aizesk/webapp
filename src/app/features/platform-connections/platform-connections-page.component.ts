@@ -4,7 +4,7 @@ import { ButtonComponent } from '../../shared/components/button/button.component
 import { TopNavbarComponent } from '../../shared/components/top-navbar/top-navbar.component';
 import { MAIN_NAV_ITEMS } from '../../shared/models/navigation.model';
 
-interface ApiConnection {
+interface PlatformConnection {
   readonly id: string;
   readonly name: string;
   readonly description: string;
@@ -16,17 +16,17 @@ interface ApiConnection {
 }
 
 @Component({
-  selector: 'app-api-connections-page',
+  selector: 'app-platform-connections-page',
   standalone: true,
   imports: [NgFor, NgIf, NgClass, ButtonComponent, TopNavbarComponent],
-  templateUrl: './api-connections-page.component.html',
-  styleUrls: ['./api-connections-page.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  templateUrl: './platform-connections-page.component.html',
+  styleUrls: ['./platform-connections-page.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ApiConnectionsPageComponent {
+export class PlatformConnectionsPageComponent {
   protected readonly navItems = MAIN_NAV_ITEMS;
 
-  protected readonly connections: readonly ApiConnection[] = [
+  protected readonly connections: readonly PlatformConnection[] = [
     {
       id: 'youtube',
       name: 'YouTube',
@@ -35,7 +35,7 @@ export class ApiConnectionsPageComponent {
       lastSync: 'Hace 15 minutos',
       icon: '▶️',
       accent: '#ef4444',
-      tier: 'Premium'
+      tier: 'Premium',
     },
     {
       id: 'twitch',
@@ -45,7 +45,7 @@ export class ApiConnectionsPageComponent {
       lastSync: 'Hace 2 horas',
       icon: '🟣',
       accent: '#a855f7',
-      tier: 'Premium'
+      tier: 'Premium',
     },
     {
       id: 'amazon',
@@ -55,7 +55,7 @@ export class ApiConnectionsPageComponent {
       lastSync: 'Nunca',
       icon: '🛒',
       accent: '#f97316',
-      tier: 'Standard'
+      tier: 'Standard',
     },
     {
       id: 'shopify',
@@ -65,14 +65,14 @@ export class ApiConnectionsPageComponent {
       lastSync: 'Hace 6 minutos',
       icon: '🛍️',
       accent: '#22c55e',
-      tier: 'Premium'
-    }
+      tier: 'Premium',
+    },
   ];
 
   protected readonly automations = [
     { label: 'Sincronización automática', enabled: true },
     { label: 'Alertas por correo', enabled: true },
-    { label: 'Reintentos inteligentes', enabled: false }
+    { label: 'Reintentos inteligentes', enabled: false },
   ];
 
   protected readonly subscriptionPlan = {
@@ -83,11 +83,14 @@ export class ApiConnectionsPageComponent {
       'Hasta 5 plataformas conectadas',
       'Histórico ilimitado de transacciones',
       'Reportes colaborativos en tiempo real',
-      'Soporte prioritario 24/7'
-    ]
+      'Soporte prioritario 24/7',
+    ],
   };
 
-  protected handleAction(connection: ApiConnection, action: 'connect' | 'disconnect' | 'sync'): void {
+  protected handleAction(
+    connection: PlatformConnection,
+    action: 'connect' | 'disconnect' | 'sync'
+  ): void {
     console.log(action, connection.id);
   }
 }
