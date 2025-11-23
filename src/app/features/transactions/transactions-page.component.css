@@ -2,14 +2,13 @@
   display: block;
   min-height: 100vh;
   background: #f5f7fb;
-  padding: 2rem;
+  padding: 2rem clamp(1.5rem, 5vw, 3rem);
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   color: #1f2a37;
 }
 
 .transactions {
-  max-width: 1280px;
-  margin: 0 auto;
+  /* Sin restricción de ancho para mantener consistencia con otras vistas */
 }
 
 .transactions__header {
