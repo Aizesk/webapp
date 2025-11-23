@@ -8,67 +8,67 @@ import { TransactionsPageComponent } from './features/transactions/transactions-
 import { EditTransactionPageComponent } from './features/transactions/edit-transaction/edit-transaction-page.component';
 import { TransactionDetailPageComponent } from './features/transactions/transaction-detail/transaction-detail-page.component';
 import { AddManualTransactionPageComponent } from './features/transactions/add-manual-transaction/add-manual-transaction-page.component';
-import { ApiConnectionsPageComponent } from './features/api-connections/api-connections-page.component';
+import { PlatformConnectionsPageComponent } from './features/platform-connections/platform-connections-page.component';
 import { ReportsPageComponent } from './features/reports/reports-page.component';
 
 export const routes: Routes = [
   {
     path: '',
     component: HomePageComponent,
-    title: 'Aizesk | Plataforma financiera'
+    title: 'Aizesk | Plataforma financiera',
   },
   {
     path: 'login',
     component: LoginPageComponent,
-    title: 'Aizesk | Inicio de sesión'
+    title: 'Aizesk | Inicio de sesión',
   },
   {
     path: 'signin',
     component: SigninPageComponent,
-    title: 'Aizesk | Registro'
+    title: 'Aizesk | Registro',
   },
   {
     path: 'recovery-password',
     component: RecoveryPasswordPageComponent,
-    title: 'Aizesk | Recuperar contraseña'
+    title: 'Aizesk | Recuperar contraseña',
   },
   {
     path: 'main-dashboard',
     component: MainDashboardPageComponent,
-    title: 'Aizesk | Dashboard general'
+    title: 'Aizesk | Dashboard general',
   },
   {
     path: 'transactions',
     component: TransactionsPageComponent,
-    title: 'Aizesk | Transacciones'
+    title: 'Aizesk | Transacciones',
   },
   {
     path: 'transactions/manual/new',
     component: AddManualTransactionPageComponent,
-    title: 'Aizesk | Nueva transacción manual'
+    title: 'Aizesk | Nueva transacción manual',
   },
   {
     path: 'transactions/:transactionId',
     component: TransactionDetailPageComponent,
-    title: 'Aizesk | Detalle de transacción'
+    title: 'Aizesk | Detalle de transacción',
   },
   {
     path: 'transactions/:transactionId/edit',
     component: EditTransactionPageComponent,
-    title: 'Aizesk | Editar transacción'
+    title: 'Aizesk | Editar transacción',
   },
   {
-    path: 'api-connections',
-    component: ApiConnectionsPageComponent,
-    title: 'Aizesk | Conexiones API'
+    path: 'platform-connections',
+    component: PlatformConnectionsPageComponent,
+    title: 'Aizesk | Conexiones Plataformas',
   },
   {
     path: 'reports',
     component: ReportsPageComponent,
-    title: 'Aizesk | Informes'
+    title: 'Aizesk | Informes',
   },
   {
     path: '**',
-    redirectTo: ''
-  }
+    redirectTo: '',
+  },
 ];
