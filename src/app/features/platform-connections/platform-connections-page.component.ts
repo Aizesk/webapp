@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { TopNavbarComponent } from '../../shared/components/top-navbar/top-navbar.component';
 import { MAIN_NAV_ITEMS } from '../../shared/models/navigation.model';
@@ -18,7 +18,7 @@ interface PlatformConnection {
 @Component({
   selector: 'app-platform-connections-page',
   standalone: true,
-  imports: [NgFor, NgIf, NgClass, ButtonComponent, TopNavbarComponent],
+  imports: [NgClass, ButtonComponent, TopNavbarComponent],
   templateUrl: './platform-connections-page.component.html',
   styleUrls: ['./platform-connections-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
