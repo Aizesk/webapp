@@ -6,8 +6,10 @@
       <article class="metric-card" *ngFor="let metric of vm.metrics; trackBy: trackByMetric">
         <div class="metric-card__label">{{ metric.label }}</div>
         <div class="metric-card__value">
-          <span *ngIf="metric.currency">{{ metric.currency === 'USD' ? '$' : metric.currency }}</span>
-          {{ metric.value | number: '1.0-0' }}
+          <span *ngIf="metric.currency">{{
+            metric.currency === 'USD' ? '$' : metric.currency
+          }}</span>
+          {{ metric.value | number : '1.0-0' }}
         </div>
         <div class="metric-card__trend" [ngClass]="metric.isPositive ? 'positive' : 'negative'">
           {{ metric.trend }}
@@ -17,10 +19,17 @@
 
     <section class="content">
       <div class="table-panel">
+        <div class="bulk-actions" *ngIf="selection.selected.length">
+          <span>{{ selection.selected.length }} seleccionadas</span>
+        </div>
         <div class="table-panel__toolbar">
-          <button type="button" class="filter-button">Todas las transacciones</button>
-          <label class="search-field">
-            <input type="search" placeholder="Buscar transacciones..." />
+          <label class="search-field search-field--wide">
+            <input
+              type="search"
+              placeholder="Buscar transacciones..."
+              [value]="vm.filters.search"
+              (input)="setSearch($any($event.target).value)"
+            />
           </label>
           <div class="toolbar-actions">
             <button type="button" class="ghost-button">Exportar</button>
@@ -31,35 +40,211 @@
         </div>
 
         <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Origen</th>
-                <th>Fecha</th>
-                <th>Descripción</th>
-                <th>Plataforma</th>
-                <th>Cantidad</th>
-                <th>Estado</th>
-                <th>Categoría</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let tx of vm.transactions">
-                <td>
-                  <span class="chip" [ngClass]="tx.manual ? 'chip--manual' : 'chip--third'">
-                    {{ tx.origin }}
-                  </span>
-                </td>
-                <td>{{ tx.date | date: 'yyyy-MM-dd' }}</td>
-                <td>{{ tx.description }}</td>
-                <td>{{ tx.platform }}</td>
-                <td>{{ tx.amount | currency: 'USD' : 'symbol' : '1.2-2' }}</td>
-                <td>
-                  <span class="status" [ngClass]="tx.status.toLowerCase()">{{ tx.status }}</span>
-                </td>
-                <td>{{ tx.category }}</td>
-                <td>
+          <div class="table-loading" *ngIf="isProcessing$ | async">
+            <mat-spinner diameter="32"></mat-spinner>
+            <span>Actualizando tabla...</span>
+          </div>
+          <table
+            mat-table
+            [dataSource]="dataSource"
+            matSort
+            matSortDisableClear
+            class="mat-elevation-z0"
+          >
+            <ng-container matColumnDef="select">
+              <th mat-header-cell *matHeaderCellDef [style.width.px]="columnWidths.select">
+                <mat-checkbox
+                  color="primary"
+                  [checked]="isAllSelected()"
+                  [indeterminate]="selection.hasValue() && !isAllSelected()"
+                  (change)="toggleAll($any($event.checked))"
+                  aria-label="Seleccionar todas las filas de la página"
+                ></mat-checkbox>
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let tx"
+                class="cell cell--select"
+                [style.width.px]="columnWidths.select"
+              >
+                <mat-checkbox
+                  color="primary"
+                  [checked]="selection.isSelected(tx)"
+                  (change)="toggleSelection(tx, $any($event.checked))"
+                  aria-label="Seleccionar transacción"
+                ></mat-checkbox>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="origin">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                class="resizable"
+                [style.width.px]="columnWidths.origin"
+                mat-sort-header="origin"
+                (click)="changeSortFromColumn('origin')"
+              >
+                <span class="th-label">Origen</span>
+                <span class="resize-handle" (mousedown)="startResize($event, 'origin')"></span>
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let tx"
+                class="cell cell--origin"
+                [style.width.px]="columnWidths.origin"
+              >
+                <span class="chip" [ngClass]="tx.manual ? 'chip--manual' : 'chip--third'">
+                  {{ tx.origin }}
+                </span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="date">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                class="resizable"
+                [style.width.px]="columnWidths.date"
+                mat-sort-header="date"
+                (click)="changeSortFromColumn('date')"
+              >
+                <span class="th-label">Fecha</span>
+                <span class="resize-handle" (mousedown)="startResize($event, 'date')"></span>
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let tx"
+                class="cell cell--date"
+                [style.width.px]="columnWidths.date"
+              >
+                {{ tx.date | date : 'yyyy-MM-dd' }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="description">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                class="resizable"
+                [style.width.px]="columnWidths.description"
+              >
+                <span class="th-label">Descripción</span>
+                <span class="resize-handle" (mousedown)="startResize($event, 'description')"></span>
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let tx"
+                class="cell cell--description"
+                [style.width.px]="columnWidths.description"
+              >
+                {{ tx.description }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="platform">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                class="resizable"
+                [style.width.px]="columnWidths.platform"
+                mat-sort-header="platform"
+                (click)="changeSortFromColumn('platform')"
+              >
+                <span class="th-label">Plataforma</span>
+                <span class="resize-handle" (mousedown)="startResize($event, 'platform')"></span>
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let tx"
+                class="cell cell--platform"
+                [style.width.px]="columnWidths.platform"
+              >
+                {{ tx.platform }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="amount">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                class="resizable"
+                [style.width.px]="columnWidths.amount"
+                mat-sort-header="amount"
+                (click)="changeSortFromColumn('amount')"
+              >
+                <span class="th-label">Cantidad</span>
+                <span class="resize-handle" (mousedown)="startResize($event, 'amount')"></span>
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let tx"
+                class="cell cell--amount"
+                [style.width.px]="columnWidths.amount"
+              >
+                {{ tx.amount | currency : 'USD' : 'symbol' : '1.2-2' }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                class="resizable"
+                [style.width.px]="columnWidths.status"
+                mat-sort-header="status"
+                (click)="changeSortFromColumn('status')"
+              >
+                <span class="th-label">Estado</span>
+                <span class="resize-handle" (mousedown)="startResize($event, 'status')"></span>
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let tx"
+                class="cell cell--status"
+                [style.width.px]="columnWidths.status"
+              >
+                <span class="status" [ngClass]="tx.status.toLowerCase()">{{ tx.status }}</span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="category">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                class="resizable"
+                [style.width.px]="columnWidths.category"
+              >
+                <span class="th-label">Categoría</span>
+                <span class="resize-handle" (mousedown)="startResize($event, 'category')"></span>
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let tx"
+                class="cell cell--category"
+                [style.width.px]="columnWidths.category"
+              >
+                {{ tx.category }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                class="resizable"
+                [style.width.px]="columnWidths.actions"
+              >
+                <span class="th-label">Acciones</span>
+                <span class="resize-handle" (mousedown)="startResize($event, 'actions')"></span>
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let tx"
+                class="cell cell--actions"
+                [style.width.px]="columnWidths.actions"
+              >
+                <div class="table-actions">
                   <button
                     type="button"
                     class="table-icon"
@@ -67,47 +252,83 @@
                     aria-label="Ver detalle"
                     title="Ver detalle"
                   >
-                    👁️
+                    <span class="material-symbols-rounded table-icon__glyph" aria-hidden="true">
+                      visibility
+                    </span>
                   </button>
-                  <ng-container *ngIf="tx.manual; else disabledEdit">
+                  @if (tx.manual) {
+                  <button
+                    type="button"
+                    class="table-icon"
+                    [routerLink]="['/transactions', tx.id, 'edit']"
+                    aria-label="Editar transacción manual"
+                  >
+                    <span class="material-symbols-rounded table-icon__glyph" aria-hidden="true">
+                      edit
+                    </span>
+                  </button>
+                  } @else {
+                  <button
+                    type="button"
+                    class="table-icon table-icon--disabled"
+                    disabled
+                    title="Solo se pueden editar transacciones manuales"
+                    aria-label="Edición no disponible"
+                  >
+                    <span class="material-symbols-rounded table-icon__glyph" aria-hidden="true">
+                      edit
+                    </span>
+                  </button>
+                  }
+                  <button type="button" class="table-icon" aria-label="Eliminar">
+                    <span class="material-symbols-rounded table-icon__glyph" aria-hidden="true">
+                      delete
+                    </span>
+                  </button>
+                </div>
+              </td>
+            </ng-container>
+
+            <tr
+              mat-header-row
+              *matHeaderRowDef="displayedColumns; sticky: true"
+              class="mat-elevation-z0 sticky-header"
+            ></tr>
+            <tr
+              mat-row
+              *matRowDef="let tx; columns: displayedColumns"
+              [class.row-selected]="selection.isSelected(tx)"
+            ></tr>
+            <tr class="mat-row no-data-row" *matNoDataRow>
+              <td [attr.colspan]="displayedColumns.length">
+                <div class="empty-state">
+                  <h4>No encontramos transacciones</h4>
+                  <p>Ajusta tu búsqueda o crea una transacción manual para empezar a verlo aquí.</p>
+                  <div class="empty-state__actions">
+                    <button type="button" class="ghost-button" (click)="clearSearch()">
+                      Limpiar búsqueda
+                    </button>
                     <button
                       type="button"
-                      class="table-icon"
-                      [routerLink]="['/transactions', tx.id, 'edit']"
-                      aria-label="Editar transacción manual"
+                      class="primary-button"
+                      [routerLink]="'/transactions/manual/new'"
                     >
-                      ✏️
+                      Añadir transacción manual
                     </button>
-                  </ng-container>
-                  <ng-template #disabledEdit>
-                    <button
-                      type="button"
-                      class="table-icon table-icon--disabled"
-                      disabled
-                      title="Solo se pueden editar transacciones manuales"
-                      aria-label="Edición no disponible"
-                    >
-                      ✏️
-                    </button>
-                  </ng-template>
-                  <button type="button" class="table-icon">🗑️</button>
-                </td>
-              </tr>
-            </tbody>
+                  </div>
+                </div>
+              </td>
+            </tr>
           </table>
         </div>
 
         <footer class="table-footer">
-          <span>Mostrando {{ vm.transactions.length }} transacciones</span>
-          <div class="pagination">
-            <button type="button" disabled>«</button>
-            <button type="button" class="active">2</button>
-            <button type="button">3</button>
-            <button type="button">4</button>
-            <button type="button">5</button>
-            <button type="button">…</button>
-            <button type="button">»</button>
-          </div>
+          <mat-paginator
+            #paginator
+            [pageSizeOptions]="pageSizeOptions"
+            [pageSize]="pageSizeOptions[0]"
+            showFirstLastButtons
+          ></mat-paginator>
         </footer>
       </div>
 
@@ -118,7 +339,7 @@
           <li *ngFor="let item of vm.distribution; trackBy: trackByPlatform">
             <span class="dot" [style.background-color]="item.color"></span>
             <span class="platform">{{ item.platform }}</span>
-            <span class="amount">{{ item.amount | currency: 'USD' : 'symbol' : '1.0-0' }}</span>
+            <span class="amount">{{ item.amount | currency : 'USD' : 'symbol' : '1.0-0' }}</span>
           </li>
         </ul>
       </aside>
