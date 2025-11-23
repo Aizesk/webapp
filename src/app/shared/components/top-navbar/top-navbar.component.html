@@ -23,12 +23,32 @@
       <span class="material-symbols-rounded icon-button__glyph" aria-hidden="true">search</span>
     </button>
     <button type="button" class="icon-button" aria-label="Notificaciones">
-      <span class="material-symbols-rounded icon-button__glyph" aria-hidden="true">notifications</span>
+      <span class="material-symbols-rounded icon-button__glyph" aria-hidden="true"
+        >notifications</span
+      >
       <span *ngIf="notificationCount > 0" class="badge">{{ notificationCount }}</span>
     </button>
     <button type="button" class="icon-button" aria-label="Centro de ayuda">
       <span class="material-symbols-rounded icon-button__glyph" aria-hidden="true">help</span>
     </button>
-    <div class="avatar" aria-hidden="true">{{ brandLogoText }}</div>
+    <div class="profile-menu-container">
+      <button
+        type="button"
+        class="avatar-button"
+        aria-label="Perfil de usuario"
+        title="Mi perfil"
+        (click)="toggleProfileMenu()"
+      >
+        <div class="avatar">{{ userInitials }}</div>
+      </button>
+      <div class="profile-menu" *ngIf="isProfileMenuOpen">
+        <a class="profile-menu__item" [routerLink]="'/subscriptions'">
+          <span class="material-symbols-rounded profile-menu__icon" aria-hidden="true"
+            >subscriptions</span
+          >
+          <span>Suscripciones</span>
+        </a>
+      </div>
+    </div>
   </div>
 </header>

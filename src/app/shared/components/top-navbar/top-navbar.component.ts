@@ -9,7 +9,7 @@ import { AppNavItem } from '../../models/navigation.model';
   imports: [NgFor, NgIf, RouterLink, RouterLinkActive],
   templateUrl: './top-navbar.component.html',
   styleUrls: ['./top-navbar.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TopNavbarComponent {
   @Input({ required: true }) navItems: ReadonlyArray<AppNavItem> = [];
@@ -17,4 +17,12 @@ export class TopNavbarComponent {
   @Input() brandLogoText = 'A';
   @Input() brandTagline?: string;
   @Input() notificationCount = 0;
+  @Input() userInitials = 'A';
+  @Input() userName?: string;
+
+  isProfileMenuOpen = false;
+
+  toggleProfileMenu(): void {
+    this.isProfileMenuOpen = !this.isProfileMenuOpen;
+  }
 }
