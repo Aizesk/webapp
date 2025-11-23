@@ -19,12 +19,16 @@
   </nav>
 
   <div class="header-actions">
-    <button type="button" class="icon-button" aria-label="Buscar">🔍</button>
+    <button type="button" class="icon-button" aria-label="Buscar">
+      <span class="material-symbols-rounded icon-button__glyph" aria-hidden="true">search</span>
+    </button>
     <button type="button" class="icon-button" aria-label="Notificaciones">
-      🔔
+      <span class="material-symbols-rounded icon-button__glyph" aria-hidden="true">notifications</span>
       <span *ngIf="notificationCount > 0" class="badge">{{ notificationCount }}</span>
     </button>
-    <button type="button" class="icon-button" aria-label="Centro de ayuda">❓</button>
+    <button type="button" class="icon-button" aria-label="Centro de ayuda">
+      <span class="material-symbols-rounded icon-button__glyph" aria-hidden="true">help</span>
+    </button>
     <div class="avatar" aria-hidden="true">{{ brandLogoText }}</div>
   </div>
 </header>

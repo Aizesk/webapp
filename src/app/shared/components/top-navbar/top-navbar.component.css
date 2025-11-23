@@ -90,13 +90,22 @@
   border: none;
   background: #f2f5fa;
   cursor: pointer;
-  font-size: 1rem;
   transition: transform 0.2s ease, background 0.2s ease;
+  display: grid;
+  place-items: center;
 }
 
 .icon-button:hover {
   transform: translateY(-2px);
   background: #e3e8f0;
+}
+
+.icon-button__glyph {
+  font-family: 'Material Symbols Rounded', sans-serif;
+  font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+  font-size: 1.4rem;
+  color: #3b4a64;
+  line-height: 1;
 }
 
 .badge {
