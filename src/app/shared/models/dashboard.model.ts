@@ -3,6 +3,7 @@ export interface SummaryCard {
   readonly value: number;
   readonly trend: string;
   readonly trendColor: 'positive' | 'negative';
+  readonly sparkline?: readonly number[];
 }
 
 export interface WeeklyIncomePoint {
@@ -14,6 +15,20 @@ export interface MonthlyIncomeVsExpensePoint {
   readonly label: string;
   readonly income: number;
   readonly expense: number;
+}
+
+export interface ChannelRevenueShare {
+  readonly channel: string;
+  readonly amount: number;
+  readonly percentage: number;
+  readonly color: string;
+}
+
+export interface ReconciliationStatus {
+  readonly account: string;
+  readonly recorded: number;
+  readonly bank: number;
+  readonly status: 'aligned' | 'warning';
 }
 
 export interface TransactionItem {
@@ -36,4 +51,6 @@ export interface DashboardSnapshot {
   readonly monthlyIncomeVsExpense: readonly MonthlyIncomeVsExpensePoint[];
   readonly transactions: readonly TransactionItem[];
   readonly accounts: readonly ConnectedAccount[];
+  readonly channelRevenue: readonly ChannelRevenueShare[];
+  readonly reconciliation: readonly ReconciliationStatus[];
 }

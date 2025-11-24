@@ -38,6 +38,25 @@
   color: #ff5470;
 }
 
+.summary-card__sparkline {
+  margin-top: 0.9rem;
+  height: 24px;
+}
+
+.summary-card__sparkline svg {
+  width: 100%;
+  height: 100%;
+}
+
+.summary-card__sparkline path {
+  fill: none;
+  stroke: #4f8bff;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.85;
+}
+
 .panel {
   background: #fff;
   border-radius: 24px;
@@ -75,6 +94,16 @@
   font-size: 0.85rem;
 }
 
+.panel__badge--soft {
+  background: rgba(79, 139, 255, 0.2);
+  color: #1f5bff;
+}
+
+.panel__badge--subtle {
+  background: rgba(17, 29, 50, 0.08);
+  color: #111d32;
+}
+
 .panel__legend {
   display: flex;
   align-items: center;
@@ -109,6 +138,13 @@
 
 .bar-chart__item {
   text-align: center;
+}
+
+.bar-chart__value {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #4a5773;
+  margin-bottom: 0.35rem;
 }
 
 .bar-chart__bar {
@@ -158,6 +194,60 @@
   text-align: center;
 }
 
+.net-chart {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+  gap: 0.75rem;
+}
+
+.net-chart__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.net-chart__value {
+  font-size: 0.8rem;
+  color: #d97706;
+  font-weight: 600;
+}
+
+.net-chart__value.positive {
+  color: #0f9b57;
+}
+
+.net-chart__bar-wrapper {
+  width: 100%;
+  height: 60px;
+  background: #f1f5f9;
+  border-radius: 999px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+}
+
+.net-chart__bar {
+  display: block;
+  width: 100%;
+  border-radius: 999px;
+  transition: height 0.3s ease;
+}
+
+.net-chart__bar--positive {
+  background: linear-gradient(180deg, #34d399, #059669);
+}
+
+.net-chart__bar--negative {
+  background: linear-gradient(180deg, #fb7185, #ef4444);
+}
+
+.net-chart__label {
+  font-size: 0.75rem;
+  color: #6c7791;
+}
+
 .side-column .panel {
   box-shadow: 0 18px 30px rgba(15, 23, 42, 0.06);
 }
@@ -165,6 +255,58 @@
 .panel--list {
   padding: 1.25rem 1.5rem;
 }
+
+.channel-list {
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.channel-list__item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.35rem 0.75rem;
+  align-items: center;
+}
+
+.channel-list__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.channel-list__name {
+  font-weight: 600;
+  color: #111d32;
+}
+
+.channel-list__amount {
+  font-size: 0.9rem;
+  color: #6c7791;
+}
+
+.channel-list__bar {
+  grid-column: 1 / 3;
+  height: 8px;
+  border-radius: 999px;
+  background: #eef2f7;
+  overflow: hidden;
+}
+
+.channel-list__progress {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.channel-list__percent {
+  font-weight: 600;
+  color: #0f62fe;
+}
+
 
 .transaction-list,
 .account-list {
@@ -192,6 +334,27 @@
   margin: 0;
   font-size: 0.85rem;
   color: #6c7791;
+}
+
+.transaction-item__meter {
+  display: block;
+  margin-top: 0.35rem;
+  width: 120px;
+  height: 6px;
+  border-radius: 999px;
+  background: #eef2f7;
+  overflow: hidden;
+}
+
+.transaction-item__meter-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ef4444, #fb7185);
+}
+
+.transaction-item__meter-fill.positive {
+  background: linear-gradient(90deg, #34d399, #059669);
 }
 
 .transaction-item__amount {
@@ -239,6 +402,83 @@
 .account-item__status.warning {
   background: rgba(255, 168, 0, 0.12);
   color: #b56100;
+}
+
+.reconciliation-list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.reconciliation-item__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.reconciliation-item__account {
+  font-weight: 600;
+  color: #111d32;
+}
+
+.reconciliation-item__body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.65rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.reconciliation-item:last-child .reconciliation-item__body {
+  border-bottom: none;
+}
+
+.reconciliation-metric {
+  flex: 1;
+  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85rem;
+  color: #6c7791;
+}
+
+.reconciliation-metric strong {
+  font-size: 1rem;
+  color: #111d32;
+}
+
+.reconciliation-diff {
+  min-width: 80px;
+  text-align: right;
+  font-weight: 600;
+  color: #0f9b57;
+}
+
+.reconciliation-diff--warning {
+  color: #d97706;
+}
+
+.status-chip {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.65rem;
+  border-radius: 999px;
+  text-transform: capitalize;
+}
+
+.status-chip.aligned {
+  background: rgba(15, 155, 87, 0.12);
+  color: #0f9b57;
+}
+
+.status-chip.warning {
+  background: rgba(234, 179, 8, 0.15);
+  color: #b45309;
 }
 
 .ghost-button {
