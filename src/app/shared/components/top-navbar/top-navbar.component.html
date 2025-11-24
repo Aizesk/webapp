@@ -31,6 +31,71 @@
     <button type="button" class="icon-button" aria-label="Centro de ayuda">
       <span class="material-symbols-rounded icon-button__glyph" aria-hidden="true">help</span>
     </button>
+    <div class="settings-menu-container">
+      <button
+        type="button"
+        class="icon-button icon-button--settings"
+        aria-label="Ajustes"
+        title="Preferencias de la app"
+        (click)="toggleSettingsMenu()"
+        [attr.aria-expanded]="isSettingsMenuOpen"
+      >
+        <span class="material-symbols-rounded icon-button__glyph" aria-hidden="true">settings</span>
+      </button>
+      <div class="settings-menu" *ngIf="isSettingsMenuOpen">
+        <div class="settings-menu__header">
+          <div>
+            <p class="settings-menu__title">Preferencias rápidas</p>
+            <p class="settings-menu__subtitle">Personaliza la interfaz</p>
+          </div>
+          <a class="settings-menu__link" [routerLink]="'/settings'">Ir a ajustes</a>
+        </div>
+        <div class="settings-menu__section">
+          <span class="settings-menu__label">Tema</span>
+          <div class="settings-menu__options">
+            <button
+              type="button"
+              class="settings-chip"
+              [class.settings-chip--active]="themePreference === 'light'"
+              (click)="setThemePreference('light')"
+            >
+              <span class="material-symbols-rounded" aria-hidden="true">light_mode</span>
+              Claro
+            </button>
+            <button
+              type="button"
+              class="settings-chip"
+              [class.settings-chip--active]="themePreference === 'dark'"
+              (click)="setThemePreference('dark')"
+            >
+              <span class="material-symbols-rounded" aria-hidden="true">dark_mode</span>
+              Oscuro
+            </button>
+          </div>
+        </div>
+        <div class="settings-menu__section">
+          <span class="settings-menu__label">Idioma</span>
+          <div class="settings-menu__options">
+            <button
+              type="button"
+              class="settings-chip"
+              [class.settings-chip--active]="languagePreference === 'es'"
+              (click)="setLanguagePreference('es')"
+            >
+              ES
+            </button>
+            <button
+              type="button"
+              class="settings-chip"
+              [class.settings-chip--active]="languagePreference === 'en'"
+              (click)="setLanguagePreference('en')"
+            >
+              EN
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="profile-menu-container">
       <button
         type="button"

@@ -21,8 +21,29 @@ export class TopNavbarComponent {
   @Input() userName?: string;
 
   isProfileMenuOpen = false;
+  isSettingsMenuOpen = false;
+  themePreference: 'light' | 'dark' = 'light';
+  languagePreference: 'es' | 'en' = 'es';
 
   toggleProfileMenu(): void {
     this.isProfileMenuOpen = !this.isProfileMenuOpen;
+    if (this.isProfileMenuOpen) {
+      this.isSettingsMenuOpen = false;
+    }
+  }
+
+  toggleSettingsMenu(): void {
+    this.isSettingsMenuOpen = !this.isSettingsMenuOpen;
+    if (this.isSettingsMenuOpen) {
+      this.isProfileMenuOpen = false;
+    }
+  }
+
+  setThemePreference(theme: 'light' | 'dark'): void {
+    this.themePreference = theme;
+  }
+
+  setLanguagePreference(language: 'es' | 'en'): void {
+    this.languagePreference = language;
   }
 }
