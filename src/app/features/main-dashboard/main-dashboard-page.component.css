@@ -1,15 +1,15 @@
 :host {
   display: block;
   min-height: 100vh;
-  background: #eef2f7;
-  padding: 2rem;
+  background: #f5f7fb;
+  padding: 2rem clamp(1.5rem, 5vw, 3rem);
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  color: #0f1c3d;
+  color: #1f2a37;
 }
 
 .dashboard {
-  max-width: 1280px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
 }
 
 .dashboard__header {
