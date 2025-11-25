@@ -12,6 +12,7 @@ import { PlatformConnectionsPageComponent } from './features/platform-connection
 import { ReportsPageComponent } from './features/reports/reports-page.component';
 import { SubscriptionsPageComponent } from './features/subscriptions/subscriptions-page.component';
 import { ProfilePageComponent } from './features/profile/profile-page.component';
+import { AdminPageComponent } from './features/admin/admin-page.component';
 
 export const routes: Routes = [
   {
@@ -78,6 +79,11 @@ export const routes: Routes = [
     path: 'profile',
     component: ProfilePageComponent,
     title: 'Aizesk | Perfil',
+  },
+  {
+    path: 'admin',
+    component: AdminPageComponent,
+    title: 'Aizesk | Administración',
   },
   {
     path: '**',
