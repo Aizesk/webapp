@@ -11,6 +11,7 @@ import { AddManualTransactionPageComponent } from './features/transactions/add-m
 import { PlatformConnectionsPageComponent } from './features/platform-connections/platform-connections-page.component';
 import { ReportsPageComponent } from './features/reports/reports-page.component';
 import { SubscriptionsPageComponent } from './features/subscriptions/subscriptions-page.component';
+import { ProfilePageComponent } from './features/profile/profile-page.component';
 
 export const routes: Routes = [
   {
@@ -72,6 +73,11 @@ export const routes: Routes = [
     path: 'subscriptions',
     component: SubscriptionsPageComponent,
     title: 'Aizesk | Suscripciones',
+  },
+  {
+    path: 'profile',
+    component: ProfilePageComponent,
+    title: 'Aizesk | Perfil',
   },
   {
     path: '**',
