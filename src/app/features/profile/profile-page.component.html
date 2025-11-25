@@ -1,0 +1,210 @@
+<section class="profile">
+  <app-top-navbar
+    [navItems]="navItems"
+    brandTagline="Cuida tu identidad digital"
+    [notificationCount]="2"
+    [userInitials]="userSummary.avatarInitials"
+  ></app-top-navbar>
+
+  <div class="profile__layout">
+    <aside class="profile-sidebar">
+      <article class="profile-card">
+        <div class="profile-card__avatar">{{ userSummary.avatarInitials }}</div>
+        <p class="profile-card__role">{{ userSummary.role }}</p>
+        <h1 class="profile-card__name">{{ userSummary.name }}</h1>
+        <p class="profile-card__email">{{ userSummary.email }}</p>
+
+        <dl class="profile-card__meta">
+          <div>
+            <dt>Plan actual</dt>
+            <dd>{{ userSummary.plan }}</dd>
+          </div>
+          <div>
+            <dt>Ubicación</dt>
+            <dd>{{ userSummary.location }}</dd>
+          </div>
+          <div>
+            <dt>Actividad</dt>
+            <dd>{{ userSummary.joinedAt }}</dd>
+          </div>
+        </dl>
+
+        <button type="button" class="ghost-button">Actualizar foto</button>
+        <button type="button" class="text-button">Gestionar sesiones activas</button>
+        <p class="profile-card__hint">{{ userSummary.lastUpdate }}</p>
+      </article>
+
+      <article class="profile-health">
+        <h2>Estado de la cuenta</h2>
+        <ul>
+          <li>
+            <span class="status-dot status-dot--success"></span>
+            Autenticación en dos pasos activa
+          </li>
+          <li>
+            <span class="status-dot status-dot--success"></span>
+            Dispositivo confiable verificado ayer
+          </li>
+          <li>
+            <span class="status-dot status-dot--warning"></span>
+            1 invitación pendiente de aceptar
+          </li>
+        </ul>
+      </article>
+    </aside>
+
+    <main class="profile-content">
+      <section class="panel">
+        <header class="panel__header">
+          <div>
+            <p class="panel__eyebrow">Datos personales</p>
+            <h2 class="panel__title">Información básica</h2>
+            <p class="panel__subtitle">
+              Actualiza tu correo, teléfono y dirección postal para mantener tu cuenta segura.
+            </p>
+          </div>
+          <span class="panel__badge">Verificado</span>
+        </header>
+
+        <form class="form-grid" [formGroup]="accountForm" (ngSubmit)="handleAccountSubmit()">
+          <div class="form-field">
+            <label for="fullName">Nombre completo</label>
+            <input id="fullName" type="text" formControlName="fullName" placeholder="Nombre y apellidos" />
+            <p class="form-error" *ngIf="accountForm.get('fullName')?.invalid && accountForm.get('fullName')?.touched">
+              Introduce un nombre válido.
+            </p>
+          </div>
+
+          <div class="form-field">
+            <label for="email">Correo electrónico</label>
+            <input id="email" type="email" formControlName="email" placeholder="nombre@empresa.com" />
+            <p class="form-error" *ngIf="accountForm.get('email')?.invalid && accountForm.get('email')?.touched">
+              Introduce un correo válido.
+            </p>
+          </div>
+
+          <div class="form-field">
+            <label for="phone">Teléfono</label>
+            <input id="phone" type="tel" formControlName="phone" placeholder="+34 600 000 000" />
+            <p class="form-error" *ngIf="accountForm.get('phone')?.invalid && accountForm.get('phone')?.touched">
+              Añade un teléfono de contacto.
+            </p>
+          </div>
+
+          <div class="form-field">
+            <label for="address">Dirección</label>
+            <input id="address" type="text" formControlName="address" placeholder="Calle, número y piso" />
+            <p class="form-error" *ngIf="accountForm.get('address')?.invalid && accountForm.get('address')?.touched">
+              La dirección es obligatoria.
+            </p>
+          </div>
+
+          <div class="form-field">
+            <label for="city">Ciudad</label>
+            <input id="city" type="text" formControlName="city" placeholder="Ciudad" />
+          </div>
+
+          <div class="form-field">
+            <label for="postalCode">Código postal</label>
+            <input id="postalCode" type="text" formControlName="postalCode" placeholder="Código postal" />
+          </div>
+
+          <div class="form-field">
+            <label for="country">País</label>
+            <input id="country" type="text" formControlName="country" placeholder="País" />
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="primary-button">Guardar cambios</button>
+            <button type="button" class="ghost-button" (click)="resetAccountForm()">
+              Deshacer
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <header class="panel__header">
+          <div>
+            <p class="panel__eyebrow">Seguridad</p>
+            <h2 class="panel__title">Actualiza tu contraseña</h2>
+            <p class="panel__subtitle">
+              Usa una contraseña única y activa la autenticación en dos pasos para mayor protección.
+            </p>
+          </div>
+        </header>
+
+        <form class="form-grid form-grid--security" [formGroup]="securityForm" (ngSubmit)="handleSecuritySubmit()">
+          <div class="form-field">
+            <label for="currentPassword">Contraseña actual</label>
+            <input id="currentPassword" type="password" formControlName="currentPassword" />
+          </div>
+
+          <div class="form-field">
+            <label for="newPassword">Nueva contraseña</label>
+            <input id="newPassword" type="password" formControlName="newPassword" />
+            <p class="form-hint">Mínimo 8 caracteres, combinando letras y números.</p>
+          </div>
+
+          <div class="form-field">
+            <label for="confirmPassword">Confirmar contraseña</label>
+            <input id="confirmPassword" type="password" formControlName="confirmPassword" />
+            <p class="form-error" *ngIf="passwordMismatch">Las contraseñas no coinciden.</p>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="primary-button">Actualizar contraseña</button>
+            <button type="button" class="ghost-button">Configurar 2FA</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <header class="panel__header">
+          <div>
+            <p class="panel__eyebrow">Preferencias</p>
+            <h2 class="panel__title">Notificaciones y comunicaciones</h2>
+            <p class="panel__subtitle">
+              Decide qué tipo de correos y alertas quieres recibir.
+            </p>
+          </div>
+        </header>
+
+        <form class="preferences" [formGroup]="preferencesForm" (ngSubmit)="handlePreferencesSubmit()">
+          <label
+            class="preference-toggle"
+            *ngFor="let preference of contactPreferences"
+            [attr.for]="preference.key"
+          >
+            <div class="preference-toggle__info">
+              <span class="preference-toggle__label">{{ preference.label }}</span>
+              <span class="preference-toggle__description">{{ preference.description }}</span>
+            </div>
+            <div class="preference-toggle__control">
+              <input
+                class="sr-only"
+                type="checkbox"
+                [id]="preference.key"
+                [formControlName]="preference.key"
+              />
+              <span
+                class="toggle"
+                [class.toggle--on]="preferencesForm.get(preference.key)?.value"
+                aria-hidden="true"
+              >
+                <span class="toggle__dot"></span>
+              </span>
+            </div>
+          </label>
+
+          <div class="form-actions">
+            <button type="submit" class="primary-button">Guardar preferencias</button>
+            <button type="button" class="ghost-button" (click)="disableAllPreferences()">
+              Desactivar todas
+            </button>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+</section>

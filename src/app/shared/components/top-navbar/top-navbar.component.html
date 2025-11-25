@@ -107,6 +107,10 @@
         <div class="avatar">{{ userInitials }}</div>
       </button>
       <div class="profile-menu" *ngIf="isProfileMenuOpen">
+        <a class="profile-menu__item" [routerLink]="'/profile'">
+          <span class="material-symbols-rounded profile-menu__icon" aria-hidden="true">account_circle</span>
+          <span>Mi perfil</span>
+        </a>
         <a class="profile-menu__item" [routerLink]="'/subscriptions'">
           <span class="material-symbols-rounded profile-menu__icon" aria-hidden="true"
             >subscriptions</span
