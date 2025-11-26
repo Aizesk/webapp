@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-signin-header',
@@ -11,4 +11,5 @@ export class SigninHeaderComponent {
   @Input({ required: true }) brandName!: string;
   @Input({ required: true }) title!: string;
   @Input() description?: string;
+  @Output() back = new EventEmitter<void>();
 }

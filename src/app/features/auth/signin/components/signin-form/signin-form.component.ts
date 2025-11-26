@@ -13,6 +13,7 @@ const COUNTRIES = ['México', 'Colombia', 'Argentina', 'España', 'Chile', 'Per�
 
 type SigninFormControls = FormGroup<{
   readonly fullName: FormControl<string>;
+  readonly lastName: FormControl<string>;
   readonly email: FormControl<string>;
   readonly password: FormControl<string>;
   readonly confirmPassword: FormControl<string>;
@@ -42,13 +43,14 @@ export class SigninFormComponent {
   constructor(private readonly fb: FormBuilder) {
     this.form = this.fb.nonNullable.group({
       fullName: ['', [Validators.required, Validators.minLength(3)]],
+      lastName: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', [Validators.required]],
-      address: [''],
-      country: ['', Validators.required],
       phone: [''],
       jobTitle: [''],
+      address: [''],
+      country: ['', Validators.required],
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ['', [Validators.required]],
       acceptTerms: [false, Validators.requiredTrue]
     });
   }
@@ -77,6 +79,13 @@ export class SigninFormComponent {
   protected hasError(controlName: keyof SigninFormControls['controls']): boolean {
     const control = this.form.get(controlName);
     return Boolean(control && control.invalid && control.touched);
+  }
+
+  protected onFieldFocus(controlName: keyof SigninFormControls['controls']): void {
+    const control = this.form.get(controlName);
+    if (control) {
+      control.markAsUntouched();
+    }
   }
 
   protected toggleVisibility(field: 'password' | 'confirmPassword'): void {

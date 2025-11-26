@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Location } from '@angular/common';
 import { SigninCardComponent } from './components/signin-card/signin-card.component';
 import { AuthProvider } from '../../../shared/models/auth-provider.model';
 import { SignUpRequest } from '../../../shared/models/sign-up-request.model';
@@ -14,6 +15,7 @@ import { Router } from '@angular/router';
 })
 export class SigninPageComponent {
   private readonly router = inject(Router);
+  private readonly location = inject(Location);
 
   protected readonly brandName = 'Aizesk';
   protected readonly title = 'Registro';
@@ -35,5 +37,9 @@ export class SigninPageComponent {
 
   protected onNavigateToLogin(): void {
     this.router.navigate(['/login']);
+  }
+
+  protected onBack(): void {
+    this.location.back();
   }
 }
