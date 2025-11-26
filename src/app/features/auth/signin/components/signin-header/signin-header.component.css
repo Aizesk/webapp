@@ -6,7 +6,7 @@
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.25rem;
 }
 
 .eyebrow {
@@ -18,9 +18,40 @@
   font-weight: 600;
 }
 
+.title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.back-button {
+  position: absolute;
+  left: 0;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  transition: background-color 0.2s, color 0.2s;
+  line-height: 1;
+}
+
+.back-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--text-primary);
+}
+
 h1 {
   margin: 0;
-  font-size: clamp(1.85rem, 3vw, 2.25rem);
+  font-size: clamp(1.5rem, 2.5vw, 1.85rem);
   color: var(--text-primary);
 }
 

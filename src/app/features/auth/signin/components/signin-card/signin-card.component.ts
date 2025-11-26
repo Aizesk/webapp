@@ -30,6 +30,7 @@ export class SigninCardComponent {
   @Output() providerSelected = new EventEmitter<AuthProvider>();
   @Output() formSubmitted = new EventEmitter<SignUpRequest>();
   @Output() loginRequested = new EventEmitter<void>();
+  @Output() backRequested = new EventEmitter<void>();
 
   protected onProviderSelected(provider: AuthProvider): void {
     this.providerSelected.emit(provider);
@@ -41,5 +42,9 @@ export class SigninCardComponent {
 
   protected onLoginRequested(): void {
     this.loginRequested.emit();
+  }
+
+  protected onBackRequested(): void {
+    this.backRequested.emit();
   }
 }

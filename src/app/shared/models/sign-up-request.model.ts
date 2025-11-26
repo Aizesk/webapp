@@ -1,5 +1,6 @@
 export interface SignUpRequest {
   readonly fullName: string;
+  readonly lastName: string;
   readonly email: string;
   readonly password: string;
   readonly address?: string;

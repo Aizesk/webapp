@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3rem 1rem;
+  padding: 2rem 1rem;
   background: radial-gradient(circle at top, rgba(79, 125, 252, 0.25), transparent 55%),
     radial-gradient(circle at 20% 20%, rgba(15, 45, 128, 0.15), transparent 45%),
     var(--surface);
