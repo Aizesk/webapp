@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { NgClass } from '@angular/common';
 
-type ButtonVariant = 'primary' | 'ghost' | 'ghost-subtle';
+type ButtonVariant = 'primary' | 'ghost' | 'ghost-subtle' | 'soft';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 const VARIANT_CLASS_MAP: Record<ButtonVariant, string> = {
   primary: 'app-button--primary',
   ghost: 'app-button--ghost',
-  'ghost-subtle': 'app-button--ghost-subtle'
+  'ghost-subtle': 'app-button--ghost-subtle',
+  soft: 'app-button--soft'
 };
 
 const SIZE_CLASS_MAP: Record<ButtonSize, string> = {

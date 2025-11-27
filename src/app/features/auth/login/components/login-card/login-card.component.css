@@ -23,6 +23,14 @@
   gap: 1rem;
 }
 
+.back-home-action {
+  margin-top: 1.25rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: center;
+}
+
 @media (max-width: 480px) {
   .login-card {
     padding: 1.75rem;

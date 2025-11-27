@@ -5,6 +5,7 @@ import { LoginDividerComponent } from '../login-divider/login-divider.component'
 import { LoginFormComponent } from '../login-form/login-form.component';
 import { AuthProvider } from '../../../../../shared/models/auth-provider.model';
 import { LoginCredentials } from '../../../../../shared/models/login-credentials.model';
+import { ButtonComponent } from '../../../../../shared/components/button/button.component';
 
 @Component({
   selector: 'app-login-card',
@@ -13,7 +14,8 @@ import { LoginCredentials } from '../../../../../shared/models/login-credentials
     LoginHeaderComponent,
     SocialLoginButtonComponent,
     LoginDividerComponent,
-    LoginFormComponent
+    LoginFormComponent,
+    ButtonComponent
   ],
   templateUrl: './login-card.component.html',
   styleUrl: './login-card.component.css',
@@ -32,6 +34,7 @@ export class LoginCardComponent {
   @Output() providerSelected = new EventEmitter<AuthProvider>();
   @Output() credentialsSubmitted = new EventEmitter<LoginCredentials>();
   @Output() forgotPassword = new EventEmitter<void>();
+  @Output() backHome = new EventEmitter<void>();
 
   protected onProviderSelected(provider: AuthProvider): void {
     this.providerSelected.emit(provider);
@@ -43,5 +46,9 @@ export class LoginCardComponent {
 
   protected onForgotPassword(): void {
     this.forgotPassword.emit();
+  }
+
+  protected onBackHome(): void {
+    this.backHome.emit();
   }
 }

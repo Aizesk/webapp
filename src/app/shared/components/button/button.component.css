@@ -56,6 +56,18 @@
   background-color: rgba(255, 255, 255, 0.85);
 }
 
+.app-button--soft {
+  min-width: auto;
+  height: auto;
+  padding: 0.55rem 1rem;
+  border-radius: 14px;
+  border-color: var(--border-subtle);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--text-muted);
+  font-weight: 500;
+  box-shadow: none;
+}
+
 .app-button--block {
   width: 100%;
   display: flex;
@@ -64,6 +76,13 @@
 .app-button:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow: 0 20px 40px rgba(3, 21, 73, 0.18);
+}
+
+.app-button--soft:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--text-primary);
+  transform: translateY(0);
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.14);
 }
 
 .app-button:disabled {
