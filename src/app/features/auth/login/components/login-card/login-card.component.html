@@ -7,14 +7,11 @@
   />
 
   @if (providers.length) {
-    <div class="providers">
-      @for (provider of providers; track provider.id) {
-        <app-social-login-button
-          [provider]="provider"
-          (selectProvider)="onProviderSelected($event)"
-        />
-      }
-    </div>
+  <div class="providers">
+    @for (provider of providers; track provider.id) {
+    <app-social-login-button [provider]="provider" (selectProvider)="onProviderSelected($event)" />
+    }
+  </div>
   }
 
   <app-login-divider label="o" />
@@ -26,4 +23,8 @@
     (submitCredentials)="onCredentialsSubmitted($event)"
     (forgotPassword)="onForgotPassword()"
   />
+
+  <div class="back-home-action">
+    <app-button variant="soft" size="sm" (click)="onBackHome()">Inicio</app-button>
+  </div>
 </article>

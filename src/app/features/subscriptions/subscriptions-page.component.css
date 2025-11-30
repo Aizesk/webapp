@@ -1,8 +1,10 @@
 :host {
   display: block;
   min-height: 100vh;
+
   background: var(--surface);
   padding: 2rem clamp(1.5rem, 5vw, 3rem);
+
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   color: var(--text-primary);
   transition: background-color 0.3s ease, color 0.3s ease;

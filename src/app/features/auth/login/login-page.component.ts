@@ -35,4 +35,8 @@ export class LoginPageComponent {
   protected onForgotPassword(): void {
     this.router.navigate(['/recovery-password']);
   }
+
+  protected onBackHome(): void {
+    this.router.navigate(['/']);
+  }
 }

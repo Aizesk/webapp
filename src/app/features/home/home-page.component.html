@@ -53,29 +53,31 @@
 
     <div class="carousel">
       <div class="carousel__track">
-        <article
-          class="platform-card"
-          *ngFor="let platform of visiblePlatforms"
-          [style.--platform-color]="platform.color"
-        >
-          <div class="platform-card__icon">{{ platform.icon }}</div>
-          <h3 class="platform-card__name">{{ platform.name }}</h3>
-          <p class="platform-card__description">{{ platform.description }}</p>
-          <div class="platform-card__badge">
-            <span class="material-symbols-rounded" aria-hidden="true">verified_user</span>
-            OAuth 2.0
-          </div>
-        </article>
+        @for (platform of visiblePlatforms; track platform.id) {
+          <article
+            class="platform-card"
+            [style.--platform-color]="platform.color"
+          >
+            <div class="platform-card__icon">{{ platform.icon }}</div>
+            <h3 class="platform-card__name">{{ platform.name }}</h3>
+            <p class="platform-card__description">{{ platform.description }}</p>
+            <div class="platform-card__badge">
+              <span class="material-symbols-rounded" aria-hidden="true">verified_user</span>
+              OAuth 2.0
+            </div>
+          </article>
+        }
       </div>
       <div class="carousel__dots">
-        <button
-          type="button"
-          *ngFor="let _ of [].constructor(carouselPageCount); let i = index"
-          class="carousel__dot"
-          [class.carousel__dot--active]="i === currentCarouselIndex"
-          (click)="setCarouselIndex(i)"
-          [attr.aria-label]="'Ir a página ' + (i + 1)"
-        ></button>
+        @for (i of [].constructor(carouselPageCount); track i) {
+          <button
+            type="button"
+            class="carousel__dot"
+            [class.carousel__dot--active]="i === currentCarouselIndex"
+            (click)="setCarouselIndex(i)"
+            [attr.aria-label]="'Ir a página ' + (i + 1)"
+          ></button>
+        }
       </div>
     </div>
   </section>
@@ -87,13 +89,15 @@
     </header>
 
     <div class="security-grid">
-      <article class="security-card" *ngFor="let feature of securityFeatures">
-        <div class="security-card__icon">
-          <span class="material-symbols-rounded" aria-hidden="true">{{ feature.icon }}</span>
-        </div>
-        <h3>{{ feature.title }}</h3>
-        <p>{{ feature.description }}</p>
-      </article>
+      @for (feature of securityFeatures; track feature.title) {
+        <article class="security-card">
+          <div class="security-card__icon">
+            <span class="material-symbols-rounded" aria-hidden="true">{{ feature.icon }}</span>
+          </div>
+          <h3>{{ feature.title }}</h3>
+          <p>{{ feature.description }}</p>
+        </article>
+      }
     </div>
   </section>
 

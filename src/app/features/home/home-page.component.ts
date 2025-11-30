@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy } from '@angular/core';
-import { NgFor, NgIf, NgClass } from '@angular/common';
 import { FeatureCard } from '../../shared/models/feature-card.model';
 import { FeatureCardListComponent } from '../../shared/components/feature-card-list/feature-card-list.component';
 import { ButtonComponent } from '../../shared/components/button/button.component';
@@ -16,7 +15,7 @@ interface PlatformPartner {
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [FeatureCardListComponent, ButtonComponent, NgFor, NgIf, NgClass],
+  imports: [FeatureCardListComponent, ButtonComponent],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -143,8 +142,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
 
   private startCarousel(): void {
     this.carouselInterval = setInterval(() => {
-      this.currentCarouselIndex =
-        (this.currentCarouselIndex + 1) % this.carouselPageCount;
+      this.currentCarouselIndex = (this.currentCarouselIndex + 1) % this.carouselPageCount;
     }, 4000);
   }
 
