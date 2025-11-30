@@ -1,14 +1,67 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
 
-:root {
+/* ===== Light Theme (Default) ===== */
+:root,
+[data-theme='light'] {
 	--brand-dark: #0f2d80;
 	--brand-light: #4f7dfc;
 	--text-primary: #0f172a;
+	--text-secondary: #1f2937;
 	--text-muted: #475467;
+	--text-subtle: #6b7280;
 	--surface: #f4f6fb;
+	--surface-elevated: #ffffff;
+	--surface-hover: #e3e8f0;
+	--surface-active: #f2f5fa;
 	--border-subtle: #e4e7ec;
 	--border-strong: #bfc4d1;
+	--shadow-color: rgba(15, 23, 42, 0.08);
+	--shadow-color-strong: rgba(15, 23, 42, 0.15);
+	--accent-primary: #0f62fe;
+	--accent-primary-hover: #4e8dff;
+	--accent-gradient: linear-gradient(135deg, #0f62fe, #70a4ff);
+	--avatar-gradient: linear-gradient(135deg, #8b5cf6, #6366f1);
+	--badge-bg: #ff5470;
+	--icon-color: #3b4a64;
+	--nav-link-color: #7a849d;
+	--chip-bg: #f8fafc;
+	--chip-text: #111827;
+	--chip-border: rgba(15, 23, 42, 0.12);
+	--chip-active-bg: #2563eb;
+	--chip-active-text: #ffffff;
+	--link-color: #2563eb;
+}
+
+/* ===== Dark Theme ===== */
+[data-theme='dark'] {
+	--brand-dark: #70a4ff;
+	--brand-light: #4f7dfc;
+	--text-primary: #f1f5f9;
+	--text-secondary: #e2e8f0;
+	--text-muted: #94a3b8;
+	--text-subtle: #9ca3af;
+	--surface: #0f172a;
+	--surface-elevated: #1e293b;
+	--surface-hover: #334155;
+	--surface-active: #1e293b;
+	--border-subtle: #334155;
+	--border-strong: #475569;
+	--shadow-color: rgba(0, 0, 0, 0.3);
+	--shadow-color-strong: rgba(0, 0, 0, 0.5);
+	--accent-primary: #60a5fa;
+	--accent-primary-hover: #93c5fd;
+	--accent-gradient: linear-gradient(135deg, #3b82f6, #60a5fa);
+	--avatar-gradient: linear-gradient(135deg, #a78bfa, #818cf8);
+	--badge-bg: #f472b6;
+	--icon-color: #94a3b8;
+	--nav-link-color: #94a3b8;
+	--chip-bg: #1e293b;
+	--chip-text: #e2e8f0;
+	--chip-border: rgba(255, 255, 255, 0.1);
+	--chip-active-bg: #3b82f6;
+	--chip-active-text: #ffffff;
+	--link-color: #60a5fa;
 }
 
 *,
@@ -23,6 +76,7 @@ body {
 	background: var(--surface);
 	color: var(--text-primary);
 	min-height: 100vh;
+	transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 button {

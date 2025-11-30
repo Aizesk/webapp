@@ -1,9 +1,10 @@
 .profile {
   min-height: 100vh;
   padding: 2rem clamp(1.5rem, 5vw, 3.5rem);
-  background: #f5f7fb;
+  background: var(--surface);
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  color: #0f172a;
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .profile__layout {
@@ -21,10 +22,11 @@
 .profile-card,
 .profile-health,
 .panel {
-  background: #ffffff;
+  background: var(--surface-elevated);
   border-radius: 22px;
   padding: 1.75rem;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 18px 40px var(--shadow-color);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .profile-card {
@@ -37,7 +39,7 @@
   width: 72px;
   height: 72px;
   border-radius: 18px;
-  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  background: var(--avatar-gradient);
   color: #fff;
   display: grid;
   place-items: center;
@@ -47,7 +49,7 @@
 
 .profile-card__role {
   margin: 0;
-  color: #7b88a8;
+  color: var(--text-muted);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -57,11 +59,12 @@
 .profile-card__name {
   margin: 0;
   font-size: 1.75rem;
+  color: var(--text-primary);
 }
 
 .profile-card__email {
   margin: 0;
-  color: #64748b;
+  color: var(--text-muted);
 }
 
 .profile-card__meta {
@@ -74,24 +77,26 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #94a3b8;
+  color: var(--text-muted);
   margin-bottom: 0.2rem;
 }
 
 .profile-card__meta dd {
   margin: 0;
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .profile-card__hint {
   margin: 0.5rem 0 0;
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .profile-health h2 {
   margin-top: 0;
   font-size: 1.1rem;
+  color: var(--text-primary);
 }
 
 .profile-health ul {
@@ -101,7 +106,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
-  color: #475569;
+  color: var(--text-muted);
   font-weight: 500;
 }
 
@@ -138,7 +143,7 @@
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 0.75rem;
   font-weight: 600;
 }
@@ -146,11 +151,12 @@
 .panel__title {
   margin: 0.25rem 0;
   font-size: 1.5rem;
+  color: var(--text-primary);
 }
 
 .panel__subtitle {
   margin: 0;
-  color: #64748b;
+  color: var(--text-muted);
 }
 
 .panel__badge {
@@ -181,24 +187,25 @@
 
 .form-field label {
   font-weight: 600;
-  color: #334155;
+  color: var(--text-secondary);
 }
 
 .form-field input,
 .form-field textarea {
-  border: 1px solid #d7dce5;
+  border: 1px solid var(--border-strong);
   border-radius: 12px;
   padding: 0.75rem 0.9rem;
   font-size: 1rem;
   font-family: inherit;
-  background: #f8fafc;
+  background: var(--surface-active);
+  color: var(--text-primary);
   transition: border 0.2s ease, box-shadow 0.2s ease;
 }
 
 .form-field input:focus,
 .form-field textarea:focus {
   outline: none;
-  border-color: #2563eb;
+  border-color: var(--accent-primary);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
@@ -211,7 +218,7 @@
 .form-hint {
   margin: 0;
   font-size: 0.8rem;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .form-actions {
@@ -266,19 +273,20 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 1rem;
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid var(--border-subtle);
   border-radius: 16px;
-  background: #f8fafc;
+  background: var(--surface-active);
 }
 
 .preference-toggle__label {
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .preference-toggle__description {
   display: block;
   margin-top: 0.25rem;
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 0.9rem;
 }
 
@@ -304,7 +312,7 @@
   width: 48px;
   height: 28px;
   border-radius: 999px;
-  background: #e2e8f0;
+  background: var(--surface-hover);
   padding: 3px;
   display: inline-flex;
   align-items: center;
@@ -315,7 +323,7 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: #ffffff;
+  background: var(--surface-elevated);
   transform: translateX(0);
   transition: transform 0.2s ease;
 }

@@ -1,9 +1,10 @@
 .admin {
   min-height: 100vh;
   padding: 2rem clamp(1.5rem, 5vw, 3.5rem);
-  background: #f5f7fb;
+  background: var(--surface);
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  color: #0f172a;
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .admin__hero {
@@ -12,18 +13,19 @@
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  background: #ffffff;
+  background: var(--surface-elevated);
   border-radius: 22px;
   padding: 2rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 18px 40px var(--shadow-color);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .admin__eyebrow {
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 0.75rem;
   font-weight: 600;
 }
@@ -31,11 +33,12 @@
 .admin__title {
   margin: 0.25rem 0 0.5rem;
   font-size: clamp(1.75rem, 3vw, 2.25rem);
+  color: var(--text-primary);
 }
 
 .admin__subtitle {
   margin: 0;
-  color: #64748b;
+  color: var(--text-muted);
   max-width: 560px;
 }
 
@@ -56,10 +59,11 @@
   display: flex;
   align-items: flex-start;
   gap: 1rem;
-  background: #ffffff;
+  background: var(--surface-elevated);
   border-radius: 18px;
   padding: 1.25rem 1.5rem;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 12px 28px var(--shadow-color);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .stat-card__icon {
@@ -83,7 +87,7 @@
 
 .stat-card__label {
   margin: 0;
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 0.85rem;
 }
 
@@ -91,6 +95,7 @@
   margin: 0.25rem 0;
   font-size: 1.75rem;
   font-weight: 700;
+  color: var(--text-primary);
 }
 
 .stat-card__trend {
@@ -114,10 +119,11 @@
 }
 
 .panel {
-  background: #ffffff;
+  background: var(--surface-elevated);
   border-radius: 22px;
   padding: 1.75rem;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 18px 40px var(--shadow-color);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .panel__header {
@@ -133,7 +139,7 @@
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 0.75rem;
   font-weight: 600;
 }
@@ -141,6 +147,7 @@
 .panel__title {
   margin: 0.25rem 0 0;
   font-size: 1.35rem;
+  color: var(--text-primary);
 }
 
 .panel__filters {
@@ -151,19 +158,20 @@
 }
 
 .filter-select {
-  border: 1px solid #d7dce5;
+  border: 1px solid var(--border-strong);
   border-radius: 10px;
   padding: 0.55rem 0.9rem;
   font-size: 0.9rem;
   font-family: inherit;
-  background: #f8fafc;
+  background: var(--surface-active);
+  color: var(--text-primary);
   cursor: pointer;
   transition: border 0.2s ease;
 }
 
 .filter-select:focus {
   outline: none;
-  border-color: #2563eb;
+  border-color: var(--accent-primary);
 }
 
 .search-field {
@@ -175,25 +183,26 @@
 .search-field__icon {
   position: absolute;
   left: 0.75rem;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 1.25rem;
   pointer-events: none;
 }
 
 .search-field input {
-  border: 1px solid #d7dce5;
+  border: 1px solid var(--border-strong);
   border-radius: 10px;
   padding: 0.55rem 0.9rem 0.55rem 2.5rem;
   font-size: 0.9rem;
   font-family: inherit;
-  background: #f8fafc;
+  background: var(--surface-active);
+  color: var(--text-primary);
   min-width: 200px;
   transition: border 0.2s ease, box-shadow 0.2s ease;
 }
 
 .search-field input:focus {
   outline: none;
-  border-color: #2563eb;
+  border-color: var(--accent-primary);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
@@ -211,47 +220,48 @@
 .data-table td {
   text-align: left;
   padding: 0.85rem 1rem;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .data-table th {
   font-weight: 600;
-  color: #475569;
-  background: #f8fafc;
+  color: var(--text-muted);
+  background: var(--surface-active);
   white-space: nowrap;
 }
 
 .data-table tbody tr:hover {
-  background: #f8fafc;
+  background: var(--surface-active);
 }
 
 .cell-timestamp {
   font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
   font-size: 0.85rem;
-  color: #64748b;
+  color: var(--text-muted);
   white-space: nowrap;
 }
 
 .cell-user {
-  color: #334155;
+  color: var(--text-secondary);
 }
 
 .cell-origin {
   font-weight: 600;
-  color: #475569;
+  color: var(--text-muted);
 }
 
 .cell-message {
-  color: #334155;
+  color: var(--text-secondary);
   max-width: 420px;
 }
 
 .cell-name {
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .cell-email {
-  color: #64748b;
+  color: var(--text-muted);
 }
 
 .cell-actions {
@@ -261,7 +271,7 @@
 
 .empty-cell {
   text-align: center;
-  color: #94a3b8;
+  color: var(--text-muted);
   padding: 2rem !important;
 }
 
@@ -296,8 +306,8 @@
   border-radius: 6px;
   font-size: 0.8rem;
   font-weight: 600;
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--surface-active);
+  color: var(--text-muted);
 }
 
 .status-badge {
@@ -337,15 +347,15 @@
 
 .table-icon .material-symbols-rounded {
   font-size: 1.15rem;
-  color: #64748b;
+  color: var(--text-muted);
 }
 
 .table-icon:hover {
-  background: #f1f5f9;
+  background: var(--surface-hover);
 }
 
 .table-icon:hover .material-symbols-rounded {
-  color: #2563eb;
+  color: var(--accent-primary);
 }
 
 .table-icon--danger:hover {

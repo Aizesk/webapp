@@ -7,15 +7,16 @@
 }
 
 .summary-card {
-  background: #fff;
+  background: var(--surface-elevated);
   border-radius: 20px;
   padding: 1.5rem;
-  box-shadow: 0 15px 25px rgba(15, 23, 42, 0.05);
+  box-shadow: 0 15px 25px var(--shadow-color);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .summary-card__label {
   font-size: 0.95rem;
-  color: #6c7791;
+  color: var(--text-muted);
 }
 
 .summary-card__value {
@@ -23,7 +24,7 @@
   margin: 0.45rem 0;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #0f1c3d;
+  color: var(--text-primary);
 }
 
 .summary-card__trend {
@@ -58,10 +59,11 @@
 }
 
 .panel {
-  background: #fff;
+  background: var(--surface-elevated);
   border-radius: 24px;
   padding: 1.5rem;
-  box-shadow: 0 20px 35px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 20px 35px var(--shadow-color);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .panel__header {
@@ -74,7 +76,7 @@
 
 .panel__eyebrow {
   font-size: 0.85rem;
-  color: #6c7791;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -82,7 +84,7 @@
 .panel__title {
   margin: 0.35rem 0 0;
   font-size: 1.2rem;
-  color: #111d32;
+  color: var(--text-primary);
 }
 
 .panel__badge {
@@ -108,7 +110,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  color: #6c7791;
+  color: var(--text-muted);
   font-weight: 500;
 }
 
@@ -143,14 +145,14 @@
 .bar-chart__value {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #4a5773;
+  color: var(--icon-color);
   margin-bottom: 0.35rem;
 }
 
 .bar-chart__bar {
   width: 100%;
   border-radius: 999px;
-  background: linear-gradient(180deg, #4f8bff, #3c59f6);
+  background: var(--accent-gradient);
   min-height: 40px;
 }
 
@@ -158,7 +160,7 @@
   display: block;
   margin-top: 0.5rem;
   font-size: 0.85rem;
-  color: #6c7791;
+  color: var(--text-muted);
 }
 
 .line-chart {
@@ -190,7 +192,7 @@
   grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
   margin-top: 0.5rem;
   font-size: 0.8rem;
-  color: #6c7791;
+  color: var(--text-muted);
   text-align: center;
 }
 
@@ -221,7 +223,7 @@
 .net-chart__bar-wrapper {
   width: 100%;
   height: 60px;
-  background: #f1f5f9;
+  background: var(--surface-active);
   border-radius: 999px;
   overflow: hidden;
   display: flex;
@@ -245,11 +247,11 @@
 
 .net-chart__label {
   font-size: 0.75rem;
-  color: #6c7791;
+  color: var(--text-muted);
 }
 
 .side-column .panel {
-  box-shadow: 0 18px 30px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 18px 30px var(--shadow-color);
 }
 
 .panel--list {
@@ -280,19 +282,19 @@
 
 .channel-list__name {
   font-weight: 600;
-  color: #111d32;
+  color: var(--text-primary);
 }
 
 .channel-list__amount {
   font-size: 0.9rem;
-  color: #6c7791;
+  color: var(--text-muted);
 }
 
 .channel-list__bar {
   grid-column: 1 / 3;
   height: 8px;
   border-radius: 999px;
-  background: #eef2f7;
+  background: var(--surface-active);
   overflow: hidden;
 }
 
@@ -304,7 +306,7 @@
 
 .channel-list__percent {
   font-weight: 600;
-  color: #0f62fe;
+  color: var(--accent-primary);
 }
 
 
@@ -328,12 +330,13 @@
 .transaction-item__title {
   font-weight: 600;
   margin-bottom: 0.25rem;
+  color: var(--text-primary);
 }
 
 .transaction-item__meta {
   margin: 0;
   font-size: 0.85rem;
-  color: #6c7791;
+  color: var(--text-muted);
 }
 
 .transaction-item__meter {
@@ -342,7 +345,7 @@
   width: 120px;
   height: 6px;
   border-radius: 999px;
-  background: #eef2f7;
+  background: var(--surface-active);
   overflow: hidden;
 }
 
@@ -371,7 +374,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 0;
-  border-bottom: 1px solid #eef2f7;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .account-item:last-child {
@@ -380,6 +383,7 @@
 
 .account-item__name {
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .account-item__status {
@@ -422,7 +426,7 @@
 
 .reconciliation-item__account {
   font-weight: 600;
-  color: #111d32;
+  color: var(--text-primary);
 }
 
 .reconciliation-item__body {
@@ -431,7 +435,7 @@
   gap: 0.75rem;
   margin-top: 0.65rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid #eef2f7;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .reconciliation-item:last-child .reconciliation-item__body {
@@ -444,12 +448,12 @@
   display: flex;
   flex-direction: column;
   font-size: 0.85rem;
-  color: #6c7791;
+  color: var(--text-muted);
 }
 
 .reconciliation-metric strong {
   font-size: 1rem;
-  color: #111d32;
+  color: var(--text-primary);
 }
 
 .reconciliation-diff {
@@ -483,10 +487,10 @@
 
 .ghost-button {
   min-width: 0;
-  border: 1px solid #d5ddea;
+  border: 1px solid var(--border-strong);
   border-radius: 20px;
   background: transparent;
-  color: #4f5d7a;
+  color: var(--icon-color);
   font-weight: 600;
   padding: 0.35rem 0.9rem;
   cursor: pointer;

@@ -6,7 +6,7 @@
   width: 100%;
   border-radius: 0.75rem;
   border: 1px solid var(--border-subtle);
-  background-color: #fff;
+  background-color: var(--surface-elevated);
   color: var(--text-primary);
   padding: 0.75rem 1rem;
   display: inline-flex;
@@ -15,7 +15,7 @@
   gap: 0.5rem;
   cursor: pointer;
   font-weight: 500;
-  transition: border-color 120ms ease, box-shadow 120ms ease;
+  transition: border-color 120ms ease, box-shadow 120ms ease, background-color 0.3s ease;
 }
 
 .social-button:hover:not(:disabled) {

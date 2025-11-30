@@ -1,19 +1,21 @@
 .transaction-detail {
   min-height: 100vh;
-  background: #f5f7fb;
+  background: var(--surface);
   padding: 2rem;
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  color: #1f2a37;
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .transactions__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #fff;
+  background: var(--surface-elevated);
   border-radius: 18px;
   padding: 1.25rem 1.75rem;
-  box-shadow: 0 12px 25px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 12px 25px var(--shadow-color);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .brand {
@@ -26,7 +28,7 @@
   width: 52px;
   height: 52px;
   border-radius: 14px;
-  background: linear-gradient(135deg, #0f62fe, #70a4ff);
+  background: var(--accent-gradient);
   display: grid;
   place-items: center;
   font-weight: 700;
@@ -37,6 +39,7 @@
 .brand__name {
   font-weight: 700;
   font-size: 1.25rem;
+  color: var(--text-primary);
 }
 
 .transactions__nav {
@@ -47,13 +50,13 @@
 .transactions__nav-link {
   text-decoration: none;
   font-weight: 600;
-  color: #7a849d;
+  color: var(--nav-link-color);
   position: relative;
   padding-bottom: 0.2rem;
 }
 
 .transactions__nav-link--active {
-  color: #0f62fe;
+  color: var(--accent-primary);
 }
 
 .transactions__nav-link--active::after {
@@ -64,7 +67,7 @@
   width: 100%;
   height: 3px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #0f62fe, #4e8dff);
+  background: var(--accent-gradient);
 }
 
 .header-actions {
@@ -79,9 +82,14 @@
   height: 40px;
   border-radius: 12px;
   border: none;
-  background: #f2f5fa;
+  background: var(--surface-active);
   cursor: pointer;
   font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.icon-button:hover {
+  background: var(--surface-hover);
 }
 
 .badge {
@@ -91,7 +99,7 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #ff5470;
+  background: var(--badge-bg);
   color: #fff;
   font-size: 0.7rem;
   display: grid;
@@ -102,8 +110,8 @@
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: #f3f0ff;
-  color: #6a3ef5;
+  background: var(--avatar-gradient);
+  color: #fff;
   display: grid;
   place-items: center;
   font-weight: 700;
@@ -111,19 +119,20 @@
 
 .detail-header {
   margin: 2rem auto 1.5rem;
-  background: #fff;
+  background: var(--surface-elevated);
   border-radius: 18px;
   padding: 1.5rem 2rem;
-  box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 15px 35px var(--shadow-color);
   display: flex;
   align-items: center;
   gap: 1.5rem;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .back-link {
   border: none;
   background: transparent;
-  color: #0f62fe;
+  color: var(--link-color);
   font-weight: 600;
   cursor: pointer;
 }
@@ -131,13 +140,13 @@
 .eyebrow {
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 0.8rem;
   margin-bottom: 0.25rem;
 }
 
 .detail-meta {
-  color: #7a849d;
+  color: var(--text-muted);
   margin-top: 0.2rem;
 }
 
@@ -158,15 +167,15 @@
 }
 
 .primary-button {
-  background: linear-gradient(135deg, #0f62fe, #4e8dff);
+  background: var(--accent-gradient);
   color: #fff;
   box-shadow: 0 15px 30px rgba(15, 98, 254, 0.25);
 }
 
 .ghost-button {
-  background: #fff;
-  border: 1px solid #d5ddea;
-  color: #4a5c89;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-strong);
+  color: var(--icon-color);
 }
 
 .ghost-button--disabled {
@@ -186,17 +195,19 @@
 }
 
 .card {
-  background: #fff;
+  background: var(--surface-elevated);
   border-radius: 18px;
   padding: 1.5rem;
-  box-shadow: 0 15px 30px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 15px 30px var(--shadow-color);
   margin-bottom: 1.5rem;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card h2,
 .card h3 {
   margin-top: 0;
   margin-bottom: 1rem;
+  color: var(--text-primary);
 }
 
 .info-grid {
@@ -209,7 +220,7 @@
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #94a3b8;
+  color: var(--text-muted);
   margin-bottom: 0.3rem;
 }
 
@@ -252,7 +263,7 @@
 }
 
 .amount--muted {
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .amount--success {
@@ -266,13 +277,14 @@
 }
 
 .empty-state {
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--surface-elevated);
   padding: 3rem;
   border-radius: 24px;
   text-align: center;
-  box-shadow: 0 30px 60px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 30px 60px var(--shadow-color-strong);
   margin: 3rem auto;
   max-width: 520px;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 @media (max-width: 1024px) {

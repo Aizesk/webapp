@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AppNavItem } from '../../models/navigation.model';
+import { ThemeService, Theme } from '../../../core/services/theme.service';
 
 @Component({
   selector: 'app-top-navbar',
@@ -20,10 +21,15 @@ export class TopNavbarComponent {
   @Input() userInitials = 'A';
   @Input() userName?: string;
 
+  private readonly themeService = inject(ThemeService);
+
   isProfileMenuOpen = false;
   isSettingsMenuOpen = false;
-  themePreference: 'light' | 'dark' = 'light';
   languagePreference: 'es' | 'en' = 'es';
+
+  get themePreference(): Theme {
+    return this.themeService.theme();
+  }
 
   toggleProfileMenu(): void {
     this.isProfileMenuOpen = !this.isProfileMenuOpen;
@@ -39,8 +45,8 @@ export class TopNavbarComponent {
     }
   }
 
-  setThemePreference(theme: 'light' | 'dark'): void {
-    this.themePreference = theme;
+  setThemePreference(theme: Theme): void {
+    this.themeService.setTheme(theme);
   }
 
   setLanguagePreference(language: 'es' | 'en'): void {

@@ -1,7 +1,8 @@
 :host {
   display: block;
   color: var(--text-primary);
-  background: linear-gradient(180deg, #f8faff 0%, #ffffff 100%);
+  background: var(--surface);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .home {
@@ -136,11 +137,12 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.5rem;
-  background: #ffffff;
+  background: var(--surface-elevated);
   border-radius: 24px;
   padding: 2rem;
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 20px 50px var(--shadow-color);
   margin-bottom: 5rem;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .stat-item {
@@ -220,12 +222,12 @@
 }
 
 .platform-card {
-  background: #ffffff;
+  background: var(--surface-elevated);
   border-radius: 20px;
   padding: 1.75rem;
-  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
-  border: 1px solid rgba(15, 23, 42, 0.06);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 12px 32px var(--shadow-color);
+  border: 1px solid var(--border-subtle);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -233,7 +235,7 @@
 
 .platform-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 20px 40px var(--shadow-color-strong);
 }
 
 .platform-card__icon {
@@ -302,10 +304,11 @@
 /* Security Section */
 .security-section {
   padding: 5rem 0;
-  background: linear-gradient(180deg, #f8faff 0%, #ffffff 100%);
+  background: var(--surface);
   margin: 0 -1.5rem;
   padding-left: 1.5rem;
   padding-right: 1.5rem;
+  transition: background-color 0.3s ease;
 }
 
 .security-grid {
@@ -317,11 +320,12 @@
 }
 
 .security-card {
-  background: #ffffff;
+  background: var(--surface-elevated);
   border-radius: 20px;
   padding: 2rem;
-  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 12px 32px var(--shadow-color);
   text-align: center;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .security-card__icon {
@@ -363,11 +367,12 @@
 }
 
 .testimonial-card {
-  background: #ffffff;
+  background: var(--surface-elevated);
   border-radius: 24px;
   padding: 2rem;
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
-  border: 1px solid rgba(15, 23, 42, 0.04);
+  box-shadow: 0 16px 40px var(--shadow-color);
+  border: 1px solid var(--border-subtle);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .testimonial-card__quote {

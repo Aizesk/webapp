@@ -7,7 +7,7 @@
   border-radius: 0.95rem;
   border: 1px solid var(--border-subtle);
   padding: 0.9rem 1rem;
-  background-color: #fff;
+  background-color: var(--surface-elevated);
   color: var(--text-primary);
   font-size: 1rem;
   font-weight: 500;
@@ -16,7 +16,7 @@
   justify-content: center;
   gap: 0.75rem;
   cursor: pointer;
-  transition: border-color 140ms ease, box-shadow 140ms ease;
+  transition: border-color 140ms ease, box-shadow 140ms ease, background-color 0.3s ease;
 }
 
 .signin-social-button:hover:not(:disabled) {

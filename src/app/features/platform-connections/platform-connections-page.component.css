@@ -1,9 +1,10 @@
 .platform-connections {
   min-height: 100vh;
-  background: #f5f7fb;
+  background: var(--surface);
   padding: 2rem clamp(1.5rem, 5vw, 3rem);
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  color: #0f172a;
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .platform-connections__header {
@@ -12,10 +13,11 @@
   gap: 1.5rem;
   align-items: center;
   justify-content: space-between;
-  background: #fff;
+  background: var(--surface-elevated);
   border-radius: 18px;
   padding: 1.25rem 1.75rem;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 12px 30px var(--shadow-color);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .brand {
@@ -28,7 +30,7 @@
   width: 52px;
   height: 52px;
   border-radius: 14px;
-  background: linear-gradient(135deg, #0f62fe, #70a4ff);
+  background: var(--accent-gradient);
   display: grid;
   place-items: center;
   font-weight: 700;
@@ -39,12 +41,13 @@
 .brand__name {
   margin: 0;
   font-weight: 700;
+  color: var(--text-primary);
 }
 
 .brand__tagline {
   margin: 0;
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .platform-connections__nav {
@@ -56,13 +59,13 @@
 .platform-connections__nav-link {
   text-decoration: none;
   font-weight: 600;
-  color: #7a849d;
+  color: var(--nav-link-color);
   position: relative;
   padding-bottom: 0.2rem;
 }
 
 .platform-connections__nav-link--active {
-  color: #0f62fe;
+  color: var(--accent-primary);
 }
 
 .platform-connections__nav-link--active::after {
@@ -73,7 +76,7 @@
   width: 100%;
   height: 3px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #0f62fe, #4e8dff);
+  background: var(--accent-gradient);
 }
 
 .header-actions {
@@ -88,7 +91,7 @@
   height: 40px;
   border-radius: 12px;
   border: none;
-  background: #f1f5f9;
+  background: var(--surface-active);
   cursor: pointer;
   font-size: 1.05rem;
   transition: transform 0.2s ease, background 0.2s ease;
@@ -96,7 +99,7 @@
 
 .icon-button:hover {
   transform: translateY(-2px);
-  background: #e2e8f0;
+  background: var(--surface-hover);
 }
 
 .badge {
@@ -106,7 +109,7 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #ef4444;
+  background: var(--badge-bg);
   color: #fff;
   font-size: 0.7rem;
   display: grid;
@@ -117,8 +120,8 @@
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: #ede9fe;
-  color: #6d28d9;
+  background: var(--avatar-gradient);
+  color: #fff;
   font-weight: 700;
   display: grid;
   place-items: center;
@@ -126,7 +129,7 @@
 
 .hero {
   margin: 2rem auto;
-  background: #fff;
+  background: var(--surface-elevated);
   border-radius: 22px;
   padding: 2rem;
   display: flex;
@@ -134,24 +137,26 @@
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 15px 35px var(--shadow-color);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .hero h1 {
   margin-bottom: 0.75rem;
   font-size: clamp(1.75rem, 3vw, 2.4rem);
+  color: var(--text-primary);
 }
 
 .eyebrow {
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 0.8rem;
   margin-bottom: 0.35rem;
 }
 
 .subtitle {
-  color: #475569;
+  color: var(--text-muted);
   margin: 0;
 }
 
@@ -168,14 +173,16 @@
 }
 
 .connections {
-  background: #fff;
+  background: var(--surface-elevated);
   border-radius: 24px;
   padding: 1.75rem;
-  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 20px 45px var(--shadow-color);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .connections h2 {
   margin: 0 0 1.25rem;
+  color: var(--text-primary);
 }
 
 .connections__grid {
@@ -186,19 +193,20 @@
 }
 
 .connection-card {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-subtle);
   border-radius: 18px;
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
   height: 100%;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  transition: box-shadow 0.2s ease, transform 0.2s ease, background-color 0.3s ease;
+  background: var(--surface-elevated);
 }
 
 .connection-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 18px 30px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 18px 30px var(--shadow-color);
 }
 
 .connection-card__header {
@@ -214,17 +222,18 @@
   display: grid;
   place-items: center;
   font-size: 1.4rem;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .connection-name {
   margin: 0;
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .connection-tier {
   font-size: 0.8rem;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .chip {
@@ -233,8 +242,8 @@
   border-radius: 999px;
   font-size: 0.8rem;
   font-weight: 600;
-  background: #e2e8f0;
-  color: #475569;
+  background: var(--surface-hover);
+  color: var(--text-muted);
   text-transform: cplatformtalize;
 }
 
@@ -254,13 +263,13 @@
 }
 
 .connection-description {
-  color: #475569;
+  color: var(--text-muted);
   margin: 0;
 }
 
 .connection-meta {
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: var(--text-subtle);
 }
 
 .connection-actions {
@@ -274,7 +283,7 @@
 .text-button {
   border: none;
   background: transparent;
-  color: #2563eb;
+  color: var(--link-color);
   font-weight: 600;
   cursor: pointer;
   padding: 0.4rem 0.25rem;
@@ -282,7 +291,7 @@
 }
 
 .text-button:hover {
-  color: #1d4ed8;
+  color: var(--accent-primary-hover);
 }
 
 .sidebar {
@@ -292,14 +301,16 @@
 }
 
 .card {
-  background: #fff;
+  background: var(--surface-elevated);
   border-radius: 22px;
   padding: 1.5rem;
-  box-shadow: 0 16px 35px rgba(15, 23, 42, 0.07);
+  box-shadow: 0 16px 35px var(--shadow-color);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card h3 {
   margin: 0.25rem 0 0.75rem;
+  color: var(--text-primary);
 }
 
 .automation-list {
@@ -316,7 +327,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  color: #475569;
+  color: var(--text-muted);
   font-weight: 500;
 }
 
@@ -324,7 +335,7 @@
   width: 44px;
   height: 24px;
   border-radius: 999px;
-  background: #e2e8f0;
+  background: var(--surface-hover);
   display: inline-flex;
   align-items: center;
   padding: 0 4px;
@@ -335,7 +346,7 @@
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--surface-elevated);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   transition: transform 0.2s ease;
 }
@@ -358,12 +369,13 @@
   font-size: 1.75rem;
   font-weight: 700;
   margin: 0;
+  color: var(--text-primary);
 }
 
 .plan__price span {
   font-size: 0.85rem;
   font-weight: 500;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .plan ul {
@@ -373,7 +385,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  color: #475569;
+  color: var(--text-muted);
 }
 
 .plan ul li::before {

@@ -1,9 +1,10 @@
 .edit-transaction {
   min-height: 100vh;
-  background: radial-gradient(circle at top, #f8fafc, #eef2ff 60%, #e2e8f0);
+  background: var(--surface);
   padding: 2.5rem;
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  color: #0f172a;
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .page-header {
@@ -15,26 +16,28 @@
 
 .back-button {
   border: none;
-  background: #fff;
+  background: var(--surface-elevated);
   border-radius: 999px;
   width: 3rem;
   height: 3rem;
   font-size: 1.25rem;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 10px 30px var(--shadow-color);
   cursor: pointer;
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .eyebrow {
   text-transform: uppercase;
   letter-spacing: 0.12em;
   font-size: 0.75rem;
-  color: #64748b;
+  color: var(--text-muted);
   margin-bottom: 0.25rem;
 }
 
 .subtitle {
   margin-top: 0.35rem;
-  color: #475569;
+  color: var(--text-secondary);
 }
 
 .header-actions {
@@ -53,15 +56,15 @@
 }
 
 .primary-button {
-  background: linear-gradient(135deg, #7c3aed, #6366f1);
+  background: var(--accent-gradient);
   color: #fff;
   box-shadow: 0 15px 25px rgba(99, 102, 241, 0.25);
 }
 
 .ghost-button {
   background: transparent;
-  color: #475569;
-  border: 1px solid rgba(99, 102, 241, 0.2);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
 }
 
 .page-content {
@@ -72,10 +75,11 @@
 
 .form-card,
 .summary-card {
-  background: #fff;
+  background: var(--surface-elevated);
   border-radius: 24px;
   padding: 2rem;
-  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 20px 45px var(--shadow-color);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .section-header {
@@ -114,19 +118,20 @@
   flex-direction: column;
   gap: 0.4rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .form-field input,
 .form-field select,
 .form-field textarea {
   border-radius: 14px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-strong);
   padding: 0.75rem 1rem;
   font-size: 0.95rem;
   font-weight: 500;
-  color: #0f172a;
-  background: #f8fafc;
+  color: var(--text-primary);
+  background: var(--surface-active);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .form-field small {
@@ -138,14 +143,15 @@
   display: flex;
   align-items: center;
   border-radius: 14px;
-  border: 1px solid #e2e8f0;
-  background: #f8fafc;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-active);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .currency-input span {
   padding: 0 0.75rem;
   font-weight: 700;
-  color: #475569;
+  color: var(--text-secondary);
 }
 
 .currency-input input {
@@ -159,7 +165,7 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  border: 1px dashed rgba(99, 102, 241, 0.3);
+  border: 1px dashed var(--border-subtle);
   border-radius: 14px;
   padding: 0.75rem 1rem;
 }
@@ -184,7 +190,7 @@
 .summary-amount {
   font-size: 2rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .summary-list {
@@ -197,7 +203,7 @@
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #94a3b8;
+  color: var(--text-muted);
   margin-bottom: 0.25rem;
 }
 
@@ -248,19 +254,20 @@
 }
 
 .activity-meta {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 0.85rem;
 }
 
 .empty-state {
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--surface-elevated);
   backdrop-filter: blur(8px);
   padding: 3rem;
   border-radius: 24px;
   text-align: center;
   max-width: 560px;
   margin: 4rem auto;
-  box-shadow: 0 30px 60px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 30px 60px var(--shadow-color-strong);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 @media (max-width: 1024px) {

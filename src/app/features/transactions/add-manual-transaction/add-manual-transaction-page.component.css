@@ -1,26 +1,28 @@
 .add-transaction {
   min-height: 100vh;
-  background: #f5f7fb;
+  background: var(--surface);
   padding: 2rem;
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  color: #1f2a37;
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .page-header {
   display: flex;
   align-items: center;
   gap: 1.25rem;
-  background: #fff;
+  background: var(--surface-elevated);
   border-radius: 18px;
   padding: 1.25rem 1.75rem;
-  box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 15px 35px var(--shadow-color);
   margin-bottom: 1.75rem;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .back-button {
   border: none;
-  background: #edf2ff;
-  color: #4338ca;
+  background: var(--surface-active);
+  color: var(--accent-primary);
   font-size: 1.25rem;
   border-radius: 50%;
   width: 3rem;
@@ -32,12 +34,12 @@
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-size: 0.8rem;
-  color: #94a3b8;
+  color: var(--text-muted);
   margin-bottom: 0.2rem;
 }
 
 .subtitle {
-  color: #7a849d;
+  color: var(--text-muted);
 }
 
 .header-actions {
@@ -56,15 +58,15 @@
 }
 
 .primary-button {
-  background: linear-gradient(135deg, #0f62fe, #4e8dff);
+  background: var(--accent-gradient);
   color: #fff;
   box-shadow: 0 15px 30px rgba(15, 98, 254, 0.25);
 }
 
 .ghost-button {
-  background: #fff;
-  border: 1px solid #d5ddea;
-  color: #4a5c89;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-strong);
+  color: var(--icon-color);
 }
 
 .page-content {
@@ -81,10 +83,11 @@
 
 .form-card,
 .summary-card {
-  background: #fff;
+  background: var(--surface-elevated);
   border-radius: 18px;
   padding: 1.5rem;
-  box-shadow: 0 15px 30px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 15px 30px var(--shadow-color);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .section-header {
@@ -119,10 +122,11 @@
 .form-field select,
 .form-field textarea {
   border-radius: 14px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-subtle);
   padding: 0.75rem 1rem;
   font-size: 0.95rem;
-  background: #f8fafc;
+  background: var(--surface-active);
+  color: var(--text-primary);
 }
 
 .form-field textarea {
@@ -138,14 +142,14 @@
   display: flex;
   align-items: center;
   border-radius: 14px;
-  border: 1px solid #e2e8f0;
-  background: #f8fafc;
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-active);
 }
 
 .currency-input span {
   padding: 0 0.9rem;
   font-weight: 700;
-  color: #475569;
+  color: var(--text-muted);
 }
 
 .currency-input input {

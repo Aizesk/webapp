@@ -4,13 +4,14 @@
 
 .login-card {
   width: min(420px, 100%);
-  background-color: #fff;
+  background-color: var(--surface-elevated);
   border-radius: 1.75rem;
   padding: 2.5rem;
-  box-shadow: 0 25px 60px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 25px 60px var(--shadow-color);
   display: flex;
   flex-direction: column;
   margin: 0 auto;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .login-card app-login-header {

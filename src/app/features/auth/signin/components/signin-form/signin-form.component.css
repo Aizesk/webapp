@@ -66,9 +66,9 @@
   border: 1px solid var(--border-strong);
   padding: 0.6rem 0.8rem;
   font-size: 0.9rem;
-  background-color: #fff;
+  background-color: var(--surface-elevated);
   color: var(--text-primary);
-  transition: border-color 140ms ease, box-shadow 140ms ease;
+  transition: border-color 140ms ease, box-shadow 140ms ease, background-color 0.3s ease;
 }
 
 .field select {
@@ -112,13 +112,14 @@
   right: 0.65rem;
   transform: translateY(-50%);
   border: none;
-  background: #f6f7fb;
+  background: var(--surface-active);
   color: var(--brand-dark);
   font-weight: 600;
   cursor: pointer;
   padding: 0.25rem 0.65rem;
   border-radius: 999px;
   font-size: 0.85rem;
+  transition: background-color 0.3s ease;
 }
 
 .field-error {

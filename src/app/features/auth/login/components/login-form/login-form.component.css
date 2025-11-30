@@ -22,8 +22,8 @@
   padding: 0.9rem 1rem;
   font-size: 1rem;
   color: var(--text-primary);
-  background-color: #fff;
-  transition: border-color 120ms ease, box-shadow 120ms ease;
+  background-color: var(--surface-elevated);
+  transition: border-color 120ms ease, box-shadow 120ms ease, background-color 0.3s ease;
 }
 
 .field input:focus {
