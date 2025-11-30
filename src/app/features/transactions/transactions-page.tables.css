@@ -179,8 +179,80 @@ td {
 }
 
 .mat-header-row,
-.mat-row {
+.mat-row,
+.mat-mdc-header-row,
+.mat-mdc-row {
   border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface-elevated);
+  transition: background-color 0.3s ease;
+}
+
+.mat-mdc-row:hover,
+.mat-row:hover {
+  background: var(--surface-hover);
+}
+
+/* Angular Material Table overrides for dark mode */
+.mat-mdc-table,
+.mat-table {
+  background: transparent;
+}
+
+.mat-mdc-cell,
+.mat-cell,
+.mat-mdc-header-cell,
+.mat-header-cell {
+  color: var(--text-primary);
+  background: transparent;
+  border-bottom-color: var(--border-subtle);
+}
+
+.mat-mdc-header-cell,
+.mat-header-cell {
+  color: var(--nav-link-color);
+}
+
+/* Checkbox styling for dark mode */
+.mat-mdc-checkbox .mdc-checkbox__background {
+  border-color: var(--border-strong);
+}
+
+.mat-mdc-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background {
+  background-color: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+/* Paginator styling for dark mode */
+.mat-mdc-paginator {
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.mat-mdc-paginator-container {
+  color: var(--text-muted);
+}
+
+.mat-mdc-paginator-page-size-label,
+.mat-mdc-paginator-range-label {
+  color: var(--text-muted);
+}
+
+.mat-mdc-select-value,
+.mat-mdc-select-arrow {
+  color: var(--text-primary);
+}
+
+.mat-mdc-paginator-icon {
+  fill: var(--icon-color);
+}
+
+.mat-mdc-icon-button:not(:disabled) {
+  color: var(--icon-color);
+}
+
+/* Sort header styling */
+.mat-sort-header-arrow {
+  color: var(--icon-color);
 }
 
 .sortable .sort-button {

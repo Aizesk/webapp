@@ -87,3 +87,70 @@ a {
 	color: inherit;
 	text-decoration: none;
 }
+
+/* ===== Angular Material Dark Mode Overrides ===== */
+[data-theme='dark'] .mat-mdc-table {
+	background: transparent !important;
+}
+
+[data-theme='dark'] .mat-mdc-row,
+[data-theme='dark'] .mat-mdc-header-row {
+	background: var(--surface-elevated) !important;
+}
+
+[data-theme='dark'] .mat-mdc-row:hover {
+	background: var(--surface-hover) !important;
+}
+
+[data-theme='dark'] .mat-mdc-cell,
+[data-theme='dark'] .mat-mdc-header-cell {
+	color: var(--text-primary);
+	border-bottom-color: var(--border-subtle);
+}
+
+[data-theme='dark'] .mat-mdc-header-cell {
+	color: var(--nav-link-color);
+}
+
+[data-theme='dark'] .mat-mdc-paginator {
+	background: transparent;
+	color: var(--text-muted);
+}
+
+[data-theme='dark'] .mat-mdc-paginator-container {
+	background: transparent;
+}
+
+[data-theme='dark'] .mat-mdc-select-value,
+[data-theme='dark'] .mat-mdc-select-arrow,
+[data-theme='dark'] .mat-mdc-select-trigger {
+	color: var(--text-primary);
+}
+
+[data-theme='dark'] .mat-mdc-paginator-page-size-label,
+[data-theme='dark'] .mat-mdc-paginator-range-label {
+	color: var(--text-muted);
+}
+
+[data-theme='dark'] .mat-mdc-icon-button svg,
+[data-theme='dark'] .mat-mdc-paginator-icon {
+	fill: var(--icon-color);
+}
+
+[data-theme='dark'] .mat-mdc-checkbox .mdc-checkbox__background {
+	border-color: var(--border-strong);
+}
+
+[data-theme='dark'] .mat-sort-header-arrow {
+	color: var(--icon-color);
+}
+
+[data-theme='dark'] .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__leading,
+[data-theme='dark'] .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__notch,
+[data-theme='dark'] .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__trailing {
+	border-color: var(--border-strong);
+}
+
+[data-theme='dark'] .mat-mdc-form-field-infix {
+	color: var(--text-primary);
+}
