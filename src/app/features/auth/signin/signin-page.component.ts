@@ -1,0 +1,45 @@
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Location } from '@angular/common';
+import { SigninCardComponent } from './components/signin-card/signin-card.component';
+import { AuthProvider } from '../../../shared/models/auth-provider.model';
+import { SignUpRequest } from '../../../shared/models/sign-up-request.model';
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-signin-page',
+  standalone: true,
+  imports: [SigninCardComponent],
+  templateUrl: './signin-page.component.html',
+  styleUrl: './signin-page.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class SigninPageComponent {
+  private readonly router = inject(Router);
+  private readonly location = inject(Location);
+
+  protected readonly brandName = 'Aizesk';
+  protected readonly title = 'Registro';
+  protected readonly subtitle = 'Crea tu cuenta en Aizesk';
+  protected readonly loginCtaLabel = '¿Ya tienes una cuenta?';
+  protected readonly loginLinkLabel = 'Inicia sesión';
+
+  protected readonly socialProviders: AuthProvider[] = [
+    { id: 'google', label: 'Registrarme con Google', icon: 'google' }
+  ];
+
+  protected onProviderSelected(provider: AuthProvider): void {
+    console.log('provider selected', provider);
+  }
+
+  protected onFormSubmitted(payload: SignUpRequest): void {
+    console.log('sign up payload', payload);
+  }
+
+  protected onNavigateToLogin(): void {
+    this.router.navigate(['/login']);
+  }
+
+  protected onBack(): void {
+    this.location.back();
+  }
+}

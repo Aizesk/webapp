@@ -1,0 +1,52 @@
+:host {
+  display: block;
+}
+
+.signin-card {
+  width: min(980px, 100%);
+  margin: 0 auto;
+  background-color: var(--surface-elevated);
+  border-radius: 1.5rem;
+  padding: 1.75rem;
+  box-shadow: 0 35px 80px var(--shadow-color);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.providers {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: center;
+  gap: 0.35rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.card-footer button {
+  border: none;
+  background: none;
+  color: var(--brand-dark);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+@media (max-width: 768px) {
+  .signin-card {
+    padding: 2rem;
+    border-radius: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .signin-card {
+    padding: 1.5rem;
+  }
+}

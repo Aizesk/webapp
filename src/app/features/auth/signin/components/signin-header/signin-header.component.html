@@ -1,0 +1,12 @@
+<header class="signin-header">
+  <p class="eyebrow">Crea tu cuenta en {{ brandName }}</p>
+  <div class="title-row">
+    <button type="button" class="back-button" (click)="back.emit()" aria-label="Volver">
+      <span aria-hidden="true">←</span>
+    </button>
+    <h1>{{ title }}</h1>
+  </div>
+  @if (description) {
+    <p class="description">{{ description }}</p>
+  }
+</header>

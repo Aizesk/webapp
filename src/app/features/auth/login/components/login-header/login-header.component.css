@@ -1,0 +1,44 @@
+:host {
+  display: block;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.brand-mark {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.9rem;
+  background: linear-gradient(140deg, #0f2d80, #4f7dfc);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(15, 45, 128, 0.35);
+}
+
+.brand-mark span {
+  font-size: 1.25rem;
+}
+
+.brand-name {
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: var(--text-primary);
+}
+
+.titles h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.75rem;
+}
+
+.description {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
