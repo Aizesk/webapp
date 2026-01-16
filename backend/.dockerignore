@@ -1,0 +1,46 @@
+# Aizesk Backend - Docker Ignore
+# ================================
+
+# Build outputs
+**/target/
+**/build/
+**/*.jar
+**/*.war
+
+# IDE files
+**/.idea/
+**/.vscode/
+**/*.iml
+**/.project
+**/.classpath
+**/.settings/
+
+# Git
+.git/
+.gitignore
+
+# Logs
+**/*.log
+**/logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test files
+**/test-results/
+**/coverage/
+
+# Documentation
+*.md
+!README.md
+docs/
+
+# Docker files (don't include in context)
+docker-compose*.yml
+Dockerfile*
+
+# Local development files
+**/.env
+**/.env.local
+**/application-local.properties

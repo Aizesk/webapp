@@ -1,0 +1,263 @@
+# ==================================================
+# Aizesk Backend - Docker Compose
+# ==================================================
+# This file orchestrates all Aizesk microservices
+# along with their dependencies (MongoDB, MySQL)
+#
+# Usage:
+#   docker-compose up -d          # Start all services
+#   docker-compose up -d mongodb  # Start only MongoDB
+#   docker-compose logs -f        # View all logs
+#   docker-compose down           # Stop all services
+#   docker-compose down -v        # Stop and remove volumes
+# ==================================================
+
+services:
+  # ============================================
+  # DATABASES
+  # ============================================
+  
+  mongodb:
+    image: mongo:7.0
+    container_name: aizesk-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: aizesk
+      MONGO_INITDB_ROOT_PASSWORD: aizesk-mongo-2024
+      MONGO_INITDB_DATABASE: aizesk
+    volumes:
+      - mongodb_data:/data/db
+      - ./docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - aizesk-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.0
+    container_name: aizesk-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: aizesk-root-2024
+      MYSQL_DATABASE: aizesk
+      MYSQL_USER: aizesk
+      MYSQL_PASSWORD: aizesk-mysql-2024
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - aizesk-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "aizesk", "-p$$MYSQL_PASSWORD"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+  # ============================================
+  # MICROSERVICES
+  # ============================================
+
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: ../Dockerfile
+    container_name: aizesk-auth-service
+    ports:
+      - "8082:8082"
+    environment:
+      SERVER_PORT: 8082
+      SPRING_DATA_MONGODB_URI: mongodb://aizesk:aizesk-mongo-2024@mongodb:27017/aizesk_auth?authSource=admin
+      JWT_SECRET: aizesk-jwt-secret-key-2024-production
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - aizesk-network
+    restart: unless-stopped
+
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: ../Dockerfile
+    container_name: aizesk-user-service
+    ports:
+      - "8083:8083"
+    environment:
+      SERVER_PORT: 8083
+      SPRING_DATA_MONGODB_URI: mongodb://aizesk:aizesk-mongo-2024@mongodb:27017/aizesk_users?authSource=admin
+      AUTH_SERVICE_URL: http://auth-service:8082
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+    networks:
+      - aizesk-network
+    restart: unless-stopped
+
+  transaction-service:
+    build:
+      context: ./transaction-service
+      dockerfile: ../Dockerfile
+    container_name: aizesk-transaction-service
+    ports:
+      - "8080:8080"
+    environment:
+      SERVER_PORT: 8080
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/aizesk_transactions?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: aizesk
+      SPRING_DATASOURCE_PASSWORD: aizesk-mysql-2024
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      AUTH_SERVICE_URL: http://auth-service:8082
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      mysql:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+    networks:
+      - aizesk-network
+    restart: unless-stopped
+
+  subscription-service:
+    build:
+      context: ./subscription-service
+      dockerfile: ../Dockerfile
+    container_name: aizesk-subscription-service
+    ports:
+      - "8084:8084"
+    environment:
+      SERVER_PORT: 8084
+      SPRING_DATA_MONGODB_URI: mongodb://aizesk:aizesk-mongo-2024@mongodb:27017/aizesk_subscriptions?authSource=admin
+      AUTH_SERVICE_URL: http://auth-service:8082
+      STRIPE_SECRET_KEY: sk_test_mock_key
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+    networks:
+      - aizesk-network
+    restart: unless-stopped
+
+  platform-connection-service:
+    build:
+      context: ./platform-connection-service
+      dockerfile: ../Dockerfile
+    container_name: aizesk-platform-connection-service
+    ports:
+      - "8085:8085"
+    environment:
+      SERVER_PORT: 8085
+      SPRING_DATA_MONGODB_URI: mongodb://aizesk:aizesk-mongo-2024@mongodb:27017/aizesk_platforms?authSource=admin
+      AUTH_SERVICE_URL: http://auth-service:8082
+      SUBSCRIPTION_SERVICE_URL: http://subscription-service:8084
+      TRANSACTION_SERVICE_URL: http://transaction-service:8080
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+      subscription-service:
+        condition: service_started
+      transaction-service:
+        condition: service_started
+    networks:
+      - aizesk-network
+    restart: unless-stopped
+
+  notification-service:
+    build:
+      context: ./notification-service
+      dockerfile: ../Dockerfile
+    container_name: aizesk-notification-service
+    ports:
+      - "8086:8086"
+    environment:
+      SERVER_PORT: 8086
+      SPRING_DATA_MONGODB_URI: mongodb://aizesk:aizesk-mongo-2024@mongodb:27017/aizesk_notifications?authSource=admin
+      MAIL_DEV_MODE: "true"
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - aizesk-network
+    restart: unless-stopped
+
+  admin-service:
+    build:
+      context: ./admin-service
+      dockerfile: ../Dockerfile
+    container_name: aizesk-admin-service
+    ports:
+      - "8087:8087"
+    environment:
+      SERVER_PORT: 8087
+      SPRING_SECURITY_USER_NAME: admin
+      SPRING_SECURITY_USER_PASSWORD: aizesk-admin-2024
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - auth-service
+      - user-service
+      - transaction-service
+      - subscription-service
+      - platform-connection-service
+      - notification-service
+    networks:
+      - aizesk-network
+    restart: unless-stopped
+
+  reporting-service:
+    build:
+      context: ./reporting-service
+      dockerfile: ../Dockerfile
+    container_name: aizesk-reporting-service
+    ports:
+      - "8081:8081"
+    environment:
+      SERVER_PORT: 8081
+      SPRING_DATA_MONGODB_URI: mongodb://aizesk:aizesk-mongo-2024@mongodb:27017/aizesk_reports?authSource=admin
+      AUTH_SERVICE_URL: http://auth-service:8082
+      TRANSACTION_SERVICE_URL: http://transaction-service:8080
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+      transaction-service:
+        condition: service_started
+    networks:
+      - aizesk-network
+    restart: unless-stopped
+
+# ============================================
+# NETWORKS
+# ============================================
+networks:
+  aizesk-network:
+    driver: bridge
+    name: aizesk-network
+
+# ============================================
+# VOLUMES
+# ============================================
+volumes:
+  mongodb_data:
+    name: aizesk-mongodb-data
+  mysql_data:
+    name: aizesk-mysql-data
