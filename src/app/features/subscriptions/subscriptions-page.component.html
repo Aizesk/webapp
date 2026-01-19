@@ -1,0 +1,91 @@
+<section class="subscriptions">
+  <app-top-navbar [navItems]="navItems" [notificationCount]="3"></app-top-navbar>
+
+  <div class="hero">
+    <div class="hero__content">
+      <p class="eyebrow">PLANES Y PRECIOS</p>
+      <h1>Elige el plan perfecto para ti</h1>
+      <p class="subtitle">
+        Gestiona tus ingresos de múltiples plataformas con las herramientas que necesitas. Cancela
+        en cualquier momento.
+      </p>
+    </div>
+
+    <div class="billing-toggle">
+      <button
+        type="button"
+        class="billing-toggle__option"
+        [class.billing-toggle__option--active]="selectedBilling === 'monthly'"
+        (click)="toggleBilling('monthly')"
+      >
+        Mensual
+      </button>
+      <button
+        type="button"
+        class="billing-toggle__option"
+        [class.billing-toggle__option--active]="selectedBilling === 'yearly'"
+        (click)="toggleBilling('yearly')"
+      >
+        Anual
+        <span class="billing-toggle__badge">Ahorra 20%</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="plans-grid">
+    <article
+      class="plan-card"
+      *ngFor="let plan of displayedPlans"
+      [class.plan-card--recommended]="plan.recommended"
+      [style.--plan-color]="plan.color"
+    >
+      <span class="plan-card__badge" *ngIf="plan.recommended">Recomendado</span>
+
+      <div class="plan-card__header">
+        <h2 class="plan-card__name">{{ plan.name }}</h2>
+        <p class="plan-card__description">{{ plan.description }}</p>
+      </div>
+
+      <div class="plan-card__pricing">
+        <div class="price">
+          <span class="price__currency">$</span>
+          <span class="price__amount">{{ plan.price }}</span>
+          <span class="price__period">/{{ selectedBilling === 'monthly' ? 'mes' : 'año' }}</span>
+        </div>
+        <p class="price__note" *ngIf="selectedBilling === 'yearly' && plan.price > 0">
+          {{ plan.price / 12 | currency : 'USD' : 'symbol' : '1.2-2' }}/mes facturado anualmente
+        </p>
+      </div>
+
+      <ul class="plan-card__features">
+        <li *ngFor="let feature of plan.features">
+          <span class="material-symbols-rounded feature-icon" aria-hidden="true">check_circle</span>
+          {{ feature }}
+        </li>
+      </ul>
+
+      <button
+        type="button"
+        class="plan-card__button"
+        [class.plan-card__button--selected]="isPlanSelected(plan.id)"
+        (click)="selectPlan(plan.id)"
+      >
+        {{
+          isPlanSelected(plan.id)
+            ? 'Plan Seleccionado'
+            : plan.price === 0
+            ? 'Comenzar Gratis'
+            : 'Seleccionar Plan'
+        }}
+      </button>
+    </article>
+  </div>
+
+  <div class="faq-section">
+    <h2>¿Tienes preguntas?</h2>
+    <p class="faq-intro">
+      Estamos aquí para ayudarte. Contáctanos en
+      <a href="mailto:soporte@aizesk.com">soporte@aizesk.com</a>
+    </p>
+  </div>
+</section>

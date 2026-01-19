@@ -1,0 +1,179 @@
+<section class="dashboard">
+  <app-top-navbar [navItems]="navItems" brandTagline="Tu control financiero" [notificationCount]="2"></app-top-navbar>
+  <ng-container *ngIf="dashboardVm$ | async as vm; else dashboardLoading">
+    <div class="dashboard__content">
+      <aside class="summary-column">
+        <article class="summary-card" *ngFor="let card of vm.summaryCards">
+          <span class="summary-card__label">{{ card.label }}</span>
+          <span class="summary-card__value">{{ card.value | currency: 'EUR' : 'symbol' : '1.0-0' }}</span>
+          <span class="summary-card__trend" [ngClass]="card.trendColor">{{ card.trend }}</span>
+          <div class="summary-card__sparkline" *ngIf="card.sparklinePath">
+            <svg viewBox="0 0 100 24" preserveAspectRatio="none">
+              <path [attr.d]="card.sparklinePath" />
+            </svg>
+          </div>
+        </article>
+      </aside>
+
+      <main class="main-column">
+        <section class="panel">
+          <header class="panel__header">
+            <div>
+              <p class="panel__eyebrow">Ingresos Semanales</p>
+              <h2 class="panel__title">Actividad reciente</h2>
+            </div>
+            <span class="panel__badge">+12.8%</span>
+          </header>
+          <div class="bar-chart">
+            <div class="bar-chart__item" *ngFor="let point of vm.weeklyIncomeViz">
+              <div class="bar-chart__value">{{ point.amount | number: '1.0-0' }}k</div>
+              <div class="bar-chart__bar" [style.height.%]="point.percentage"></div>
+              <span class="bar-chart__label">{{ point.label }}</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <header class="panel__header">
+            <div>
+              <p class="panel__eyebrow">Ingresos vs Gastos</p>
+              <h2 class="panel__title">Comparativo acumulado 2024</h2>
+            </div>
+            <div class="panel__legend">
+              <span class="legend-dot legend-dot--income"></span> Ingresos
+              <span class="legend-dot legend-dot--expense"></span> Gastos
+            </div>
+          </header>
+          <div class="line-chart">
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+              <polyline [attr.points]="vm.incomePolyline" class="line line--income" />
+              <polyline [attr.points]="vm.expensePolyline" class="line line--expense" />
+            </svg>
+            <div class="line-chart__labels">
+              <span *ngFor="let point of vm.monthlyIncomeVsExpense">{{ point.label }}</span>
+            </div>
+          </div>
+          <div class="net-chart">
+            <div class="net-chart__item" *ngFor="let bar of vm.monthlyNetBars">
+              <div class="net-chart__value" [class.positive]="bar.positive">
+                {{ bar.net | currency: 'EUR' : 'symbol' : '1.0-0' }}
+              </div>
+              <div class="net-chart__bar-wrapper">
+                <span
+                  class="net-chart__bar"
+                  [class.net-chart__bar--positive]="bar.positive"
+                  [class.net-chart__bar--negative]="!bar.positive"
+                  [style.height.%]="bar.percent"
+                ></span>
+              </div>
+              <span class="net-chart__label">{{ bar.label }}</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <header class="panel__header">
+            <div>
+              <p class="panel__eyebrow">Participación por canal</p>
+              <h2 class="panel__title">Top fuentes de ingreso</h2>
+            </div>
+            <span class="panel__badge panel__badge--soft">Mock</span>
+          </header>
+          <ul class="channel-list">
+            <li class="channel-list__item" *ngFor="let channel of vm.channelRevenue">
+              <div class="channel-list__meta">
+                <span class="channel-list__name">{{ channel.channel }}</span>
+                <span class="channel-list__amount">{{ channel.amount | currency: 'EUR' : 'symbol' : '1.0-0' }}</span>
+              </div>
+              <div class="channel-list__bar">
+                <span
+                  class="channel-list__progress"
+                  [style.width.%]="channel.percentage"
+                  [style.background]="channel.color"
+                ></span>
+              </div>
+              <span class="channel-list__percent">{{ channel.percentage }}%</span>
+            </li>
+          </ul>
+        </section>
+      </main>
+
+      <aside class="side-column">
+        <section class="panel panel--list">
+          <header class="panel__header">
+            <h3 class="panel__title">Últimas transacciones</h3>
+            <button type="button" class="ghost-button">Ver más</button>
+          </header>
+          <ul class="transaction-list">
+            <li class="transaction-item" *ngFor="let tx of vm.transactions">
+              <div>
+                <p class="transaction-item__title">{{ tx.title }}</p>
+                <p class="transaction-item__meta">{{ tx.description }} · {{ tx.timestamp }}</p>
+                <span class="transaction-item__meter">
+                  <span
+                    class="transaction-item__meter-fill"
+                    [class.positive]="tx.positive"
+                    [style.width.%]="tx.meterPercent"
+                  ></span>
+                </span>
+              </div>
+              <span class="transaction-item__amount" [class.positive]="tx.positive">
+                {{ tx.positive ? '+' : '-' }}{{ tx.amount | currency: 'EUR' : 'symbol' : '1.0-0' }}
+              </span>
+            </li>
+          </ul>
+        </section>
+
+        <section class="panel panel--list">
+          <header class="panel__header">
+            <h3 class="panel__title">Cuentas conectadas</h3>
+            <button type="button" class="ghost-button ghost-button--small">Añadir</button>
+          </header>
+          <ul class="account-list">
+            <li class="account-item" *ngFor="let account of vm.accounts">
+              <span class="account-item__name">{{ account.name }}</span>
+              <span class="account-item__status" [ngClass]="account.statusColor">{{ account.status }}</span>
+            </li>
+          </ul>
+        </section>
+
+        <section class="panel panel--list">
+          <header class="panel__header">
+            <h3 class="panel__title">Conciliación bancaria</h3>
+            <span class="panel__badge panel__badge--subtle">Simulado</span>
+          </header>
+          <ul class="reconciliation-list">
+            <li class="reconciliation-item" *ngFor="let item of vm.reconciliation">
+              <div class="reconciliation-item__head">
+                <span class="reconciliation-item__account">{{ item.account }}</span>
+                <span class="status-chip" [ngClass]="item.status">
+                  {{ item.status === 'aligned' ? 'Conciliado' : 'Revisar' }}
+                </span>
+              </div>
+              <div class="reconciliation-item__body">
+                <div class="reconciliation-metric">
+                  <span>Registrado</span>
+                  <strong>{{ item.recorded | currency: 'EUR' : 'symbol' : '1.0-0' }}</strong>
+                </div>
+                <div class="reconciliation-metric">
+                  <span>Banco</span>
+                  <strong>{{ item.bank | currency: 'EUR' : 'symbol' : '1.0-0' }}</strong>
+                </div>
+                <div
+                  class="reconciliation-diff"
+                  [class.reconciliation-diff--warning]="item.status === 'warning'"
+                >
+                  {{ item.recorded - item.bank | currency: 'EUR' : 'symbol' : '1.0-0' }}
+                </div>
+              </div>
+            </li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </ng-container>
+</section>
+
+<ng-template #dashboardLoading>
+  <div class="dashboard__loading">Cargando dashboard...</div>
+</ng-template>

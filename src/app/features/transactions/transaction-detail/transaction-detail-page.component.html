@@ -1,0 +1,141 @@
+<section class="transaction-detail">
+  <app-top-navbar [navItems]="navItems" [notificationCount]="3"></app-top-navbar>
+
+  <ng-container *ngIf="vm$ | async as vm">
+    <ng-container *ngIf="vm.transaction; else notFound">
+      <div class="detail-header">
+        <button type="button" class="back-link" (click)="navigateBack()">← Volver a Transacciones</button>
+        <div>
+          <p class="eyebrow">Detalle de Transacción</p>
+          <h1>ID: {{ vm.transaction.id }}</h1>
+          <p class="detail-meta">{{ vm.transaction.date | date: 'fullDate' }} · {{ vm.transaction.time }}</p>
+        </div>
+        <div class="detail-actions">
+          <button
+            type="button"
+            class="ghost-button"
+            [class.ghost-button--disabled]="!isManual(vm.transaction)"
+            [disabled]="!isManual(vm.transaction)"
+            (click)="handleEdit(vm.transaction)"
+          >
+            Editar
+          </button>
+          <button type="button" class="danger-button">Eliminar</button>
+        </div>
+      </div>
+
+      <section class="detail-content">
+        <div class="detail-left">
+          <article class="card">
+            <h2>Información General</h2>
+            <div class="info-grid">
+              <div>
+                <p class="label">Estado</p>
+                <span class="status" [ngClass]="getStatusClass(vm.transaction.status)">
+                  {{ vm.transaction.status }}
+                </span>
+              </div>
+              <div>
+                <p class="label">Plataforma</p>
+                <p>{{ vm.transaction.platform }}</p>
+              </div>
+              <div>
+                <p class="label">Origen</p>
+                <p>{{ vm.transaction.origin }}</p>
+              </div>
+              <div>
+                <p class="label">Categoría</p>
+                <p>{{ vm.transaction.category }}</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <h2>Detalles de la Transacción</h2>
+            <div class="detail-list">
+              <div>
+                <p class="label">Descripción</p>
+                <p>{{ vm.transaction.description }}</p>
+              </div>
+              <div>
+                <p class="label">Fecha</p>
+                <p>{{ vm.transaction.date | date: 'yyyy-MM-dd' }}</p>
+              </div>
+              <div>
+                <p class="label">Hora</p>
+                <p>{{ vm.transaction.time ?? '—' }}</p>
+              </div>
+              <div>
+                <p class="label">Método de Pago</p>
+                <p>{{ vm.transaction.paymentMethod ?? '—' }}</p>
+              </div>
+              <div>
+                <p class="label">Referencia</p>
+                <p>{{ vm.transaction.reference ?? '—' }}</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <h2>Información del Cliente</h2>
+            <div class="detail-list">
+              <div>
+                <p class="label">Nombre</p>
+                <p>{{ vm.transaction.customer?.name ?? '—' }}</p>
+              </div>
+              <div>
+                <p class="label">Email</p>
+                <p>{{ vm.transaction.customer?.email ?? '—' }}</p>
+              </div>
+              <div>
+                <p class="label">ID de Cliente</p>
+                <p>{{ vm.transaction.customer?.id ?? '—' }}</p>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <aside class="detail-right">
+          <article class="summary-card">
+            <h3>Resumen Financiero</h3>
+            <ul>
+              <li>
+                <div>
+                  <p class="label">Cantidad Total</p>
+                  <p class="amount amount--primary">{{ vm.totalAmount | currency: 'USD' : 'symbol' : '1.2-2' }}</p>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <p class="label">Comisión</p>
+                  <p class="amount amount--muted">-{{ vm.fee | currency: 'USD' : 'symbol' : '1.2-2' }}</p>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <p class="label">Cantidad Neta</p>
+                  <p class="amount amount--success">{{ vm.netAmount | currency: 'USD' : 'symbol' : '1.2-2' }}</p>
+                </div>
+              </li>
+            </ul>
+          </article>
+
+          <article class="card quick-actions">
+            <h3>Acciones Rápidas</h3>
+            <button type="button" class="primary-button">Generar Recibo</button>
+            <button type="button" class="ghost-button">Exportar PDF</button>
+            <button type="button" class="ghost-button">Enviar por Email</button>
+          </article>
+        </aside>
+      </section>
+    </ng-container>
+  </ng-container>
+
+  <ng-template #notFound>
+    <div class="empty-state">
+      <h2>No encontramos la transacción solicitada</h2>
+      <p>Verifica el enlace o regresa al listado de transacciones para seleccionarla nuevamente.</p>
+      <button type="button" class="primary-button" (click)="navigateBack()">Volver al listado</button>
+    </div>
+  </ng-template>
+</section>
