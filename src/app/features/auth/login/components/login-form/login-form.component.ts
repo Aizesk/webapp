@@ -27,6 +27,7 @@ export class LoginFormComponent {
   @Input() submitLabel = 'Acceder';
   @Input() rememberLabel = 'Mantener sesión iniciada';
   @Input() forgotPasswordLabel = '¿Has olvidado tu contraseña?';
+  @Input() isLoading = false;
 
   @Output() submitCredentials = new EventEmitter<LoginCredentials>();
   @Output() forgotPassword = new EventEmitter<void>();

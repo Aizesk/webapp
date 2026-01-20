@@ -3,7 +3,7 @@
     <div class="brand__logo" aria-hidden="true">{{ brandLogoText }}</div>
     <div>
       <p class="brand__name">{{ brandName }}</p>
-      <p *ngIf="brandTagline" class="brand__tagline">{{ brandTagline }}</p>
+      <p class="brand__tagline">{{ brandTagline }}</p>
     </div>
   </div>
 
@@ -108,7 +108,9 @@
       </button>
       <div class="profile-menu" *ngIf="isProfileMenuOpen">
         <a class="profile-menu__item" [routerLink]="'/profile'">
-          <span class="material-symbols-rounded profile-menu__icon" aria-hidden="true">account_circle</span>
+          <span class="material-symbols-rounded profile-menu__icon" aria-hidden="true"
+            >account_circle</span
+          >
           <span>Mi perfil</span>
         </a>
         <a class="profile-menu__item" [routerLink]="'/subscriptions'">

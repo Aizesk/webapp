@@ -1,160 +1,133 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy } from '@angular/core';
-import { FeatureCard } from '../../shared/models/feature-card.model';
-import { FeatureCardListComponent } from '../../shared/components/feature-card-list/feature-card-list.component';
-import { ButtonComponent } from '../../shared/components/button/button.component';
-import { Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject, computed, OnInit } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { TopNavbarComponent } from '../../shared/components/top-navbar/top-navbar.component';
+import { AuthService } from '../../core/services/auth.service';
+import { MAIN_NAV_ITEMS } from '../../shared/models/navigation.model';
 
-interface PlatformPartner {
+interface QuickAction {
   readonly id: string;
-  readonly name: string;
-  readonly icon: string;
-  readonly color: string;
+  readonly title: string;
   readonly description: string;
+  readonly icon: string;
+  readonly route: string;
+  readonly variant: 'primary' | 'secondary' | 'outline';
+}
+
+interface Notification {
+  readonly id: string;
+  readonly title: string;
+  readonly message: string;
+  readonly icon: string;
+  readonly type: 'info' | 'success' | 'warning';
+  readonly timestamp: string;
+  readonly read: boolean;
 }
 
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [FeatureCardListComponent, ButtonComponent],
+  imports: [RouterLink, TopNavbarComponent],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HomePageComponent implements OnInit, OnDestroy {
+export class HomePageComponent implements OnInit {
   private readonly router = inject(Router);
-  private carouselInterval: ReturnType<typeof setInterval> | null = null;
+  private readonly authService = inject(AuthService);
 
-  protected currentCarouselIndex = 0;
+  protected readonly navItems = MAIN_NAV_ITEMS;
 
-  protected readonly platformPartners: readonly PlatformPartner[] = [
+  // Get user name from AuthService
+  protected readonly userName = computed(() => {
+    const user = this.authService.currentUser();
+    if (user?.fullName) {
+      return user.fullName.split(' ')[0]; // First name only
+    }
+    return 'Usuario';
+  });
+
+  protected readonly currentHour = new Date().getHours();
+
+  protected readonly greeting = computed(() => {
+    if (this.currentHour < 12) return 'Buenos días';
+    if (this.currentHour < 19) return 'Buenas tardes';
+    return 'Buenas noches';
+  });
+
+  protected readonly quickActions: readonly QuickAction[] = [
     {
-      id: 'youtube',
-      name: 'YouTube',
-      icon: '▶️',
-      color: '#FF0000',
-      description: 'Sincroniza ingresos por AdSense, membresías y Super Chats',
+      id: 'new-transaction',
+      title: 'Nueva Transacción',
+      description: 'Registra un nuevo ingreso o gasto manualmente',
+      icon: 'add_circle',
+      route: '/transactions/manual/new',
+      variant: 'primary',
     },
     {
-      id: 'twitch',
-      name: 'Twitch',
-      icon: '🟣',
-      color: '#9146FF',
-      description: 'Importa suscripciones, bits y donaciones automáticamente',
+      id: 'connect-account',
+      title: 'Conectar Cuenta',
+      description: 'Vincula una nueva plataforma a tu perfil',
+      icon: 'link',
+      route: '/platform-connections',
+      variant: 'secondary',
     },
     {
-      id: 'shopify',
-      name: 'Shopify',
-      icon: '🛍️',
-      color: '#96BF48',
-      description: 'Conecta tu tienda de merch y productos digitales',
-    },
-    {
-      id: 'amazon',
-      name: 'Amazon',
-      icon: '📦',
-      color: '#FF9900',
-      description: 'Importa ventas de afiliados, FBA y KDP',
+      id: 'monthly-report',
+      title: 'Ver Reporte Mensual',
+      description: 'Consulta el resumen de tus finanzas del mes',
+      icon: 'analytics',
+      route: '/reports',
+      variant: 'outline',
     },
   ];
 
-  protected readonly securityFeatures = [
+  // Mock notifications - will be replaced with real data
+  protected readonly notifications: readonly Notification[] = [
     {
-      icon: 'shield',
-      title: 'OAuth 2.0 Certificado',
-      description: 'Conexiones verificadas con los estándares más exigentes de la industria.',
+      id: '1',
+      title: 'Sincronización completada',
+      message: 'YouTube: Se importaron 12 nuevas transacciones',
+      icon: 'check_circle',
+      type: 'success',
+      timestamp: 'Hace 2 horas',
+      read: false,
     },
     {
-      icon: 'fingerprint',
-      title: 'Sin acceso a contraseñas',
-      description: 'Nunca almacenamos tus credenciales. Solo tokens de acceso revocables.',
+      id: '2',
+      title: 'Reporte mensual disponible',
+      message: 'Tu resumen de diciembre 2025 está listo para descargar',
+      icon: 'description',
+      type: 'info',
+      timestamp: 'Hace 1 día',
+      read: false,
     },
     {
-      icon: 'sync_lock',
-      title: 'Tokens renovables',
-      description: 'Acceso temporal que puedes revocar en cualquier momento desde tu cuenta.',
-    },
-    {
-      icon: 'gpp_good',
-      title: 'GDPR & CCPA compliant',
-      description: 'Cumplimos con las normativas de protección de datos más estrictas.',
-    },
-  ];
-
-  protected readonly featureCards: FeatureCard[] = [
-    {
-      code: 'GI',
-      title: 'Gestión Intuitiva',
-      description:
-        'Controla todos tus ingresos de YouTube, Twitch, TikTok y más desde un solo lugar. Proyecta ganancias, categoriza por plataforma y visualiza tu crecimiento en tiempo real.',
-    },
-    {
-      code: 'RD',
-      title: 'Reportes para Creadores',
-      description:
-        'Genera informes fiscales, métricas por sponsor y análisis de rendimiento. Exporta para tu gestor, prepara reuniones con marcas y demuestra tu valor con datos reales.',
-    },
-    {
-      code: 'SG',
-      title: 'Seguridad Enterprise',
-      description:
-        'Cifrado de extremo a extremo, OAuth 2.0 certificado y cumplimiento GDPR. Tus datos financieros protegidos con los estándares de la banca digital.',
+      id: '3',
+      title: 'Reconexión requerida',
+      message: 'Tu cuenta de Twitch necesita volver a autorizarse',
+      icon: 'warning',
+      type: 'warning',
+      timestamp: 'Hace 3 días',
+      read: true,
     },
   ];
 
   ngOnInit(): void {
-    this.startCarousel();
+    // Future: Load real notifications from service
   }
 
-  ngOnDestroy(): void {
-    this.stopCarousel();
+  protected navigateTo(route: string): void {
+    this.router.navigate([route]);
   }
 
-  protected handleLogin(): void {
-    this.router.navigate(['/login']);
-  }
-
-  protected handleSignin(): void {
-    this.router.navigate(['/signin']);
-  }
-
-  protected handlePlatformConnections(): void {
-    this.router.navigate(['/platform-connections']);
-  }
-
-  protected handleReports(): void {
-    this.router.navigate(['/reports']);
-  }
-
-  protected setCarouselIndex(index: number): void {
-    this.currentCarouselIndex = index;
-    this.restartCarousel();
-  }
-
-  protected get visiblePlatforms(): readonly PlatformPartner[] {
-    const itemsPerView = 4;
-    const start = this.currentCarouselIndex * itemsPerView;
-    return this.platformPartners.slice(start, start + itemsPerView);
-  }
-
-  protected get carouselPageCount(): number {
-    return Math.ceil(this.platformPartners.length / 4);
-  }
-
-  private startCarousel(): void {
-    this.carouselInterval = setInterval(() => {
-      this.currentCarouselIndex = (this.currentCarouselIndex + 1) % this.carouselPageCount;
-    }, 4000);
-  }
-
-  private stopCarousel(): void {
-    if (this.carouselInterval) {
-      clearInterval(this.carouselInterval);
-      this.carouselInterval = null;
+  protected getNotificationIcon(type: Notification['type']): string {
+    switch (type) {
+      case 'success':
+        return 'check_circle';
+      case 'warning':
+        return 'warning';
+      default:
+        return 'info';
     }
-  }
-
-  private restartCarousel(): void {
-    this.stopCarousel();
-    this.startCarousel();
   }
 }

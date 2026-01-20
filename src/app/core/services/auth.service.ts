@@ -1,8 +1,8 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, throwError, BehaviorSubject } from 'rxjs';
-import { tap, catchError, map } from 'rxjs/operators';
+import { Observable, throwError, of } from 'rxjs';
+import { tap, catchError, delay } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { LoginCredentials } from '../../shared/models/login-credentials.model';
 import { SignUpRequest } from '../../shared/models/sign-up-request.model';
@@ -11,6 +11,36 @@ import { AuthResponse } from '../../shared/models/auth-response.model';
 const TOKEN_KEY = 'aizesk_access_token';
 const REFRESH_TOKEN_KEY = 'aizesk_refresh_token';
 const USER_KEY = 'aizesk_user';
+
+// Demo users for development mode
+const DEMO_USERS: Record<string, { password: string; user: AuthResponse }> = {
+  'demo@aizesk.com': {
+    password: 'password123',
+    user: {
+      accessToken: 'demo-access-token-' + Date.now(),
+      refreshToken: 'demo-refresh-token-' + Date.now(),
+      expiresIn: 3600,
+      tokenType: 'Bearer',
+      userId: 'demo-user-001',
+      email: 'demo@aizesk.com',
+      fullName: 'Usuario Demo',
+      roles: ['ROLE_USER']
+    }
+  },
+  'admin@aizesk.com': {
+    password: 'password123',
+    user: {
+      accessToken: 'admin-access-token-' + Date.now(),
+      refreshToken: 'admin-refresh-token-' + Date.now(),
+      expiresIn: 3600,
+      tokenType: 'Bearer',
+      userId: 'admin-user-001',
+      email: 'admin@aizesk.com',
+      fullName: 'Admin Aizesk',
+      roles: ['ROLE_USER', 'ROLE_ADMIN']
+    }
+  }
+};
 
 interface StoredUser {
   userId: string;
@@ -38,12 +68,35 @@ export class AuthService {
 
   /**
    * Login with email/password credentials.
+   * In development mode, uses mock authentication to allow testing without backend.
    */
   login(credentials: LoginCredentials): Observable<AuthResponse> {
+    // In development mode, use mock login directly to avoid backend dependency
+    if (!environment.production) {
+      return this.mockLogin(credentials);
+    }
+
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => this.handleAuthSuccess(response, credentials.rememberSession)),
       catchError(this.handleError)
     );
+  }
+
+  /**
+   * Mock login for development when backend is unavailable.
+   */
+  private mockLogin(credentials: LoginCredentials): Observable<AuthResponse> {
+    const demoUser = DEMO_USERS[credentials.email.toLowerCase()];
+
+    if (demoUser && demoUser.password === credentials.password) {
+      // Simulate network delay
+      return of(demoUser.user).pipe(
+        delay(500),
+        tap(response => this.handleAuthSuccess(response, credentials.rememberSession))
+      );
+    }
+
+    return throwError(() => new Error('Credenciales inválidas. Usa demo@aizesk.com / password123'));
   }
 
   /**
@@ -81,7 +134,7 @@ export class AuthService {
     this.clearStorage();
     this._isAuthenticated.set(false);
     this._currentUser.set(null);
-    this.router.navigate(['/auth/login']);
+    this.router.navigate(['/login']);
   }
 
   /**

@@ -1,5 +1,10 @@
 <section class="transactions">
-  <app-top-navbar [navItems]="navItems" [notificationCount]="3"></app-top-navbar>
+  <app-top-navbar
+    [navItems]="navItems"
+    brandTagline="Control de transacciones"
+    [notificationCount]="3"
+  >
+  </app-top-navbar>
 
   <ng-container *ngIf="vm$ | async as vm">
     <section class="metrics">
@@ -9,7 +14,7 @@
           <span *ngIf="metric.currency">{{
             metric.currency === 'USD' ? '$' : metric.currency
           }}</span>
-          {{ metric.value | number : '1.0-0' }}
+          {{ metric.value | number: '1.0-0' }}
         </div>
         <div class="metric-card__trend" [ngClass]="metric.isPositive ? 'positive' : 'negative'">
           {{ metric.trend }}
@@ -118,7 +123,7 @@
                 class="cell cell--date"
                 [style.width.px]="columnWidths.date"
               >
-                {{ tx.date | date : 'yyyy-MM-dd' }}
+                {{ tx.date | date: 'yyyy-MM-dd' }}
               </td>
             </ng-container>
 
@@ -182,7 +187,7 @@
                 class="cell cell--amount"
                 [style.width.px]="columnWidths.amount"
               >
-                {{ tx.amount | currency : 'USD' : 'symbol' : '1.2-2' }}
+                {{ tx.amount | currency: 'USD' : 'symbol' : '1.2-2' }}
               </td>
             </ng-container>
 
@@ -257,28 +262,28 @@
                     </span>
                   </button>
                   @if (tx.manual) {
-                  <button
-                    type="button"
-                    class="table-icon"
-                    [routerLink]="['/transactions', tx.id, 'edit']"
-                    aria-label="Editar transacción manual"
-                  >
-                    <span class="material-symbols-rounded table-icon__glyph" aria-hidden="true">
-                      edit
-                    </span>
-                  </button>
+                    <button
+                      type="button"
+                      class="table-icon"
+                      [routerLink]="['/transactions', tx.id, 'edit']"
+                      aria-label="Editar transacción manual"
+                    >
+                      <span class="material-symbols-rounded table-icon__glyph" aria-hidden="true">
+                        edit
+                      </span>
+                    </button>
                   } @else {
-                  <button
-                    type="button"
-                    class="table-icon table-icon--disabled"
-                    disabled
-                    title="Solo se pueden editar transacciones manuales"
-                    aria-label="Edición no disponible"
-                  >
-                    <span class="material-symbols-rounded table-icon__glyph" aria-hidden="true">
-                      edit
-                    </span>
-                  </button>
+                    <button
+                      type="button"
+                      class="table-icon table-icon--disabled"
+                      disabled
+                      title="Solo se pueden editar transacciones manuales"
+                      aria-label="Edición no disponible"
+                    >
+                      <span class="material-symbols-rounded table-icon__glyph" aria-hidden="true">
+                        edit
+                      </span>
+                    </button>
                   }
                   <button type="button" class="table-icon" aria-label="Eliminar">
                     <span class="material-symbols-rounded table-icon__glyph" aria-hidden="true">
@@ -339,7 +344,7 @@
           <li *ngFor="let item of vm.distribution; trackBy: trackByPlatform">
             <span class="dot" [style.background-color]="item.color"></span>
             <span class="platform">{{ item.platform }}</span>
-            <span class="amount">{{ item.amount | currency : 'USD' : 'symbol' : '1.0-0' }}</span>
+            <span class="amount">{{ item.amount | currency: 'USD' : 'symbol' : '1.0-0' }}</span>
           </li>
         </ul>
       </aside>

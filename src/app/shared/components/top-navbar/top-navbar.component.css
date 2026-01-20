@@ -9,6 +9,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  min-height: 76px;
   padding: 1.25rem 1.75rem;
   background: var(--surface-elevated);
   border-radius: 18px;
