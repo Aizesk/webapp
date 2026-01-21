@@ -1,7 +1,8 @@
 import { CurrencyPipe, NgFor, NgIf } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TransactionService } from '../../../core/services/transaction.service';
 
 @Component({
   selector: 'app-add-manual-transaction-page',
@@ -14,7 +15,11 @@ import { Router } from '@angular/router';
 export class AddManualTransactionPageComponent {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
+  private readonly transactionService = inject(TransactionService);
   private readonly now = new Date();
+
+  protected readonly submitting = signal(false);
+  protected readonly errorMessage = signal<string | null>(null);
 
   protected readonly platformOptions = ['Amazon', 'Shopify', 'Twitch', 'YouTube', 'Directo'];
   protected readonly categoryOptions = ['Venta de Productos', 'Suscripción/Donación', 'Ingreso por Publicidad', 'Servicios', 'Otros'];
@@ -56,14 +61,34 @@ export class AddManualTransactionPageComponent {
       return;
     }
 
-    const payload = {
-      ...this.form.getRawValue(),
-      origin: 'Manual',
-      manual: true,
-      createdAt: new Date().toISOString()
+    // Prevent double submission
+    if (this.submitting()) {
+      return;
+    }
+
+    this.submitting.set(true);
+    this.errorMessage.set(null);
+
+    const formValues = this.form.getRawValue();
+
+    const request = {
+      amount: formValues.amount,
+      description: formValues.description,
+      platform: formValues.platform,
+      category: formValues.category,
+      origin: 'Manual'
     };
 
-    console.table(payload);
-    this.router.navigate(['/transactions']);
+    this.transactionService.createTransaction(request).subscribe({
+      next: () => {
+        this.submitting.set(false);
+        this.router.navigate(['/transactions']);
+      },
+      error: (err) => {
+        this.submitting.set(false);
+        this.errorMessage.set(err.message || 'Error al guardar la transacción');
+        console.error('Error creating transaction:', err);
+      }
+    });
   }
 }
