@@ -1,0 +1,205 @@
+# ==================================================
+# AIZESK - SMOKE TEST (Prueba de Humo)
+# ==================================================
+# Extensión requerida: REST Client (humao.rest-client)
+# 
+# SERVICIOS Y PUERTOS:
+# - Auth Service:       http://localhost:8082
+# - User Service:       http://localhost:8083
+# - Transaction Service: http://localhost:8080
+# - Reporting Service:  http://localhost:8081
+# - Subscription Service: http://localhost:8084
+# - Platform Service:   http://localhost:8085
+# - Notification Service: http://localhost:8086
+# - Admin Service:      http://localhost:8087
+# 
+# INSTRUCCIONES:
+# 1. Asegúrate de que Docker esté ejecutando los servicios
+# 2. Ejecuta las peticiones en orden (1 → 2 → 3 → 4)
+# 3. Copia el token de la respuesta del login y pégalo en @authToken
+# ==================================================
+
+### VARIABLES GLOBALES
+@baseAuthUrl = http://localhost:8082/api/v1/auth
+@baseUserUrl = http://localhost:8083/api/v1/users
+@baseReportUrl = http://localhost:8081/api/v1/reports
+@baseTransactionUrl = http://localhost:8080/api/v1/transactions
+
+# ⚠️ ACTUALIZA ESTE TOKEN después del login exitoso
+@authToken = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2ZDVhMDNlYi05ZTMxLTQ5NjgtYmVlMC1iNmQ4NjJkMDg1NWMiLCJlbWFpbCI6InNtb2tldGVzdEBhaXplc2suY29tIiwibmFtZSI6IlNtb2tlIFRlc3RlciIsInJvbGVzIjoiUk9MRV9VU0VSIiwidHlwZSI6ImFjY2VzcyIsImlhdCI6MTc2OTAxOTY4MCwiZXhwIjoxNzY5MDIzMjgwfQ.yw_j-dG4dnqrrNtB4Q1tMFK8a47MJukTEC4NwHOWU14
+
+# Datos del usuario de prueba
+@testEmail = smoketest_{{$timestamp}}@aizesk.com
+@testPassword = SmokeTest2024!
+
+
+# ==================================================
+# FASE 1: HEALTH CHECKS
+# ==================================================
+# Nota: Auth Service no tiene actuator configurado, 
+# usamos el endpoint de validación como health check
+
+### 1.0 Health Check - Auth Service (via validate endpoint)
+# @name healthAuth
+# Este endpoint responde 200 si el servicio está activo
+# (aunque el token sea inválido, confirma que el servicio responde)
+POST http://localhost:8082/api/v1/auth/validate
+Content-Type: application/json
+Authorization: Bearer test
+
+###
+
+### 1.0.1 Health Check - User Service  
+# @name healthUser
+GET http://localhost:8083/api/v1/users/health
+Accept: application/json
+
+###
+
+
+# ==================================================
+# FASE 2: FLUJO DE AUTENTICACIÓN
+# ==================================================
+
+### 2.1 REGISTRO - Crear usuario nuevo
+# @name register
+POST {{baseAuthUrl}}/register
+Content-Type: application/json
+
+{
+    "fullName": "Smoke",
+    "lastName": "Tester",
+    "email": "smoketest@aizesk.com",
+    "password": "SmokeTest2024!",
+    "address": "Calle Test 123",
+    "country": "España",
+    "phone": "+34 612345678",
+    "jobTitle": "QA Engineer",
+    "acceptTerms": true
+}
+
+###
+
+### 2.2 LOGIN - Obtener Token Bearer
+# @name login
+# ⚠️ IMPORTANTE: Copia el accessToken de la respuesta y pégalo arriba en @authToken
+POST {{baseAuthUrl}}/login
+Content-Type: application/json
+
+{
+    "email": "smoketest@aizesk.com",
+    "password": "SmokeTest2024!",
+    "rememberSession": true
+}
+
+###
+
+### 2.3 VALIDAR TOKEN - Verificar que el token es válido
+# @name validateToken
+POST {{baseAuthUrl}}/validate
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+
+# ==================================================
+# FASE 3: ENDPOINTS PROTEGIDOS
+# ==================================================
+
+### 3.1 PERFIL DE USUARIO - GET /users/profile
+# @name userProfile
+GET {{baseUserUrl}}/profile
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+### 3.2 PREFERENCIAS DE USUARIO - GET /users/preferences
+# @name userPreferences
+GET {{baseUserUrl}}/preferences
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+### 3.3 TRANSACCIONES - GET lista de transacciones
+# @name transactions
+GET {{baseTransactionUrl}}
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+
+# ==================================================
+# FASE 4: TESTS DE ERRORES ESPERADOS
+# ==================================================
+
+### 4.1 LOGIN con credenciales incorrectas (debe devolver 401)
+# @name loginFail
+POST {{baseAuthUrl}}/login
+Content-Type: application/json
+
+{
+    "email": "noexiste@aizesk.com",
+    "password": "wrongpassword",
+    "rememberSession": false
+}
+
+###
+
+### 4.2 Acceso sin token (debe devolver 401/403)
+# @name unauthorizedAccess
+GET {{baseUserUrl}}/profile
+Content-Type: application/json
+
+###
+
+### 4.3 Token inválido (debe devolver 401)
+# @name invalidToken
+GET {{baseUserUrl}}/profile
+Content-Type: application/json
+Authorization: Bearer token_invalido_12345
+
+###
+
+
+# ==================================================
+# FASE 5: REFRESH TOKEN
+# ==================================================
+
+### 5.1 REFRESH TOKEN - Renovar token (usa refreshToken del login)
+# @name refreshToken
+# ⚠️ Reemplaza REFRESH_TOKEN_AQUI con el refreshToken del login
+POST {{baseAuthUrl}}/refresh
+Content-Type: application/json
+
+{
+    "refreshToken": "REFRESH_TOKEN_AQUI"
+}
+
+###
+
+
+# ==================================================
+# NOTAS ADICIONALES
+# ==================================================
+# 
+# ✅ Respuestas esperadas exitosas:
+#    - 200 OK: Login, Profile, Validate
+#    - 201 Created: Register
+# 
+# ❌ Respuestas esperadas de error:
+#    - 401 Unauthorized: Credenciales incorrectas, Token inválido
+#    - 403 Forbidden: Sin permisos
+#    - 400 Bad Request: Datos de entrada inválidos
+#
+# 📝 CHECKLIST DE VERIFICACIÓN:
+#    [ ] Health checks responden 200
+#    [ ] Registro crea usuario (201)
+#    [ ] Login devuelve accessToken + refreshToken
+#    [ ] Profile devuelve datos del usuario con token
+#    [ ] Accesos sin token devuelven 401
+#    [ ] Token inválido devuelve 401
+# ==================================================
