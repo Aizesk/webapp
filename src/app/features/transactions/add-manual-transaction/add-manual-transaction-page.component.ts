@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TransactionService } from '../../../core/services/transaction.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-add-manual-transaction-page',
@@ -16,6 +17,7 @@ export class AddManualTransactionPageComponent {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly transactionService = inject(TransactionService);
+  private readonly authService = inject(AuthService);
   private readonly now = new Date();
 
   protected readonly submitting = signal(false);
@@ -70,13 +72,19 @@ export class AddManualTransactionPageComponent {
     this.errorMessage.set(null);
 
     const formValues = this.form.getRawValue();
+    const currentUser = this.authService.currentUser();
+
+    // Build ISO datetime from date + time
+    const transactionDate = `${formValues.date}T${formValues.time}:00`;
 
     const request = {
+      userId: currentUser?.userId || 'demo-user-001',
+      type: 'INCOME' as const,  // Manual transactions are income by default
       amount: formValues.amount,
+      currency: 'EUR',
       description: formValues.description,
-      platform: formValues.platform,
       category: formValues.category,
-      origin: 'Manual'
+      transactionDate: transactionDate
     };
 
     this.transactionService.createTransaction(request).subscribe({

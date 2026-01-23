@@ -121,6 +121,23 @@
   display: grid;
   grid-template-columns: 220px 1fr 320px;
   gap: 1.5rem;
+  max-width: 1600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Fintech layout - uses rows instead of columns */
+.dashboard--fintech .dashboard__content {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto auto auto;
+  gap: 1.5rem;
+}
+
+@media (max-width: 1200px) {
+  .dashboard__content {
+    grid-template-columns: 1fr;
+  }
 }
 
 .dashboard__loading {
