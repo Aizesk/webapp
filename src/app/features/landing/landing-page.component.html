@@ -1,0 +1,139 @@
+<section class="home">
+  <header class="home__header">
+    <div class="brand">
+      <div class="brand__logo">A</div>
+      <div class="brand__copy">
+        <span class="brand__name">Aizesk</span>
+        <span class="brand__tagline">Finanzas para creadores</span>
+      </div>
+    </div>
+    <div class="home__actions">
+      <app-button variant="ghost-subtle" size="sm" (click)="handleLogin()"
+        >Iniciar sesión</app-button
+      >
+      <app-button variant="primary" size="sm" (click)="handleSignin()">Empieza gratis</app-button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero__badge">
+      <span class="material-symbols-rounded" aria-hidden="true">verified</span>
+      OAuth 2.0 · Conexión 100% segura
+    </div>
+    <h1>
+      El centro de control financiero<br />
+      <span class="hero__highlight">para creadores de contenido y vendedores digitales</span>
+    </h1>
+    <p class="hero__subtitle">
+      Conecta YouTube, Twitch, Shopify y Amazon. Unifica todos tus ingresos en un solo dashboard,
+      genera reportes fiscales automáticos y toma el control de tu negocio digital.
+    </p>
+    <div class="hero__actions">
+      <app-button variant="primary" size="lg" (click)="handleSignin()">
+        Crear cuenta gratis
+      </app-button>
+      <app-button variant="ghost" size="lg" (click)="handlePlatformConnections()">
+        Ver plataformas compatibles
+      </app-button>
+    </div>
+    <p class="hero__trust">
+      <span class="material-symbols-rounded" aria-hidden="true">lock</span>
+      Sin tarjeta de crédito · Cancela cuando quieras · Tus datos siempre tuyos
+    </p>
+  </section>
+
+  <section class="platforms-section">
+    <header class="section-header">
+      <p class="section-eyebrow">Integraciones OAuth 2.0</p>
+      <h2>Conecta tus plataformas favoritas de forma segura</h2>
+      <p class="section-subtitle">
+        Autorizaciones verificadas, sin compartir contraseñas. Revoca acceso en cualquier momento.
+      </p>
+    </header>
+
+    <div class="carousel">
+      <div class="carousel__track">
+        @for (platform of visiblePlatforms; track platform.id) {
+          <article class="platform-card" [style.--platform-color]="platform.color">
+            <div class="platform-card__icon">{{ platform.icon }}</div>
+            <h3 class="platform-card__name">{{ platform.name }}</h3>
+            <p class="platform-card__description">{{ platform.description }}</p>
+            <div class="platform-card__badge">
+              <span class="material-symbols-rounded" aria-hidden="true">verified_user</span>
+              OAuth 2.0
+            </div>
+          </article>
+        }
+      </div>
+      <div class="carousel__dots">
+        @for (i of [].constructor(carouselPageCount); track i) {
+          <button
+            type="button"
+            class="carousel__dot"
+            [class.carousel__dot--active]="i === currentCarouselIndex"
+            (click)="setCarouselIndex(i)"
+            [attr.aria-label]="'Ir a página ' + (i + 1)"
+          ></button>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="security-section">
+    <header class="section-header">
+      <p class="section-eyebrow">Seguridad de nivel bancario</p>
+      <h2>Tus datos financieros protegidos como merecen</h2>
+    </header>
+
+    <div class="security-grid">
+      @for (feature of securityFeatures; track feature.title) {
+        <article class="security-card">
+          <div class="security-card__icon">
+            <span class="material-symbols-rounded" aria-hidden="true">{{ feature.icon }}</span>
+          </div>
+          <h3>{{ feature.title }}</h3>
+          <p>{{ feature.description }}</p>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="home__features">
+    <header class="section-header">
+      <p class="section-eyebrow">Características principales</p>
+      <h2>Todo lo que necesitas para profesionalizar tus finanzas</h2>
+    </header>
+    <app-feature-card-list [cards]="featureCards"></app-feature-card-list>
+  </section>
+
+  <section class="cta-section">
+    <div class="cta-content">
+      <h2>¿Listo para tomar el control de tus ingresos?</h2>
+      <p>
+        Únete a la comunidad de creadores que ya usan Aizesk para simplificar sus finanzas y
+        enfocarse en lo que mejor saben hacer: crear contenido increíble.
+      </p>
+      <div class="cta-actions">
+        <app-button variant="primary" size="lg" (click)="handleSignin()">
+          Crear cuenta gratis
+        </app-button>
+        <app-button variant="ghost" size="lg" (click)="handleReports()">
+          Ver demo de reportes
+        </app-button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="home__footer">
+    <div class="footer-brand">
+      <div class="brand__logo brand__logo--small">A</div>
+      <span>Aizesk © 2025</span>
+    </div>
+    <nav class="footer-links">
+      <a href="#">Términos</a>
+      <a href="#">Privacidad</a>
+      <a href="#">Seguridad</a>
+      <a href="#">Contacto</a>
+    </nav>
+  </footer>
+</section>

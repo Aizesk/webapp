@@ -32,6 +32,26 @@
   justify-content: center;
 }
 
+/* Error Banner */
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: 0.75rem;
+  color: #dc2626;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.error-banner .material-symbols-rounded {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
 @media (max-width: 480px) {
   .login-card {
     padding: 1.75rem;

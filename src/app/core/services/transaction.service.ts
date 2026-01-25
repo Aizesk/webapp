@@ -1,4 +1,4 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { tap, catchError, map } from 'rxjs/operators';
@@ -6,21 +6,26 @@ import { environment } from '../../../environments/environment';
 import { PaginatedResponse } from '../../shared/models/paginated-response.model';
 import { TransactionApiResponse } from '../../shared/models/transaction-api.model';
 import { DetailedTransaction, TransactionMetric } from '../../shared/models/transactions.model';
+import { AuthService } from './auth.service';
 
 /**
  * Request DTO for creating a new transaction.
+ * Matches backend TransactionRequest record.
  */
 export interface CreateTransactionRequest {
+  readonly userId: string;
+  readonly type: 'INCOME' | 'EXPENSE' | 'TRANSFER';
   readonly amount: number;
-  readonly description: string;
-  readonly platform: string;
-  readonly category: string;
-  readonly origin: string;
+  readonly currency: string;
+  readonly description?: string;
+  readonly category?: string;
+  readonly transactionDate?: string; // ISO date string
 }
 
 @Injectable({ providedIn: 'root' })
 export class TransactionService {
   private readonly apiUrl = environment.apiUrls.transactions;
+  private readonly authService = inject(AuthService);
 
   // Reactive state
   private readonly _transactions = signal<DetailedTransaction[]>([]);
@@ -78,15 +83,16 @@ export class TransactionService {
   getTransactions(page: number = 0, size: number = 20): Observable<PaginatedResponse<DetailedTransaction>> {
     this._loading.set(true);
 
+    const userId = this.authService.currentUser()?.userId || 'demo-user-001';
     const params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
 
-    return this.http.get<PaginatedResponse<TransactionApiResponse>>(this.apiUrl, { params }).pipe(
+    return this.http.get<PaginatedResponse<TransactionApiResponse>>(`${this.apiUrl}/user/${userId}`, { params }).pipe(
       map(response => this.mapPaginatedResponse(response)),
       tap(response => {
         this._transactions.set(response.content);
-        this._currentPage.set(response.currentPage);
+        this._currentPage.set(response.page);
         this._totalPages.set(response.totalPages);
         this._totalElements.set(response.totalElements);
         this._loading.set(false);
@@ -149,21 +155,21 @@ export class TransactionService {
    * Fills in optional fields that don't exist in backend with defaults.
    */
   private mapTransaction(tx: TransactionApiResponse): DetailedTransaction {
-    const dateTime = new Date(tx.date);
+    const dateTime = new Date(tx.transactionDate);
 
     return {
-      id: tx.id,
-      origin: tx.origin,
+      id: String(tx.id),
+      origin: tx.type === 'INCOME' ? 'Ingreso' : tx.type === 'EXPENSE' ? 'Gasto' : 'Transferencia',
       date: dateTime.toISOString().split('T')[0], // Extract date part
-      time: dateTime.toTimeString().split(' ')[0], // Extract time part (derived from date)
-      description: tx.description,
-      platform: tx.platform,
+      time: dateTime.toTimeString().split(' ')[0], // Extract time part
+      description: tx.description || '',
+      platform: 'Manual', // Backend doesn't have platform, default to Manual
       amount: tx.amount,
-      status: this.mapStatus(tx.status),
-      category: tx.category,
+      status: 'Completado', // Default status since backend doesn't track this
+      category: tx.category || 'Sin categoría',
       // Optional fields not in backend - set to undefined
       fee: undefined,
-      manual: undefined,
+      manual: true,
       paymentMethod: undefined,
       reference: undefined,
       customer: undefined

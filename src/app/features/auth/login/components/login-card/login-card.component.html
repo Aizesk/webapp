@@ -7,19 +7,30 @@
   />
 
   @if (providers.length) {
-  <div class="providers">
-    @for (provider of providers; track provider.id) {
-    <app-social-login-button [provider]="provider" (selectProvider)="onProviderSelected($event)" />
-    }
-  </div>
+    <div class="providers">
+      @for (provider of providers; track provider.id) {
+        <app-social-login-button
+          [provider]="provider"
+          (selectProvider)="onProviderSelected($event)"
+        />
+      }
+    </div>
   }
 
   <app-login-divider label="o" />
+
+  @if (errorMessage) {
+    <div class="error-banner">
+      <span class="material-symbols-rounded" aria-hidden="true">error</span>
+      <span>{{ errorMessage }}</span>
+    </div>
+  }
 
   <app-login-form
     [rememberLabel]="rememberLabel"
     [forgotPasswordLabel]="forgotPasswordLabel"
     [submitLabel]="submitLabel"
+    [isLoading]="isLoading"
     (submitCredentials)="onCredentialsSubmitted($event)"
     (forgotPassword)="onForgotPassword()"
   />

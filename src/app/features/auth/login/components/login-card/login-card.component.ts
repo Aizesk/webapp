@@ -30,6 +30,8 @@ export class LoginCardComponent {
   @Input() rememberLabel = 'Mantener sesión iniciada';
   @Input() forgotPasswordLabel = '¿Has olvidado tu contraseña?';
   @Input() submitLabel = 'Acceder';
+  @Input() isLoading = false;
+  @Input() errorMessage: string | null = null;
 
   @Output() providerSelected = new EventEmitter<AuthProvider>();
   @Output() credentialsSubmitted = new EventEmitter<LoginCredentials>();

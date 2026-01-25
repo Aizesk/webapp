@@ -1,16 +1,33 @@
 <section class="add-transaction">
   <header class="page-header">
-    <button type="button" class="back-button" (click)="handleCancel()">←</button>
+    <button type="button" class="back-button" (click)="handleCancel()" [disabled]="submitting()">
+      ←
+    </button>
     <div>
       <p class="eyebrow">Transacciones</p>
       <h1>Registrar transacción manual</h1>
-      <p class="subtitle">Completa los datos de la operación para mantener el historial sincronizado.</p>
+      <p class="subtitle">
+        Completa los datos de la operación para mantener el historial sincronizado.
+      </p>
     </div>
     <div class="header-actions">
-      <button type="button" class="ghost-button" (click)="handleCancel()">Cancelar</button>
-      <button type="button" class="primary-button" (click)="handleSubmit()">Guardar transacción</button>
+      <button type="button" class="ghost-button" (click)="handleCancel()" [disabled]="submitting()">
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        class="primary-button"
+        (click)="handleSubmit()"
+        [disabled]="submitting()"
+      >
+        {{ submitting() ? 'Guardando...' : 'Guardar transacción' }}
+      </button>
     </div>
   </header>
+
+  <div *ngIf="errorMessage()" class="error-banner">
+    {{ errorMessage() }}
+  </div>
 
   <form class="page-content" [formGroup]="form" (ngSubmit)="handleSubmit()">
     <div class="form-columns">
@@ -26,7 +43,11 @@
         <div class="form-grid">
           <label class="form-field">
             <span>Descripción</span>
-            <input type="text" formControlName="description" placeholder="Ej. Pedido #52005 (Servicio A)" />
+            <input
+              type="text"
+              formControlName="description"
+              placeholder="Ej. Pedido #52005 (Servicio A)"
+            />
             <small *ngIf="form.get('description')?.invalid && form.get('description')?.touched">
               Ingresa una descripción válida.
             </small>
@@ -83,7 +104,9 @@
           <label class="form-field">
             <span>Método de pago</span>
             <select formControlName="paymentMethod">
-              <option *ngFor="let method of paymentMethodOptions" [value]="method">{{ method }}</option>
+              <option *ngFor="let method of paymentMethodOptions" [value]="method">
+                {{ method }}
+              </option>
             </select>
           </label>
 
@@ -140,7 +163,11 @@
         </div>
 
         <label class="form-field">
-          <textarea rows="4" formControlName="notes" placeholder="Agrega indicaciones para tu equipo"></textarea>
+          <textarea
+            rows="4"
+            formControlName="notes"
+            placeholder="Agrega indicaciones para tu equipo"
+          ></textarea>
         </label>
       </article>
     </div>
@@ -152,11 +179,15 @@
         <ul>
           <li>
             <span>Cantidad Total</span>
-            <strong>{{ form.get('amount')?.value || 0 | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
+            <strong>{{
+              form.get('amount')?.value || 0 | currency: 'USD' : 'symbol' : '1.2-2'
+            }}</strong>
           </li>
           <li>
             <span>Comisión</span>
-            <strong>-{{ form.get('fee')?.value || 0 | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
+            <strong
+              >-{{ form.get('fee')?.value || 0 | currency: 'USD' : 'symbol' : '1.2-2' }}</strong
+            >
           </li>
           <li>
             <span>Cantidad Neta</span>

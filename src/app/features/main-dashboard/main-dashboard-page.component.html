@@ -1,169 +1,340 @@
-<section class="dashboard">
-  <app-top-navbar [navItems]="navItems" brandTagline="Tu control financiero" [notificationCount]="2"></app-top-navbar>
+<section class="dashboard dashboard--fintech">
+  <app-top-navbar
+    [navItems]="navItems"
+    brandTagline="Tu control financiero"
+    [notificationCount]="2"
+  ></app-top-navbar>
+
   <ng-container *ngIf="dashboardVm$ | async as vm; else dashboardLoading">
     <div class="dashboard__content">
-      <aside class="summary-column">
-        <article class="summary-card" *ngFor="let card of vm.summaryCards">
-          <span class="summary-card__label">{{ card.label }}</span>
-          <span class="summary-card__value">{{ card.value | currency: 'EUR' : 'symbol' : '1.0-0' }}</span>
-          <span class="summary-card__trend" [ngClass]="card.trendColor">{{ card.trend }}</span>
-          <div class="summary-card__sparkline" *ngIf="card.sparklinePath">
+      <!-- ═══════════════════════════════════════════════════════════════════
+           TOP ROW: KPI Cards - Compact & Professional
+           ═══════════════════════════════════════════════════════════════════ -->
+      <header class="kpi-row">
+        <article class="kpi-card" *ngFor="let card of vm.summaryCards">
+          <div class="kpi-card__header">
+            <span class="kpi-card__label">{{ card.label }}</span>
+            <span class="kpi-card__trend" [ngClass]="card.trendColor">{{ card.trend }}</span>
+          </div>
+          <span class="kpi-card__value">{{
+            card.value | currency: 'EUR' : 'symbol' : '1.0-0'
+          }}</span>
+          <div class="kpi-card__sparkline" *ngIf="card.sparklinePath">
             <svg viewBox="0 0 100 24" preserveAspectRatio="none">
               <path [attr.d]="card.sparklinePath" />
             </svg>
           </div>
         </article>
-      </aside>
+      </header>
 
-      <main class="main-column">
-        <section class="panel">
+      <!-- ═══════════════════════════════════════════════════════════════════
+           MIDDLE ROW: Main Combo Chart + Donut Chart
+           ═══════════════════════════════════════════════════════════════════ -->
+      <div class="charts-row">
+        <!-- Main Combo Chart: Bars (Income) + Line (Expense) with Dual Y-Axis -->
+        <section class="panel panel--main-chart">
           <header class="panel__header">
             <div>
-              <p class="panel__eyebrow">Ingresos Semanales</p>
-              <h2 class="panel__title">Actividad reciente</h2>
-            </div>
-            <span class="panel__badge">+12.8%</span>
-          </header>
-          <div class="bar-chart">
-            <div class="bar-chart__item" *ngFor="let point of vm.weeklyIncomeViz">
-              <div class="bar-chart__value">{{ point.amount | number: '1.0-0' }}k</div>
-              <div class="bar-chart__bar" [style.height.%]="point.percentage"></div>
-              <span class="bar-chart__label">{{ point.label }}</span>
-            </div>
-          </div>
-        </section>
-
-        <section class="panel">
-          <header class="panel__header">
-            <div>
-              <p class="panel__eyebrow">Ingresos vs Gastos</p>
-              <h2 class="panel__title">Comparativo acumulado 2024</h2>
+              <p class="panel__eyebrow">Rendimiento Financiero</p>
+              <h2 class="panel__title">Ingresos vs Gastos — Últimos 6 meses</h2>
             </div>
             <div class="panel__legend">
-              <span class="legend-dot legend-dot--income"></span> Ingresos
-              <span class="legend-dot legend-dot--expense"></span> Gastos
+              <span class="legend-item"> <span class="legend-bar"></span> Ingresos </span>
+              <span class="legend-item"> <span class="legend-line"></span> Gastos </span>
             </div>
           </header>
-          <div class="line-chart">
-            <svg viewBox="0 0 100 100" preserveAspectRatio="none">
-              <polyline [attr.points]="vm.incomePolyline" class="line line--income" />
-              <polyline [attr.points]="vm.expensePolyline" class="line line--expense" />
-            </svg>
-            <div class="line-chart__labels">
-              <span *ngFor="let point of vm.monthlyIncomeVsExpense">{{ point.label }}</span>
+
+          <!-- Combo Chart Container with Dual Y-Axis -->
+          <div class="combo-chart">
+            <!-- Left Y-Axis: Income Scale -->
+            <div class="combo-chart__y-axis combo-chart__y-axis--left">
+              <span class="combo-chart__axis-title">Ingresos</span>
+              <div class="combo-chart__ticks">
+                <span *ngFor="let tick of vm.incomeAxisTicks">€{{ tick }}k</span>
+              </div>
             </div>
-          </div>
-          <div class="net-chart">
-            <div class="net-chart__item" *ngFor="let bar of vm.monthlyNetBars">
-              <div class="net-chart__value" [class.positive]="bar.positive">
-                {{ bar.net | currency: 'EUR' : 'symbol' : '1.0-0' }}
+
+            <!-- Chart Area -->
+            <div class="combo-chart__area">
+              <!-- Gridlines -->
+              <div class="combo-chart__gridlines">
+                <div class="combo-chart__gridline" *ngFor="let tick of vm.incomeAxisTicks"></div>
               </div>
-              <div class="net-chart__bar-wrapper">
-                <span
-                  class="net-chart__bar"
-                  [class.net-chart__bar--positive]="bar.positive"
-                  [class.net-chart__bar--negative]="!bar.positive"
-                  [style.height.%]="bar.percent"
-                ></span>
+
+              <!-- Bars + Line SVG -->
+              <svg
+                class="combo-chart__svg"
+                viewBox="0 0 520 240"
+                preserveAspectRatio="xMidYMid meet"
+              >
+                <!-- Gradient Definition -->
+                <defs>
+                  <linearGradient id="incomeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color: #007bff; stop-opacity: 1" />
+                    <stop offset="100%" style="stop-color: #0056b3; stop-opacity: 1" />
+                  </linearGradient>
+                </defs>
+
+                <!-- Income Bars -->
+                <g class="combo-chart__bars">
+                  <g *ngFor="let point of vm.comboChartData; let i = index">
+                    <rect
+                      class="combo-bar"
+                      [attr.x]="i * 80 + 25"
+                      [attr.y]="point.barY"
+                      width="50"
+                      [attr.height]="point.barHeight"
+                      fill="url(#incomeGradient)"
+                    >
+                      <title>{{ point.label }}: €{{ point.income | number: '1.0-0' }}</title>
+                    </rect>
+                  </g>
+                </g>
+
+                <!-- Expense Line (Straight, no curves) -->
+                <polyline class="combo-line" [attr.points]="vm.expenseLinePath" fill="none" />
+
+                <!-- Expense Data Points -->
+                <g class="combo-chart__points">
+                  <circle
+                    *ngFor="let point of vm.comboChartData; let i = index"
+                    class="combo-point"
+                    [attr.cx]="i * 80 + 50"
+                    [attr.cy]="point.expenseY"
+                    r="5"
+                  >
+                    <title>Gastos {{ point.label }}: €{{ point.expense | number: '1.0-0' }}</title>
+                  </circle>
+                </g>
+              </svg>
+
+              <!-- X-Axis Labels -->
+              <div class="combo-chart__x-labels">
+                <span *ngFor="let point of vm.monthlyIncomeVsExpense">{{ point.label }}</span>
               </div>
-              <span class="net-chart__label">{{ bar.label }}</span>
+            </div>
+
+            <!-- Right Y-Axis: Expense Scale -->
+            <div class="combo-chart__y-axis combo-chart__y-axis--right">
+              <span class="combo-chart__axis-title combo-chart__axis-title--expense">Gastos</span>
+              <div class="combo-chart__ticks combo-chart__ticks--right">
+                <span *ngFor="let tick of vm.expenseAxisTicks">€{{ tick }}k</span>
+              </div>
             </div>
           </div>
         </section>
 
-        <section class="panel">
+        <!-- Donut Chart: Income by Source -->
+        <section class="panel panel--donut">
           <header class="panel__header">
             <div>
-              <p class="panel__eyebrow">Participación por canal</p>
-              <h2 class="panel__title">Top fuentes de ingreso</h2>
+              <p class="panel__eyebrow">Desglose</p>
+              <h2 class="panel__title">Ingresos por Fuente</h2>
             </div>
-            <span class="panel__badge panel__badge--soft">Mock</span>
           </header>
-          <ul class="channel-list">
-            <li class="channel-list__item" *ngFor="let channel of vm.channelRevenue">
-              <div class="channel-list__meta">
-                <span class="channel-list__name">{{ channel.channel }}</span>
-                <span class="channel-list__amount">{{ channel.amount | currency: 'EUR' : 'symbol' : '1.0-0' }}</span>
-              </div>
-              <div class="channel-list__bar">
-                <span
-                  class="channel-list__progress"
-                  [style.width.%]="channel.percentage"
-                  [style.background]="channel.color"
-                ></span>
-              </div>
-              <span class="channel-list__percent">{{ channel.percentage }}%</span>
-            </li>
-          </ul>
-        </section>
-      </main>
 
-      <aside class="side-column">
-        <section class="panel panel--list">
-          <header class="panel__header">
-            <h3 class="panel__title">Últimas transacciones</h3>
-            <button type="button" class="ghost-button">Ver más</button>
-          </header>
-          <ul class="transaction-list">
-            <li class="transaction-item" *ngFor="let tx of vm.transactions">
-              <div>
-                <p class="transaction-item__title">{{ tx.title }}</p>
-                <p class="transaction-item__meta">{{ tx.description }} · {{ tx.timestamp }}</p>
-                <span class="transaction-item__meter">
+          <div class="donut-chart">
+            <svg viewBox="0 0 200 200" class="donut-chart__svg">
+              <!-- Background ring for visual context -->
+              <circle cx="100" cy="100" r="70" fill="none" stroke="#e5e7eb" stroke-width="28" />
+
+              <!-- Donut Segments -->
+              <g class="donut-chart__segments">
+                @for (segment of vm.donutSegments; track segment.label; let i = $index) {
+                  <circle
+                    class="donut-segment"
+                    cx="100"
+                    cy="100"
+                    r="70"
+                    fill="none"
+                    [attr.stroke]="segment.color"
+                    stroke-width="28"
+                    [attr.stroke-dasharray]="segment.dashArray"
+                    [attr.stroke-dashoffset]="segment.dashOffset"
+                    stroke-linecap="butt"
+                  >
+                    <title>
+                      {{ segment.label }}: €{{ segment.amount | number: '1.0-0' }} ({{
+                        segment.percentage
+                      }}%)
+                    </title>
+                  </circle>
+                }
+              </g>
+
+              <!-- Center Text -->
+              <text x="100" y="92" class="donut-chart__center-label">Total</text>
+              <text x="100" y="112" class="donut-chart__center-value">
+                {{ vm.totalChannelRevenue | currency: 'EUR' : 'symbol' : '1.0-0' }}
+              </text>
+            </svg>
+
+            <!-- Donut Legend -->
+            <ul class="donut-legend">
+              @for (segment of vm.donutSegments; track segment.label) {
+                <li class="donut-legend__item">
+                  <span class="donut-legend__color" [style.background]="segment.color"></span>
+                  <span class="donut-legend__label">{{ segment.label }}</span>
+                  <span class="donut-legend__value">{{ segment.percentage }}%</span>
+                </li>
+              }
+            </ul>
+          </div>
+        </section>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════════════════
+           BOTTOM ROW: Professional Data Grid
+           ═══════════════════════════════════════════════════════════════════ -->
+      <section class="panel panel--table">
+        <header class="panel__header">
+          <div>
+            <p class="panel__eyebrow">Historial Detallado</p>
+            <h2 class="panel__title">Transacciones Recientes</h2>
+          </div>
+          <div class="panel__actions">
+            <button type="button" class="btn btn--secondary">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path
+                  d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"
+                />
+              </svg>
+              Exportar
+            </button>
+            <button type="button" class="btn btn--ghost">Ver todas</button>
+          </div>
+        </header>
+
+        <div class="data-grid-container">
+          <table class="data-grid">
+            <thead class="data-grid__head">
+              <tr>
+                <th class="data-grid__th">Fecha</th>
+                <th class="data-grid__th">Concepto</th>
+                <th class="data-grid__th">Fuente / Destino</th>
+                <th class="data-grid__th">Categoría</th>
+                <th class="data-grid__th data-grid__th--center">Estado</th>
+                <th class="data-grid__th data-grid__th--right">Monto</th>
+              </tr>
+            </thead>
+            <tbody class="data-grid__body">
+              <tr
+                class="data-grid__row"
+                *ngFor="let tx of vm.transactions; let odd = odd"
+                [class.data-grid__row--zebra]="odd"
+              >
+                <td class="data-grid__td data-grid__td--date">{{ tx.timestamp }}</td>
+                <td class="data-grid__td data-grid__td--concept">
+                  <strong>{{ tx.title }}</strong>
+                </td>
+                <td class="data-grid__td">{{ tx.description }}</td>
+                <td class="data-grid__td">
                   <span
-                    class="transaction-item__meter-fill"
-                    [class.positive]="tx.positive"
-                    [style.width.%]="tx.meterPercent"
-                  ></span>
-                </span>
+                    class="category-tag"
+                    [ngClass]="tx.positive ? 'category-tag--income' : 'category-tag--expense'"
+                  >
+                    {{ tx.positive ? 'Ingreso' : 'Gasto' }}
+                  </span>
+                </td>
+                <td class="data-grid__td data-grid__td--center">
+                  <span class="status-badge status-badge--completed">Completado</span>
+                </td>
+                <td
+                  class="data-grid__td data-grid__td--amount"
+                  [ngClass]="tx.positive ? 'positive' : 'negative'"
+                >
+                  {{ tx.positive ? '+' : '-'
+                  }}{{ tx.amount | currency: 'EUR' : 'symbol' : '1.2-2' }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <footer class="data-grid__footer">
+          <span class="data-grid__info">Mostrando {{ vm.transactions.length }} transacciones</span>
+          <div class="data-grid__pagination">
+            <button type="button" class="pagination-btn" disabled>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+              </svg>
+            </button>
+            <span class="pagination-page pagination-page--active">1</span>
+            <button type="button" class="pagination-btn">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+              </svg>
+            </button>
+          </div>
+        </footer>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════════════
+           SIDE WIDGETS: Accounts & Reconciliation
+           ═══════════════════════════════════════════════════════════════════ -->
+      <aside class="widgets-row">
+        <section class="panel panel--widget">
+          <header class="panel__header">
+            <h3 class="panel__title">Cuentas Conectadas</h3>
+            <button type="button" class="btn btn--icon" aria-label="Añadir cuenta">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+              </svg>
+            </button>
+          </header>
+          <ul class="widget-list">
+            <li class="widget-list__item" *ngFor="let account of vm.accounts">
+              <div class="widget-list__icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                  <path
+                    d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"
+                  />
+                </svg>
               </div>
-              <span class="transaction-item__amount" [class.positive]="tx.positive">
-                {{ tx.positive ? '+' : '-' }}{{ tx.amount | currency: 'EUR' : 'symbol' : '1.0-0' }}
-              </span>
+              <span class="widget-list__name">{{ account.name }}</span>
+              <span class="widget-list__status" [ngClass]="account.statusColor">{{
+                account.status
+              }}</span>
             </li>
           </ul>
         </section>
 
-        <section class="panel panel--list">
+        <section class="panel panel--widget">
           <header class="panel__header">
-            <h3 class="panel__title">Cuentas conectadas</h3>
-            <button type="button" class="ghost-button ghost-button--small">Añadir</button>
+            <h3 class="panel__title">Conciliación Bancaria</h3>
+            <span class="panel__badge panel__badge--subtle">En tiempo real</span>
           </header>
-          <ul class="account-list">
-            <li class="account-item" *ngFor="let account of vm.accounts">
-              <span class="account-item__name">{{ account.name }}</span>
-              <span class="account-item__status" [ngClass]="account.statusColor">{{ account.status }}</span>
-            </li>
-          </ul>
-        </section>
-
-        <section class="panel panel--list">
-          <header class="panel__header">
-            <h3 class="panel__title">Conciliación bancaria</h3>
-            <span class="panel__badge panel__badge--subtle">Simulado</span>
-          </header>
-          <ul class="reconciliation-list">
-            <li class="reconciliation-item" *ngFor="let item of vm.reconciliation">
-              <div class="reconciliation-item__head">
-                <span class="reconciliation-item__account">{{ item.account }}</span>
-                <span class="status-chip" [ngClass]="item.status">
-                  {{ item.status === 'aligned' ? 'Conciliado' : 'Revisar' }}
+          <ul class="widget-list widget-list--reconciliation">
+            <li
+              class="widget-list__item widget-list__item--recon"
+              *ngFor="let item of vm.reconciliation"
+            >
+              <div class="recon-header">
+                <span class="recon-account">{{ item.account }}</span>
+                <span class="recon-status" [ngClass]="item.status">
+                  {{ item.status === 'aligned' ? '✓ Conciliado' : '⚠ Revisar' }}
                 </span>
               </div>
-              <div class="reconciliation-item__body">
-                <div class="reconciliation-metric">
-                  <span>Registrado</span>
-                  <strong>{{ item.recorded | currency: 'EUR' : 'symbol' : '1.0-0' }}</strong>
+              <div class="recon-values">
+                <div class="recon-metric">
+                  <span class="recon-label">Sistema</span>
+                  <span class="recon-value">{{
+                    item.recorded | currency: 'EUR' : 'symbol' : '1.0-0'
+                  }}</span>
                 </div>
-                <div class="reconciliation-metric">
-                  <span>Banco</span>
-                  <strong>{{ item.bank | currency: 'EUR' : 'symbol' : '1.0-0' }}</strong>
+                <div class="recon-metric">
+                  <span class="recon-label">Banco</span>
+                  <span class="recon-value">{{
+                    item.bank | currency: 'EUR' : 'symbol' : '1.0-0'
+                  }}</span>
                 </div>
                 <div
-                  class="reconciliation-diff"
-                  [class.reconciliation-diff--warning]="item.status === 'warning'"
+                  class="recon-diff"
+                  [ngClass]="item.status === 'warning' ? 'recon-diff--warning' : 'recon-diff--ok'"
                 >
-                  {{ item.recorded - item.bank | currency: 'EUR' : 'symbol' : '1.0-0' }}
+                  {{ item.recorded - item.bank >= 0 ? '+' : ''
+                  }}{{ item.recorded - item.bank | currency: 'EUR' : 'symbol' : '1.0-0' }}
                 </div>
               </div>
             </li>
@@ -175,5 +346,8 @@
 </section>
 
 <ng-template #dashboardLoading>
-  <div class="dashboard__loading">Cargando dashboard...</div>
+  <div class="dashboard__loading">
+    <div class="loading-spinner"></div>
+    <span>Cargando dashboard...</span>
+  </div>
 </ng-template>

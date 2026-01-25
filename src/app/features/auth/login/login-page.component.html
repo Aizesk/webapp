@@ -6,6 +6,8 @@
     [title]="title"
     [description]="cardDescription"
     [providers]="socialProviders"
+    [isLoading]="isLoading()"
+    [errorMessage]="errorMessage()"
     (providerSelected)="onProviderSelected($event)"
     (credentialsSubmitted)="onCredentialsSubmitted($event)"
     (forgotPassword)="onForgotPassword()"

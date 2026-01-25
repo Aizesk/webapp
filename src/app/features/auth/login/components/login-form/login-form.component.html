@@ -41,7 +41,13 @@
     variant="primary"
     type="submit"
     [block]="true"
+    [disabled]="isLoading"
   >
-    {{ submitLabel }}
+    @if (isLoading) {
+      <span class="loading-spinner"></span>
+      Accediendo...
+    } @else {
+      {{ submitLabel }}
+    }
   </app-button>
 </form>

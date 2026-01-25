@@ -5,7 +5,7 @@ export interface AppNavItem {
 }
 
 export const MAIN_NAV_ITEMS: ReadonlyArray<AppNavItem> = [
-  { label: 'Inicio', path: '/', exact: true },
+  { label: 'Inicio', path: '/inicio', exact: true },
   { label: 'Dashboard', path: '/main-dashboard' },
   { label: 'Transacciones', path: '/transactions' },
   { label: 'Conexiones', path: '/platform-connections' },

@@ -1,142 +1,127 @@
 <section class="home">
-  <header class="home__header">
-    <div class="brand">
-      <div class="brand__logo">A</div>
-      <div class="brand__copy">
-        <span class="brand__name">Aizesk</span>
-        <span class="brand__tagline">Finanzas para creadores</span>
+  <app-top-navbar
+    [navItems]="navItems"
+    brandTagline="Tu control financiero"
+    [notificationCount]="notifications.length"
+  >
+  </app-top-navbar>
+
+  <div class="home__content">
+    <!-- Welcome Section -->
+    <header class="welcome-section">
+      <div class="welcome-section__greeting">
+        <h1>
+          {{ greeting() }}, <span class="welcome-section__name">{{ userName() }}</span> 👋
+        </h1>
+        <p class="welcome-section__subtitle">
+          Bienvenido de nuevo a tu centro de control financiero. Aquí tienes un resumen de lo más
+          importante.
+        </p>
       </div>
-    </div>
-    <div class="home__actions">
-      <app-button variant="ghost-subtle" size="sm" (click)="handleLogin()"
-        >Iniciar sesión</app-button
-      >
-      <app-button variant="primary" size="sm" (click)="handleSignin()">Empieza gratis</app-button>
-    </div>
-  </header>
-
-  <section class="hero">
-    <div class="hero__badge">
-      <span class="material-symbols-rounded" aria-hidden="true">verified</span>
-      OAuth 2.0 · Conexión 100% segura
-    </div>
-    <h1>
-      El centro de control financiero<br />
-      <span class="hero__highlight">para creadores de contenido y vendedores digitales</span>
-    </h1>
-    <p class="hero__subtitle">
-      Conecta YouTube, Twitch, Shopify y Amazon. Unifica todos tus ingresos en un solo
-      dashboard, genera reportes fiscales automáticos y toma el control de tu negocio digital.
-    </p>
-    <div class="hero__actions">
-      <app-button variant="primary" size="lg" (click)="handleSignin()">
-        Crear cuenta gratis
-      </app-button>
-      <app-button variant="ghost" size="lg" (click)="handlePlatformConnections()">
-        Ver plataformas compatibles
-      </app-button>
-    </div>
-    <p class="hero__trust">
-      <span class="material-symbols-rounded" aria-hidden="true">lock</span>
-      Sin tarjeta de crédito · Cancela cuando quieras · Tus datos siempre tuyos
-    </p>
-  </section>
-
-  <section class="platforms-section">
-    <header class="section-header">
-      <p class="section-eyebrow">Integraciones OAuth 2.0</p>
-      <h2>Conecta tus plataformas favoritas de forma segura</h2>
-      <p class="section-subtitle">
-        Autorizaciones verificadas, sin compartir contraseñas. Revoca acceso en cualquier momento.
-      </p>
     </header>
 
-    <div class="carousel">
-      <div class="carousel__track">
-        @for (platform of visiblePlatforms; track platform.id) {
+    <!-- Quick Actions -->
+    <section class="quick-actions">
+      <header class="section-header">
+        <h2>Acceso Rápido</h2>
+        <p class="section-header__subtitle">Las acciones más comunes al alcance de tu mano</p>
+      </header>
+
+      <div class="quick-actions__grid">
+        @for (action of quickActions; track action.id) {
           <article
-            class="platform-card"
-            [style.--platform-color]="platform.color"
+            class="action-card"
+            [class.action-card--primary]="action.variant === 'primary'"
+            [class.action-card--secondary]="action.variant === 'secondary'"
+            [class.action-card--outline]="action.variant === 'outline'"
+            (click)="navigateTo(action.route)"
+            tabindex="0"
+            role="button"
+            [attr.aria-label]="action.title"
           >
-            <div class="platform-card__icon">{{ platform.icon }}</div>
-            <h3 class="platform-card__name">{{ platform.name }}</h3>
-            <p class="platform-card__description">{{ platform.description }}</p>
-            <div class="platform-card__badge">
-              <span class="material-symbols-rounded" aria-hidden="true">verified_user</span>
-              OAuth 2.0
+            <div class="action-card__icon">
+              <span class="material-symbols-rounded" aria-hidden="true">{{ action.icon }}</span>
             </div>
+            <div class="action-card__content">
+              <h3 class="action-card__title">{{ action.title }}</h3>
+              <p class="action-card__description">{{ action.description }}</p>
+            </div>
+            <span class="material-symbols-rounded action-card__arrow" aria-hidden="true"
+              >arrow_forward</span
+            >
           </article>
         }
       </div>
-      <div class="carousel__dots">
-        @for (i of [].constructor(carouselPageCount); track i) {
-          <button
-            type="button"
-            class="carousel__dot"
-            [class.carousel__dot--active]="i === currentCarouselIndex"
-            (click)="setCarouselIndex(i)"
-            [attr.aria-label]="'Ir a página ' + (i + 1)"
-          ></button>
+    </section>
+
+    <!-- Notifications Section -->
+    <section class="notifications-section">
+      <header class="section-header">
+        <h2>Notificaciones Recientes</h2>
+        <a routerLink="/notifications" class="section-header__link">Ver todas</a>
+      </header>
+
+      <div class="notifications-list">
+        @for (notification of notifications; track notification.id) {
+          <article
+            class="notification-card"
+            [class.notification-card--unread]="!notification.read"
+            [class.notification-card--success]="notification.type === 'success'"
+            [class.notification-card--warning]="notification.type === 'warning'"
+            [class.notification-card--info]="notification.type === 'info'"
+          >
+            <div class="notification-card__icon">
+              <span class="material-symbols-rounded" aria-hidden="true">{{
+                notification.icon
+              }}</span>
+            </div>
+            <div class="notification-card__content">
+              <h4 class="notification-card__title">{{ notification.title }}</h4>
+              <p class="notification-card__message">{{ notification.message }}</p>
+              <span class="notification-card__timestamp">{{ notification.timestamp }}</span>
+            </div>
+            @if (!notification.read) {
+              <span class="notification-card__badge"></span>
+            }
+          </article>
+        }
+
+        @if (notifications.length === 0) {
+          <div class="notifications-empty">
+            <span class="material-symbols-rounded" aria-hidden="true">notifications_off</span>
+            <p>No tienes notificaciones pendientes</p>
+          </div>
         }
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="security-section">
-    <header class="section-header">
-      <p class="section-eyebrow">Seguridad de nivel bancario</p>
-      <h2>Tus datos financieros protegidos como merecen</h2>
-    </header>
+    <!-- Quick Stats Preview -->
+    <section class="quick-stats">
+      <header class="section-header">
+        <h2>Vista Rápida</h2>
+        <a routerLink="/main-dashboard" class="section-header__link">Ir al Dashboard</a>
+      </header>
 
-    <div class="security-grid">
-      @for (feature of securityFeatures; track feature.title) {
-        <article class="security-card">
-          <div class="security-card__icon">
-            <span class="material-symbols-rounded" aria-hidden="true">{{ feature.icon }}</span>
+      <div class="quick-stats__grid">
+        <article class="stat-card">
+          <span class="stat-card__icon material-symbols-rounded" aria-hidden="true"
+            >trending_up</span
+          >
+          <div class="stat-card__content">
+            <span class="stat-card__label">Este mes</span>
+            <span class="stat-card__value">Revisa tu dashboard</span>
           </div>
-          <h3>{{ feature.title }}</h3>
-          <p>{{ feature.description }}</p>
         </article>
-      }
-    </div>
-  </section>
-
-  <section class="home__features">
-    <header class="section-header">
-      <p class="section-eyebrow">Características principales</p>
-      <h2>Todo lo que necesitas para profesionalizar tus finanzas</h2>
-    </header>
-    <app-feature-card-list [cards]="featureCards"></app-feature-card-list>
-  </section>
-
-  <section class="cta-section">
-    <div class="cta-content">
-      <h2>¿Listo para tomar el control de tus ingresos?</h2>
-      <p>
-        Únete a la comunidad de creadores que ya usan Aizesk para simplificar sus finanzas y
-        enfocarse en lo que mejor saben hacer: crear contenido increíble.
-      </p>
-      <div class="cta-actions">
-        <app-button variant="primary" size="lg" (click)="handleSignin()">
-          Crear cuenta gratis
-        </app-button>
-        <app-button variant="ghost" size="lg" (click)="handleReports()">
-          Ver demo de reportes
-        </app-button>
+        <article class="stat-card">
+          <span class="stat-card__icon material-symbols-rounded" aria-hidden="true"
+            >account_balance</span
+          >
+          <div class="stat-card__content">
+            <span class="stat-card__label">Cuentas conectadas</span>
+            <span class="stat-card__value">Ver conexiones</span>
+          </div>
+        </article>
       </div>
-    </div>
-  </section>
-
-  <footer class="home__footer">
-    <div class="footer-brand">
-      <div class="brand__logo brand__logo--small">A</div>
-      <span>Aizesk © 2025</span>
-    </div>
-    <nav class="footer-links">
-      <a href="#">Términos</a>
-      <a href="#">Privacidad</a>
-      <a href="#">Seguridad</a>
-      <a href="#">Contacto</a>
-    </nav>
-  </footer>
+    </section>
+  </div>
 </section>

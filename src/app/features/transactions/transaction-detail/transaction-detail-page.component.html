@@ -1,14 +1,23 @@
 <section class="transaction-detail">
-  <app-top-navbar [navItems]="navItems" [notificationCount]="3"></app-top-navbar>
+  <app-top-navbar
+    [navItems]="navItems"
+    brandTagline="Detalle de transacción"
+    [notificationCount]="3"
+  >
+  </app-top-navbar>
 
   <ng-container *ngIf="vm$ | async as vm">
     <ng-container *ngIf="vm.transaction; else notFound">
       <div class="detail-header">
-        <button type="button" class="back-link" (click)="navigateBack()">← Volver a Transacciones</button>
+        <button type="button" class="back-link" (click)="navigateBack()">
+          ← Volver a Transacciones
+        </button>
         <div>
           <p class="eyebrow">Detalle de Transacción</p>
           <h1>ID: {{ vm.transaction.id }}</h1>
-          <p class="detail-meta">{{ vm.transaction.date | date: 'fullDate' }} · {{ vm.transaction.time }}</p>
+          <p class="detail-meta">
+            {{ vm.transaction.date | date: 'fullDate' }} · {{ vm.transaction.time }}
+          </p>
         </div>
         <div class="detail-actions">
           <button
@@ -102,19 +111,25 @@
               <li>
                 <div>
                   <p class="label">Cantidad Total</p>
-                  <p class="amount amount--primary">{{ vm.totalAmount | currency: 'USD' : 'symbol' : '1.2-2' }}</p>
+                  <p class="amount amount--primary">
+                    {{ vm.totalAmount | currency: 'USD' : 'symbol' : '1.2-2' }}
+                  </p>
                 </div>
               </li>
               <li>
                 <div>
                   <p class="label">Comisión</p>
-                  <p class="amount amount--muted">-{{ vm.fee | currency: 'USD' : 'symbol' : '1.2-2' }}</p>
+                  <p class="amount amount--muted">
+                    -{{ vm.fee | currency: 'USD' : 'symbol' : '1.2-2' }}
+                  </p>
                 </div>
               </li>
               <li>
                 <div>
                   <p class="label">Cantidad Neta</p>
-                  <p class="amount amount--success">{{ vm.netAmount | currency: 'USD' : 'symbol' : '1.2-2' }}</p>
+                  <p class="amount amount--success">
+                    {{ vm.netAmount | currency: 'USD' : 'symbol' : '1.2-2' }}
+                  </p>
                 </div>
               </li>
             </ul>
@@ -135,7 +150,9 @@
     <div class="empty-state">
       <h2>No encontramos la transacción solicitada</h2>
       <p>Verifica el enlace o regresa al listado de transacciones para seleccionarla nuevamente.</p>
-      <button type="button" class="primary-button" (click)="navigateBack()">Volver al listado</button>
+      <button type="button" class="primary-button" (click)="navigateBack()">
+        Volver al listado
+      </button>
     </div>
   </ng-template>
 </section>

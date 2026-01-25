@@ -1,14 +1,15 @@
 /**
  * Backend API response model for Transactions.
- * Maps directly to Java: com.aizesk.transaction.transaction_service.application.dto.TransactionResponse
+ * Maps directly to Java: com.aizesk.transaction.dto.TransactionResponse
  */
 export interface TransactionApiResponse {
-  readonly id: string;
+  readonly id: number;
+  readonly userId: string;
+  readonly type: 'INCOME' | 'EXPENSE' | 'TRANSFER';
   readonly amount: number;
-  readonly date: string; // ISO 8601 LocalDateTime from backend
-  readonly description: string;
-  readonly platform: string;
-  readonly category: string;
-  readonly status: string;
-  readonly origin: string;
+  readonly currency: string;
+  readonly description: string | null;
+  readonly category: string | null;
+  readonly transactionDate: string; // ISO 8601 LocalDateTime from backend
+  readonly createdAt: string; // ISO 8601 LocalDateTime from backend
 }

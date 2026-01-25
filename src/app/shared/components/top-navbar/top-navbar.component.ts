@@ -16,7 +16,7 @@ export class TopNavbarComponent {
   @Input({ required: true }) navItems: ReadonlyArray<AppNavItem> = [];
   @Input() brandName = 'Aizesk';
   @Input() brandLogoText = 'A';
-  @Input() brandTagline?: string;
+  @Input() brandTagline = 'Tu control financiero';
   @Input() notificationCount = 0;
   @Input() userInitials = 'A';
   @Input() userName?: string;

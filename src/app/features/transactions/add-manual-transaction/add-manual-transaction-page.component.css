@@ -7,6 +7,16 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+.error-banner {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #b91c1c;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
 .page-header {
   display: flex;
   align-items: center;

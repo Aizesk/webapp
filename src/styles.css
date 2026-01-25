@@ -31,6 +31,7 @@
 	--chip-active-bg: #2563eb;
 	--chip-active-text: #ffffff;
 	--link-color: #2563eb;
+	--gridline-color: #F0F0F0;
 }
 
 /* ===== Dark Theme ===== */
@@ -62,6 +63,7 @@
 	--chip-active-bg: #3b82f6;
 	--chip-active-text: #ffffff;
 	--link-color: #60a5fa;
+	--gridline-color: rgba(255, 255, 255, 0.08);
 }
 
 *,
