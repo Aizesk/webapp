@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 CONTAINER_NAME="aizesk-mysql"
 MYSQL_USER="aizesk"
 MYSQL_PASSWORD="aizesk-mysql-2024"
-MYSQL_DATABASE="aizesk_users"
+MYSQL_DATABASE="aizesk"
 MYSQL_ROOT_PASSWORD="root"
 
 # Directory of this script
@@ -78,7 +78,7 @@ case "${1:-}" in
     "reset")
         echo -e "${RED}⚠️  WARNING: This will DELETE all data!${NC}"
         read -p "Are you sure? (y/N): " confirm
-        if [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
+        if [[ "$confirm" =~ ^[Yy]([Ee][Ss])?$ ]]; then
             echo -e "${YELLOW}🗑️  Resetting database...${NC}"
             cd "$DB_DIR"
             docker-compose down -v

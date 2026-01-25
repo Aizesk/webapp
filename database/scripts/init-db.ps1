@@ -14,7 +14,7 @@ param(
 $CONTAINER_NAME = "aizesk-mysql"
 $MYSQL_USER = "aizesk"
 $MYSQL_PASSWORD = "aizesk-mysql-2024"
-$MYSQL_DATABASE = "aizesk_users"
+$MYSQL_DATABASE = "aizesk"
 $MYSQL_ROOT_PASSWORD = "root"
 
 # Get script directory
