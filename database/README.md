@@ -11,33 +11,40 @@ database/
 │   ├── 01-schema.sql        # Creación de tablas
 │   └── 02-seed-data.sql     # Datos iniciales de prueba
 ├── scripts/
-│   └── init-db.sh           # Script de gestión de la base de datos
+│   ├── init-db.sh           # Script para macOS/Linux
+│   └── init-db.ps1          # Script para Windows (PowerShell)
 └── README.md
 ```
 
 ## 🚀 Inicio Rápido
 
-### 1. Levantar la base de datos
+### 🍎 macOS / Linux
 
 ```bash
 cd database
 chmod +x scripts/init-db.sh
 ./scripts/init-db.sh start
-```
-
-### 2. Verificar que está funcionando
-
-```bash
 ./scripts/init-db.sh status
-```
-
-### 3. Conectarse a MySQL
-
-```bash
 ./scripts/init-db.sh shell
 ```
 
+### 🪟 Windows (PowerShell)
+
+```powershell
+cd database
+.\scripts\init-db.ps1 start
+.\scripts\init-db.ps1 status
+.\scripts\init-db.ps1 shell
+```
+
+> **Nota Windows**: Si tienes problemas de ejecución, primero ejecuta:
+> ```powershell
+> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+> ```
+
 ## 📋 Comandos Disponibles
+
+### 🍎 macOS / Linux
 
 | Comando | Descripción |
 |---------|-------------|
@@ -50,6 +57,20 @@ chmod +x scripts/init-db.sh
 | `./scripts/init-db.sh shell-root` | Conectar a MySQL como root |
 | `./scripts/init-db.sh seed` | Reinsertar datos de prueba |
 | `./scripts/init-db.sh exec <file>` | Ejecutar un archivo SQL |
+
+### 🪟 Windows (PowerShell)
+
+| Comando | Descripción |
+|---------|-------------|
+| `.\scripts\init-db.ps1 start` | Inicia el contenedor MySQL |
+| `.\scripts\init-db.ps1 stop` | Detiene el contenedor |
+| `.\scripts\init-db.ps1 reset` | ⚠️ Elimina todos los datos y reinicia |
+| `.\scripts\init-db.ps1 status` | Muestra estado e información de conexión |
+| `.\scripts\init-db.ps1 logs` | Ver logs del contenedor |
+| `.\scripts\init-db.ps1 shell` | Conectar a MySQL como usuario aizesk |
+| `.\scripts\init-db.ps1 shell-root` | Conectar a MySQL como root |
+| `.\scripts\init-db.ps1 seed` | Reinsertar datos de prueba |
+| `.\scripts\init-db.ps1 exec <file>` | Ejecutar un archivo SQL |
 
 ## 🔌 Conexión desde Servicios
 
