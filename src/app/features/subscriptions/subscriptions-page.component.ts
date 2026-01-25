@@ -54,7 +54,7 @@ export class SubscriptionsPageComponent {
       name: 'Starter',
       price: 19,
       billing: 'monthly',
-      description: 'Ideal para creadores de contenido individuales',
+      description: 'Ideal para vendedores individuales',
       color: '#0ea5e9',
       features: [
         'Hasta 500 transacciones/mes',

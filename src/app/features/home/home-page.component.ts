@@ -86,7 +86,7 @@ export class HomePageComponent implements OnInit {
     {
       id: '1',
       title: 'Sincronización completada',
-      message: 'YouTube: Se importaron 12 nuevas transacciones',
+      message: 'Shopify: Se importaron 12 nuevos pedidos',
       icon: 'check_circle',
       type: 'success',
       timestamp: 'Hace 2 horas',
@@ -95,7 +95,7 @@ export class HomePageComponent implements OnInit {
     {
       id: '2',
       title: 'Reporte mensual disponible',
-      message: 'Tu resumen de diciembre 2025 está listo para descargar',
+      message: 'Tu resumen de ventas de diciembre 2025 está listo',
       icon: 'description',
       type: 'info',
       timestamp: 'Hace 1 día',
@@ -104,7 +104,7 @@ export class HomePageComponent implements OnInit {
     {
       id: '3',
       title: 'Reconexión requerida',
-      message: 'Tu cuenta de Twitch necesita volver a autorizarse',
+      message: 'Tu cuenta de Amazon Seller necesita volver a autorizarse',
       icon: 'warning',
       type: 'warning',
       timestamp: 'Hace 3 días',

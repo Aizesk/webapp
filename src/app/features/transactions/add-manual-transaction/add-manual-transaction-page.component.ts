@@ -23,8 +23,8 @@ export class AddManualTransactionPageComponent {
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
 
-  protected readonly platformOptions = ['Amazon', 'Shopify', 'Twitch', 'YouTube', 'Directo'];
-  protected readonly categoryOptions = ['Venta de Productos', 'Suscripción/Donación', 'Ingreso por Publicidad', 'Servicios', 'Otros'];
+  protected readonly platformOptions = ['Amazon', 'Shopify', 'Directo'];
+  protected readonly categoryOptions = ['Venta de Productos', 'Ingreso por Publicidad', 'Servicios', 'Otros'];
   protected readonly statusOptions = ['Recibido', 'Pagado', 'Procesando', 'Completado', 'Pendiente', 'Enviado'];
   protected readonly paymentMethodOptions = ['Transferencia bancaria', 'Tarjeta de crédito', 'PayPal', 'Efectivo'];
   protected readonly timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;

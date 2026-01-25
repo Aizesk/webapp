@@ -28,26 +28,6 @@ export class PlatformConnectionsPageComponent {
 
   protected readonly connections: readonly PlatformConnection[] = [
     {
-      id: 'youtube',
-      name: 'YouTube',
-      description: 'Sincroniza ingresos por anuncios, membresías y super chats.',
-      status: 'Conectado',
-      lastSync: 'Hace 15 minutos',
-      icon: '▶️',
-      accent: '#ef4444',
-      tier: 'Premium',
-    },
-    {
-      id: 'twitch',
-      name: 'Twitch',
-      description: 'Recopila suscripciones, bits y donaciones en tiempo real.',
-      status: 'Conectado',
-      lastSync: 'Hace 2 horas',
-      icon: '🟣',
-      accent: '#a855f7',
-      tier: 'Premium',
-    },
-    {
       id: 'amazon',
       name: 'Amazon',
       description: 'Integra ventas de productos físicos y digitales.',

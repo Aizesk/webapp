@@ -116,9 +116,7 @@ export class TransactionsPageComponent implements OnInit, AfterViewInit, OnDestr
   // Default distribution for visualization (backend doesn't provide this yet)
   private readonly defaultDistribution: PlatformDistribution[] = [
     { platform: 'Amazon', amount: 0, color: '#f97316' },
-    { platform: 'Twitch', amount: 0, color: '#a855f7' },
-    { platform: 'Shopify', amount: 0, color: '#22c55e' },
-    { platform: 'YouTube', amount: 0, color: '#3b82f6' }
+    { platform: 'Shopify', amount: 0, color: '#22c55e' }
   ];
 
   // Convert signals to observables for combineLatest
@@ -178,9 +176,7 @@ export class TransactionsPageComponent implements OnInit, AfterViewInit, OnDestr
 
       const colors: Record<string, string> = {
         'Amazon': '#f97316',
-        'Twitch': '#a855f7',
         'Shopify': '#22c55e',
-        'YouTube': '#3b82f6',
         'default': '#94a3b8'
       };
 
