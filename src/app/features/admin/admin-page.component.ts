@@ -8,7 +8,6 @@ type LogLevel = 'INFO' | 'WARN' | 'ERROR';
 type LogOrigin =
   | 'AUTH'
   | 'API-AMAZON'
-  | 'API-YOUTUBE'
   | 'BILLING'
   | 'BACKEND'
   | 'TRANSACTIONS'
@@ -115,9 +114,9 @@ export class AdminPageComponent {
     {
       id: 'log-4',
       timestamp: new Date('2025-10-16T18:25:02'),
-      user: 'david@creador.com',
+      user: 'david@vendedor.com',
       level: 'INFO',
-      origin: 'API-YOUTUBE',
+      origin: 'API-AMAZON',
       message: 'Conexión exitosa (ID Usuario: 112)',
     },
     {
@@ -131,7 +130,7 @@ export class AdminPageComponent {
     {
       id: 'log-6',
       timestamp: new Date('2025-10-16T18:21:03'),
-      user: 'david@creador.com',
+      user: 'david@vendedor.com',
       level: 'INFO',
       origin: 'TRANSACTIONS',
       message: 'Creación manual de gasto (Monto: -150.00)',
@@ -176,7 +175,7 @@ export class AdminPageComponent {
     {
       id: 'usr-3',
       name: 'David Martín',
-      email: 'david@creador.com',
+      email: 'david@vendedor.com',
       role: 'user',
       status: 'active',
       createdAt: new Date('2024-01-10'),

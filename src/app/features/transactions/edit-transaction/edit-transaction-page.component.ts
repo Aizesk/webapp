@@ -27,7 +27,7 @@ export class EditTransactionPageComponent {
   private readonly transactionService = inject(TransactionService);
 
   protected readonly originOptions = ['Terceros', 'Manual'];
-  protected readonly platformOptions = ['Amazon', 'Shopify', 'Twitch', 'YouTube'];
+  protected readonly platformOptions = ['Amazon', 'Shopify'];
   protected readonly statusOptions: DetailedTransaction['status'][] = [
     'Recibido',
     'Pagado',
@@ -37,9 +37,8 @@ export class EditTransactionPageComponent {
     'Enviado'
   ];
   protected readonly categoryOptions = [
-    'Suscripción/Donación',
-    'Ingreso por Publicidad',
     'Venta de Productos',
+    'Ingreso por Publicidad',
     'Servicios',
     'Otros'
   ];

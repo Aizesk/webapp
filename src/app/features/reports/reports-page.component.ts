@@ -78,7 +78,7 @@ export class ReportsPageComponent {
     {
       id: 'campaign-roas',
       name: 'ROAS campañas colaborativas',
-      description: 'Comparativa de campañas con creadores, inversión y retorno neto.',
+      description: 'Comparativa de campañas de marketing, inversión y retorno neto.',
       updatedAt: 'Hace 4 días',
       amount: '$9,740',
       frequency: 'Trimestral',
@@ -110,8 +110,8 @@ export class ReportsPageComponent {
     },
     {
       id: 'creator-ranking',
-      title: 'Ranking de creadores y revenue share',
-      benefit: 'Detecta alianzas con mejor margen y oportunidades de escalado.',
+      title: 'Ranking de productos y revenue share',
+      benefit: 'Detecta productos con mejor margen y oportunidades de escalado.',
       complexity: 'Baja'
     }
   ];

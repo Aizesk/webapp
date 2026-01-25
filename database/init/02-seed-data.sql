@@ -1,14 +1,13 @@
 -- =====================================================
--- AIZESK Platform - Seed Data
--- Version: 1.0.0
--- Description: Initial data for development/testing
+-- AIZESK Platform - Complete Seed Data
+-- Version: 2.0.0
+-- Description: Initial data for all microservices
 -- =====================================================
 
-USE aizesk_users;
+USE aizesk;
 
 -- =====================================================
--- USUARIOS DE PRUEBA
--- Usando INSERT IGNORE para evitar errores si ya existen
+-- USER-SERVICE: USUARIOS DE PRUEBA
 -- =====================================================
 
 -- Usuario Demo (credenciales: demo@aizesk.com / password123)
@@ -142,7 +141,7 @@ INSERT IGNORE INTO users (
 );
 
 -- =====================================================
--- SESIONES DE PRUEBA
+-- USER-SERVICE: SESIONES ACTIVAS
 -- =====================================================
 
 INSERT IGNORE INTO active_sessions (
@@ -171,12 +170,424 @@ INSERT IGNORE INTO active_sessions (
 );
 
 -- =====================================================
--- LOG DE AUDITORÍA INICIAL
+-- SUBSCRIPTION-SERVICE: SUSCRIPCIONES
+-- =====================================================
+
+-- Suscripción FREE para demo user
+INSERT IGNORE INTO subscriptions (
+    id, user_id, plan_type, status,
+    stripe_customer_id, stripe_subscription_id,
+    start_date, end_date, next_billing_date,
+    auto_renew, transactions_used, platforms_connected,
+    created_at
+) VALUES (
+    'sub-0001-0000-0000-000000000001',
+    'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+    'FREE',
+    'ACTIVE',
+    NULL,
+    NULL,
+    NOW() - INTERVAL 30 DAY,
+    NULL,
+    NULL,
+    0,
+    15,
+    1,
+    NOW() - INTERVAL 30 DAY
+);
+
+-- Suscripción ENTERPRISE para admin
+INSERT IGNORE INTO subscriptions (
+    id, user_id, plan_type, status,
+    stripe_customer_id, stripe_subscription_id,
+    start_date, end_date, next_billing_date,
+    auto_renew, transactions_used, platforms_connected,
+    created_at
+) VALUES (
+    'sub-0002-0000-0000-000000000002',
+    'b2c3d4e5-f6a7-8901-bcde-f12345678901',
+    'ENTERPRISE',
+    'ACTIVE',
+    'cus_mock_admin_123',
+    'sub_mock_admin_456',
+    NOW() - INTERVAL 60 DAY,
+    NOW() + INTERVAL 305 DAY,
+    NOW() + INTERVAL 30 DAY,
+    1,
+    250,
+    5,
+    NOW() - INTERVAL 60 DAY
+);
+
+-- Suscripción PRO para Carlos
+INSERT IGNORE INTO subscriptions (
+    id, user_id, plan_type, status,
+    stripe_customer_id, stripe_subscription_id,
+    start_date, end_date, next_billing_date,
+    auto_renew, transactions_used, platforms_connected,
+    created_at
+) VALUES (
+    'sub-0003-0000-0000-000000000003',
+    'c3d4e5f6-a7b8-9012-cdef-123456789012',
+    'PRO',
+    'ACTIVE',
+    'cus_mock_carlos_789',
+    'sub_mock_carlos_012',
+    NOW() - INTERVAL 15 DAY,
+    NOW() + INTERVAL 15 DAY,
+    NOW() + INTERVAL 15 DAY,
+    1,
+    45,
+    2,
+    NOW() - INTERVAL 15 DAY
+);
+
+-- =====================================================
+-- SUBSCRIPTION-SERVICE: FACTURAS
+-- =====================================================
+
+INSERT IGNORE INTO invoices (
+    id, subscription_id, user_id, stripe_invoice_id,
+    amount, currency, status, description,
+    invoice_date, due_date, paid_at, pdf_url, created_at
+) VALUES 
+(
+    'inv-0001-0000-0000-000000000001',
+    'sub-0002-0000-0000-000000000002',
+    'b2c3d4e5-f6a7-8901-bcde-f12345678901',
+    'in_mock_001',
+    99.00,
+    'EUR',
+    'PAID',
+    'Aizesk Enterprise - Enero 2026',
+    NOW() - INTERVAL 30 DAY,
+    NOW() - INTERVAL 23 DAY,
+    NOW() - INTERVAL 25 DAY,
+    'https://stripe.com/invoices/mock/001.pdf',
+    NOW() - INTERVAL 30 DAY
+),
+(
+    'inv-0002-0000-0000-000000000002',
+    'sub-0003-0000-0000-000000000003',
+    'c3d4e5f6-a7b8-9012-cdef-123456789012',
+    'in_mock_002',
+    29.00,
+    'EUR',
+    'PAID',
+    'Aizesk Pro - Enero 2026',
+    NOW() - INTERVAL 15 DAY,
+    NOW() - INTERVAL 8 DAY,
+    NOW() - INTERVAL 10 DAY,
+    'https://stripe.com/invoices/mock/002.pdf',
+    NOW() - INTERVAL 15 DAY
+);
+
+-- =====================================================
+-- SUBSCRIPTION-SERVICE: MÉTODOS DE PAGO
+-- =====================================================
+
+INSERT IGNORE INTO payment_methods (
+    id, user_id, stripe_payment_method_id,
+    type, card_brand, card_last4, card_exp_month, card_exp_year,
+    is_default, created_at
+) VALUES 
+(
+    'pm-0001-0000-0000-000000000001',
+    'b2c3d4e5-f6a7-8901-bcde-f12345678901',
+    'pm_mock_admin_001',
+    'CARD',
+    'VISA',
+    '4242',
+    12,
+    2027,
+    1,
+    NOW() - INTERVAL 60 DAY
+),
+(
+    'pm-0002-0000-0000-000000000002',
+    'c3d4e5f6-a7b8-9012-cdef-123456789012',
+    'pm_mock_carlos_001',
+    'CARD',
+    'MASTERCARD',
+    '5555',
+    6,
+    2026,
+    1,
+    NOW() - INTERVAL 15 DAY
+);
+
+-- =====================================================
+-- PLATFORM-CONNECTION-SERVICE: CONEXIONES
+-- =====================================================
+
+-- Conexión Amazon para Admin
+INSERT IGNORE INTO platform_connections (
+    id, user_id, platform_type, status,
+    platform_account_id, platform_account_name,
+    access_token, refresh_token, token_expires_at,
+    last_sync_at, total_orders_synced, last_error,
+    created_at
+) VALUES (
+    'conn-0001-0000-0000-000000000001',
+    'b2c3d4e5-f6a7-8901-bcde-f12345678901',
+    'AMAZON',
+    'CONNECTED',
+    'amz_seller_001',
+    'Aizesk Store Spain',
+    'mock_access_token_amazon_encrypted',
+    'mock_refresh_token_amazon_encrypted',
+    NOW() + INTERVAL 1 HOUR,
+    NOW() - INTERVAL 30 MINUTE,
+    1250,
+    NULL,
+    NOW() - INTERVAL 45 DAY
+);
+
+-- Conexión eBay para Admin
+INSERT IGNORE INTO platform_connections (
+    id, user_id, platform_type, status,
+    platform_account_id, platform_account_name,
+    access_token, refresh_token, token_expires_at,
+    last_sync_at, total_orders_synced, last_error,
+    created_at
+) VALUES (
+    'conn-0002-0000-0000-000000000002',
+    'b2c3d4e5-f6a7-8901-bcde-f12345678901',
+    'EBAY',
+    'CONNECTED',
+    'ebay_seller_001',
+    'Aizesk eBay Store',
+    'mock_access_token_ebay_encrypted',
+    'mock_refresh_token_ebay_encrypted',
+    NOW() + INTERVAL 2 HOUR,
+    NOW() - INTERVAL 1 HOUR,
+    580,
+    NULL,
+    NOW() - INTERVAL 30 DAY
+);
+
+-- Conexión Shopify para Carlos
+INSERT IGNORE INTO platform_connections (
+    id, user_id, platform_type, status,
+    platform_account_id, platform_account_name,
+    access_token, refresh_token, token_expires_at,
+    last_sync_at, total_orders_synced, last_error,
+    created_at
+) VALUES (
+    'conn-0003-0000-0000-000000000003',
+    'c3d4e5f6-a7b8-9012-cdef-123456789012',
+    'SHOPIFY',
+    'CONNECTED',
+    'shop_carlos_001',
+    'Carlos Tech Store',
+    'mock_access_token_shopify_encrypted',
+    'mock_refresh_token_shopify_encrypted',
+    NOW() + INTERVAL 24 HOUR,
+    NOW() - INTERVAL 2 HOUR,
+    89,
+    NULL,
+    NOW() - INTERVAL 10 DAY
+);
+
+-- Conexión en error para Demo User
+INSERT IGNORE INTO platform_connections (
+    id, user_id, platform_type, status,
+    platform_account_id, platform_account_name,
+    access_token, refresh_token, token_expires_at,
+    last_sync_at, total_orders_synced, last_error,
+    created_at
+) VALUES (
+    'conn-0004-0000-0000-000000000004',
+    'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+    'WALLAPOP',
+    'ERROR',
+    'walla_demo_001',
+    'Demo Wallapop',
+    NULL,
+    NULL,
+    NULL,
+    NOW() - INTERVAL 3 DAY,
+    12,
+    'Token expired. Please reconnect your account.',
+    NOW() - INTERVAL 20 DAY
+);
+
+-- =====================================================
+-- PLATFORM-CONNECTION-SERVICE: LOGS DE SINCRONIZACIÓN
+-- =====================================================
+
+INSERT IGNORE INTO sync_logs (
+    id, connection_id, user_id, sync_type, status,
+    orders_fetched, orders_created, orders_updated,
+    error_message, started_at, completed_at, duration_ms
+) VALUES 
+(
+    'sync-0001-0000-0000-000000000001',
+    'conn-0001-0000-0000-000000000001',
+    'b2c3d4e5-f6a7-8901-bcde-f12345678901',
+    'INCREMENTAL',
+    'COMPLETED',
+    25,
+    20,
+    5,
+    NULL,
+    NOW() - INTERVAL 30 MINUTE,
+    NOW() - INTERVAL 29 MINUTE,
+    45000
+),
+(
+    'sync-0002-0000-0000-000000000002',
+    'conn-0002-0000-0000-000000000002',
+    'b2c3d4e5-f6a7-8901-bcde-f12345678901',
+    'INCREMENTAL',
+    'COMPLETED',
+    10,
+    8,
+    2,
+    NULL,
+    NOW() - INTERVAL 1 HOUR,
+    NOW() - INTERVAL 59 MINUTE,
+    32000
+),
+(
+    'sync-0003-0000-0000-000000000003',
+    'conn-0004-0000-0000-000000000004',
+    'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+    'INCREMENTAL',
+    'FAILED',
+    0,
+    0,
+    0,
+    'Authentication failed: Token expired',
+    NOW() - INTERVAL 3 DAY,
+    NOW() - INTERVAL 3 DAY,
+    1500
+);
+
+-- =====================================================
+-- TRANSACTION-SERVICE: TRANSACCIONES
+-- =====================================================
+
+-- Transacciones de ejemplo
+INSERT INTO transactions (
+    user_id, type, amount, currency, description, category,
+    transaction_date, platform_connection_id, platform_order_id, platform_type
+) VALUES 
+-- Ventas del admin
+('b2c3d4e5-f6a7-8901-bcde-f12345678901', 'INCOME', 125.50, 'EUR', 'Venta iPhone 12 Case', 'Electronics', NOW() - INTERVAL 1 DAY, 'conn-0001-0000-0000-000000000001', 'AMZ-001-2026', 'AMAZON'),
+('b2c3d4e5-f6a7-8901-bcde-f12345678901', 'INCOME', 89.99, 'EUR', 'Venta Auriculares Bluetooth', 'Electronics', NOW() - INTERVAL 2 DAY, 'conn-0001-0000-0000-000000000001', 'AMZ-002-2026', 'AMAZON'),
+('b2c3d4e5-f6a7-8901-bcde-f12345678901', 'INCOME', 45.00, 'EUR', 'Venta Funda Tablet', 'Electronics', NOW() - INTERVAL 3 DAY, 'conn-0002-0000-0000-000000000002', 'EBAY-001-2026', 'EBAY'),
+('b2c3d4e5-f6a7-8901-bcde-f12345678901', 'EXPENSE', 15.50, 'EUR', 'Comisión Amazon', 'Fees', NOW() - INTERVAL 1 DAY, NULL, NULL, NULL),
+('b2c3d4e5-f6a7-8901-bcde-f12345678901', 'EXPENSE', 25.00, 'EUR', 'Envío DHL', 'Shipping', NOW() - INTERVAL 2 DAY, NULL, NULL, NULL),
+-- Ventas de Carlos
+('c3d4e5f6-a7b8-9012-cdef-123456789012', 'INCOME', 299.99, 'EUR', 'Venta Laptop Stand', 'Office', NOW() - INTERVAL 1 DAY, 'conn-0003-0000-0000-000000000003', 'SHOP-001-2026', 'SHOPIFY'),
+('c3d4e5f6-a7b8-9012-cdef-123456789012', 'INCOME', 49.99, 'EUR', 'Venta Mouse Pad XL', 'Office', NOW() - INTERVAL 4 DAY, 'conn-0003-0000-0000-000000000003', 'SHOP-002-2026', 'SHOPIFY'),
+('c3d4e5f6-a7b8-9012-cdef-123456789012', 'EXPENSE', 8.99, 'EUR', 'Comisión Shopify', 'Fees', NOW() - INTERVAL 1 DAY, NULL, NULL, NULL);
+
+-- =====================================================
+-- NOTIFICATION-SERVICE: NOTIFICACIONES EMAIL
+-- =====================================================
+
+INSERT IGNORE INTO email_notifications (
+    id, recipient_email, recipient_name, notification_type,
+    subject, template_name, template_variables, status,
+    error_message, retry_count, created_at, sent_at
+) VALUES 
+(
+    'email-0001-0000-0000-000000000001',
+    'demo@aizesk.com',
+    'Demo User',
+    'WELCOME',
+    'Bienvenido a Aizesk!',
+    'welcome',
+    '{"userName": "Demo", "activationLink": "https://aizesk.com/activate/xxx"}',
+    'SENT',
+    NULL,
+    0,
+    NOW() - INTERVAL 30 DAY,
+    NOW() - INTERVAL 30 DAY
+),
+(
+    'email-0002-0000-0000-000000000002',
+    'carlos.garcia@example.com',
+    'Carlos García',
+    'SUBSCRIPTION_CREATED',
+    'Tu suscripción Pro está activa',
+    'subscription_created',
+    '{"planName": "PRO", "amount": 29.00, "currency": "EUR"}',
+    'SENT',
+    NULL,
+    0,
+    NOW() - INTERVAL 15 DAY,
+    NOW() - INTERVAL 15 DAY
+);
+
+-- =====================================================
+-- NOTIFICATION-SERVICE: NOTIFICACIONES IN-APP
+-- =====================================================
+
+INSERT IGNORE INTO inapp_notifications (
+    id, user_id, title, message, notification_type, priority,
+    is_read, read_at, action_url, created_at, expires_at
+) VALUES 
+(
+    'inapp-0001-0000-0000-000000000001',
+    'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+    'Conexión con Wallapop fallida',
+    'Tu conexión con Wallapop ha expirado. Por favor, reconecta tu cuenta.',
+    'WARNING',
+    'HIGH',
+    0,
+    NULL,
+    '/settings/connections',
+    NOW() - INTERVAL 3 DAY,
+    NOW() + INTERVAL 7 DAY
+),
+(
+    'inapp-0002-0000-0000-000000000002',
+    'b2c3d4e5-f6a7-8901-bcde-f12345678901',
+    'Sincronización completada',
+    'Se han sincronizado 25 nuevos pedidos de Amazon.',
+    'SUCCESS',
+    'NORMAL',
+    1,
+    NOW() - INTERVAL 25 MINUTE,
+    '/transactions',
+    NOW() - INTERVAL 30 MINUTE,
+    NULL
+),
+(
+    'inapp-0003-0000-0000-000000000003',
+    'c3d4e5f6-a7b8-9012-cdef-123456789012',
+    'Tu período de prueba termina pronto',
+    'Tu suscripción Pro caduca en 15 días. Renueva para no perder acceso.',
+    'INFO',
+    'NORMAL',
+    0,
+    NULL,
+    '/settings/subscription',
+    NOW() - INTERVAL 1 DAY,
+    NOW() + INTERVAL 14 DAY
+);
+
+-- =====================================================
+-- AUTH-SERVICE: AUDIT LOG INICIAL
 -- =====================================================
 
 INSERT INTO audit_log (user_id, action, resource, ip_address, details, success) VALUES
-(NULL, 'SYSTEM_INIT', 'DATABASE', '127.0.0.1', '{"version": "1.0.0", "environment": "development"}', 1);
+(NULL, 'SYSTEM_INIT', 'DATABASE', '127.0.0.1', '{"version": "2.0.0", "environment": "development"}', 1),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'LOGIN', 'AUTH', '192.168.1.100', '{"method": "email_password"}', 1),
+('b2c3d4e5-f6a7-8901-bcde-f12345678901', 'LOGIN', 'AUTH', '192.168.1.101', '{"method": "email_password"}', 1);
 
--- Log de datos insertados
+-- =====================================================
+-- VERIFICATION
+-- =====================================================
+
 SELECT 'Seed data inserted successfully!' AS status;
-SELECT CONCAT('Total users: ', COUNT(*)) AS info FROM users;
+SELECT 
+    (SELECT COUNT(*) FROM users) AS users,
+    (SELECT COUNT(*) FROM subscriptions) AS subscriptions,
+    (SELECT COUNT(*) FROM platform_connections) AS connections,
+    (SELECT COUNT(*) FROM transactions) AS transactions,
+    (SELECT COUNT(*) FROM email_notifications) AS emails,
+    (SELECT COUNT(*) FROM inapp_notifications) AS notifications;

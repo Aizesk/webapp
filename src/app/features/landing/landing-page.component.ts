@@ -28,20 +28,6 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
   protected readonly platformPartners: readonly PlatformPartner[] = [
     {
-      id: 'youtube',
-      name: 'YouTube',
-      icon: '▶️',
-      color: '#FF0000',
-      description: 'Sincroniza ingresos por AdSense, membresías y Super Chats',
-    },
-    {
-      id: 'twitch',
-      name: 'Twitch',
-      icon: '🟣',
-      color: '#9146FF',
-      description: 'Importa suscripciones, bits y donaciones automáticamente',
-    },
-    {
       id: 'shopify',
       name: 'Shopify',
       icon: '🛍️',
@@ -85,13 +71,13 @@ export class LandingPageComponent implements OnInit, OnDestroy {
       code: 'GI',
       title: 'Gestión Intuitiva',
       description:
-        'Controla todos tus ingresos de YouTube, Twitch, TikTok y más desde un solo lugar. Proyecta ganancias, categoriza por plataforma y visualiza tu crecimiento en tiempo real.',
+        'Controla todos tus ingresos de Amazon, Shopify y más desde un solo lugar. Proyecta ganancias, categoriza por plataforma y visualiza tu crecimiento en tiempo real.',
     },
     {
       code: 'RD',
-      title: 'Reportes para Creadores',
+      title: 'Reportes para Vendedores',
       description:
-        'Genera informes fiscales, métricas por sponsor y análisis de rendimiento. Exporta para tu gestor, prepara reuniones con marcas y demuestra tu valor con datos reales.',
+        'Genera informes fiscales, métricas por producto y análisis de rendimiento. Exporta para tu gestor, prepara reuniones y demuestra tu valor con datos reales.',
     },
     {
       code: 'SG',
