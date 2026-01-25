@@ -57,7 +57,9 @@ function Wait-ForMySQL {
     $attempt = 1
     
     while ($attempt -le $maxAttempts) {
-        $result = docker exec $CONTAINER_NAME mysqladmin ping -h localhost -u root -p$MYSQL_ROOT_PASSWORD --silent 2>$null
+        # Use environment variable for password (more secure and compatible)
+        $env:MYSQL_PWD = $MYSQL_ROOT_PASSWORD
+        $result = docker exec -e MYSQL_PWD=$MYSQL_ROOT_PASSWORD $CONTAINER_NAME mysqladmin ping -h localhost -u root --silent 2>$null
         if ($LASTEXITCODE -eq 0) {
             Write-Host "✅ MySQL is ready!" -ForegroundColor Green
             return $true
@@ -138,18 +140,19 @@ switch ($Command) {
     
     "shell" {
         Write-Host "🔌 Connecting to MySQL..." -ForegroundColor Blue
-        docker exec -it $CONTAINER_NAME mysql -u $MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE
+        # Use -e to pass password as environment variable (avoids parsing issues)
+        docker exec -it -e MYSQL_PWD=$MYSQL_PASSWORD $CONTAINER_NAME mysql -u $MYSQL_USER $MYSQL_DATABASE
     }
     
     "shell-root" {
         Write-Host "🔌 Connecting to MySQL as root..." -ForegroundColor Blue
-        docker exec -it $CONTAINER_NAME mysql -u root -p$MYSQL_ROOT_PASSWORD
+        docker exec -it -e MYSQL_PWD=$MYSQL_ROOT_PASSWORD $CONTAINER_NAME mysql -u root
     }
     
     "seed" {
         Write-Host "🌱 Running seed data..." -ForegroundColor Yellow
         $seedFile = Join-Path $DB_DIR "init\02-seed-data.sql"
-        Get-Content $seedFile | docker exec -i $CONTAINER_NAME mysql -u $MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE
+        Get-Content $seedFile | docker exec -i -e MYSQL_PWD=$MYSQL_PASSWORD $CONTAINER_NAME mysql -u $MYSQL_USER $MYSQL_DATABASE
         Write-Host "✅ Seed data inserted!" -ForegroundColor Green
     }
     
@@ -159,7 +162,7 @@ switch ($Command) {
             exit 1
         }
         Write-Host "📄 Executing SQL file: $Argument" -ForegroundColor Yellow
-        Get-Content $Argument | docker exec -i $CONTAINER_NAME mysql -u $MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE
+        Get-Content $Argument | docker exec -i -e MYSQL_PWD=$MYSQL_PASSWORD $CONTAINER_NAME mysql -u $MYSQL_USER $MYSQL_DATABASE
         Write-Host "✅ SQL executed!" -ForegroundColor Green
     }
     
