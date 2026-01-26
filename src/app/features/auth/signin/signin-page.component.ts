@@ -3,6 +3,8 @@ import { Location } from '@angular/common';
 import { SigninCardComponent } from './components/signin-card/signin-card.component';
 import { AuthProvider } from '../../../shared/models/auth-provider.model';
 import { SignUpRequest } from '../../../shared/models/sign-up-request.model';
+import { AuthService } from '../../../core/services/auth.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
 @Component({
@@ -16,6 +18,8 @@ import { Router } from '@angular/router';
 export class SigninPageComponent {
   private readonly router = inject(Router);
   private readonly location = inject(Location);
+  private readonly authService = inject(AuthService);
+  private readonly snackBar = inject(MatSnackBar);
 
   protected readonly brandName = 'Aizesk';
   protected readonly title = 'Registro';
@@ -32,7 +36,16 @@ export class SigninPageComponent {
   }
 
   protected onFormSubmitted(payload: SignUpRequest): void {
-    console.log('sign up payload', payload);
+    this.authService.register(payload).subscribe({
+      next: () => {
+        this.snackBar.open('Registro exitoso! Por favor inicia sesión.', 'Cerrar', { duration: 5000, panelClass: ['success-snackbar'] });
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        console.error('Registration failed', err);
+        this.snackBar.open(err.message || 'Error al registrar usuario', 'Cerrar', { duration: 5000, panelClass: ['error-snackbar'] });
+      }
+    });
   }
 
   protected onNavigateToLogin(): void {
