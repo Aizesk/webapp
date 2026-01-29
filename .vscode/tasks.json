@@ -1,0 +1,274 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Frontend: Start Angular",
+      "type": "shell",
+      "command": "npm start",
+      "options": {
+        "cwd": "c:/Users/Alberto/Desktop/UNIR/2o_CUATRIMESTRE/TFM/Aizesk/frontend/webapp"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "typescript",
+        "pattern": { "regexp": ".", "message": 1 },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "bundle generation complete|Compiled successfully"
+        }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "group": "frontend"
+      }
+    },
+    {
+      "label": "MS: transaction-service (8080)",
+      "type": "shell",
+      "command": "mvn spring-boot:run -DskipTests",
+      "options": {
+        "cwd": "c:/Users/Alberto/Desktop/UNIR/2o_CUATRIMESTRE/TFM/Aizesk/backend/transaction-service"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "spring-boot",
+        "pattern": { "regexp": ".", "message": 1 },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Started .* in .* seconds"
+        }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "group": "microservices"
+      }
+    },
+    {
+      "label": "MS: reporting-service (8081)",
+      "type": "shell",
+      "command": "mvn spring-boot:run -DskipTests",
+      "options": {
+        "cwd": "c:/Users/Alberto/Desktop/UNIR/2o_CUATRIMESTRE/TFM/Aizesk/backend/reporting-service"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "spring-boot",
+        "pattern": { "regexp": ".", "message": 1 },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Started .* in .* seconds"
+        }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "group": "microservices"
+      }
+    },
+    {
+      "label": "MS: auth-service (8082)",
+      "type": "shell",
+      "command": "mvn spring-boot:run -DskipTests",
+      "options": {
+        "cwd": "c:/Users/Alberto/Desktop/UNIR/2o_CUATRIMESTRE/TFM/Aizesk/backend/auth-service"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "spring-boot",
+        "pattern": { "regexp": ".", "message": 1 },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Started .* in .* seconds"
+        }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "group": "microservices"
+      }
+    },
+    {
+      "label": "MS: user-service (8083)",
+      "type": "shell",
+      "command": "mvn spring-boot:run -DskipTests",
+      "options": {
+        "cwd": "c:/Users/Alberto/Desktop/UNIR/2o_CUATRIMESTRE/TFM/Aizesk/backend/user-service"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "spring-boot",
+        "pattern": { "regexp": ".", "message": 1 },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Started .* in .* seconds"
+        }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "group": "microservices"
+      }
+    },
+    {
+      "label": "MS: subscription-service (8084)",
+      "type": "shell",
+      "command": "mvn spring-boot:run -DskipTests",
+      "options": {
+        "cwd": "c:/Users/Alberto/Desktop/UNIR/2o_CUATRIMESTRE/TFM/Aizesk/backend/subscription-service"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "spring-boot",
+        "pattern": { "regexp": ".", "message": 1 },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Started .* in .* seconds"
+        }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "group": "microservices"
+      }
+    },
+    {
+      "label": "MS: platform-connection-service (8085)",
+      "type": "shell",
+      "command": "mvn spring-boot:run -DskipTests",
+      "options": {
+        "cwd": "c:/Users/Alberto/Desktop/UNIR/2o_CUATRIMESTRE/TFM/Aizesk/backend/platform-connection-service"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "spring-boot",
+        "pattern": { "regexp": ".", "message": 1 },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Started .* in .* seconds"
+        }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "group": "microservices"
+      }
+    },
+    {
+      "label": "MS: notification-service (8086)",
+      "type": "shell",
+      "command": "mvn spring-boot:run -DskipTests",
+      "options": {
+        "cwd": "c:/Users/Alberto/Desktop/UNIR/2o_CUATRIMESTRE/TFM/Aizesk/backend/notification-service"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "spring-boot",
+        "pattern": { "regexp": ".", "message": 1 },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Started .* in .* seconds"
+        }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "group": "microservices"
+      }
+    },
+    {
+      "label": "MS: admin-service (8087)",
+      "type": "shell",
+      "command": "mvn spring-boot:run -DskipTests",
+      "options": {
+        "cwd": "c:/Users/Alberto/Desktop/UNIR/2o_CUATRIMESTRE/TFM/Aizesk/backend/admin-service"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "spring-boot",
+        "pattern": { "regexp": ".", "message": 1 },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Started .* in .* seconds"
+        }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "group": "microservices"
+      }
+    },
+    {
+      "label": "🚀 Start ALL Microservices",
+      "dependsOn": [
+        "MS: transaction-service (8080)",
+        "MS: reporting-service (8081)",
+        "MS: auth-service (8082)",
+        "MS: user-service (8083)",
+        "MS: subscription-service (8084)",
+        "MS: platform-connection-service (8085)",
+        "MS: notification-service (8086)",
+        "MS: admin-service (8087)"
+      ],
+      "dependsOrder": "parallel",
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "🚀 Start ALL (Backend + Frontend)",
+      "dependsOn": [
+        "MS: transaction-service (8080)",
+        "MS: reporting-service (8081)",
+        "MS: auth-service (8082)",
+        "MS: user-service (8083)",
+        "MS: subscription-service (8084)",
+        "MS: platform-connection-service (8085)",
+        "MS: notification-service (8086)",
+        "MS: admin-service (8087)",
+        "Frontend: Start Angular"
+      ],
+      "dependsOrder": "parallel",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "🐳 Start Docker (MySQL)",
+      "type": "shell",
+      "command": "docker-compose up -d",
+      "options": {
+        "cwd": "c:/Users/Alberto/Desktop/UNIR/2o_CUATRIMESTRE/TFM/Aizesk/frontend/webapp/local deployment"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "🐳 Stop Docker (MySQL)",
+      "type": "shell",
+      "command": "docker-compose down",
+      "options": {
+        "cwd": "c:/Users/Alberto/Desktop/UNIR/2o_CUATRIMESTRE/TFM/Aizesk/frontend/webapp/local deployment"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    }
+  ]
+}
