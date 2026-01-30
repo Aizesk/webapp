@@ -7,7 +7,6 @@ export const environment = {
     reporting: 'http://localhost:8081/api/v1/reports',
     subscriptions: 'http://localhost:8084/api/v1/subscriptions',
     platforms: 'http://localhost:8085/api/v1/connections',
-    notifications: 'http://localhost:8086/api/v1/notifications',
-    admin: 'http://localhost:8087/api/v1/admin'
+    notifications: 'http://localhost:8086/api/v1/notifications'
   }
 };

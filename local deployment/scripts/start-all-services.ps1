@@ -23,8 +23,7 @@ $SERVICES = @(
     "user-service",
     "subscription-service",
     "platform-connection-service",
-    "notification-service",
-    "admin-service"
+    "notification-service"
 )
 
 # Service ports (confirmed from ServiceRegistrationConfig.java and environment.ts)
@@ -36,7 +35,6 @@ $SERVICE_PORTS = @{
     "subscription-service" = 8084
     "platform-connection-service" = 8085
     "notification-service" = 8086
-    "admin-service" = 8087
 }
 
 function Write-Header {

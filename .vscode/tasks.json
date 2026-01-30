@@ -186,29 +186,6 @@
       }
     },
     {
-      "label": "MS: admin-service (8087)",
-      "type": "shell",
-      "command": "mvn spring-boot:run -DskipTests",
-      "options": {
-        "cwd": "c:/Users/Alberto/Desktop/UNIR/2o_CUATRIMESTRE/TFM/Aizesk/backend/admin-service"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "spring-boot",
-        "pattern": { "regexp": ".", "message": 1 },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": ".",
-          "endsPattern": "Started .* in .* seconds"
-        }
-      },
-      "presentation": {
-        "reveal": "silent",
-        "panel": "dedicated",
-        "group": "microservices"
-      }
-    },
-    {
       "label": "🚀 Start ALL Microservices",
       "dependsOn": [
         "MS: transaction-service (8080)",
@@ -217,8 +194,7 @@
         "MS: user-service (8083)",
         "MS: subscription-service (8084)",
         "MS: platform-connection-service (8085)",
-        "MS: notification-service (8086)",
-        "MS: admin-service (8087)"
+        "MS: notification-service (8086)"
       ],
       "dependsOrder": "parallel",
       "problemMatcher": [],
@@ -234,7 +210,6 @@
         "MS: subscription-service (8084)",
         "MS: platform-connection-service (8085)",
         "MS: notification-service (8086)",
-        "MS: admin-service (8087)",
         "Frontend: Start Angular"
       ],
       "dependsOrder": "parallel",
