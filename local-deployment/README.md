@@ -151,8 +151,8 @@ docker exec -it aizesk-mysql mysql -u aizesk -paizesk-mysql-2024 aizesk
 ### Scripts de inicialización
 Los scripts en `./db/` se ejecutan automáticamente al crear el contenedor:
 - `01-schema.sql` - Esquema de tablas (sincronizado con JPA)
-- `02-seed-data.sql` - Datos iniciales (usuarios, suscripciones, etc.)
-- `03-sample-transactions.sql` - Transacciones de ejemplo
+- `02-seed-data.sql` - Datos iniciales + transacciones de ejemplo
+
 
 ---
 
@@ -191,8 +191,7 @@ local-deployment/
 ├── README.md                       # Esta documentación
 ├── db/                             # Scripts SQL de inicialización
 │   ├── 01-schema.sql               #   Esquema de tablas
-│   ├── 02-seed-data.sql            #   Datos de prueba
-│   └── 03-sample-transactions.sql  #   Transacciones de ejemplo
+│   └── 02-seed-data.sql            #   Datos de prueba + transacciones
 └── scripts/                        # Scripts de utilidad
     ├── db-utils.sh / .ps1          #   Utilidades de MySQL
     └── git-sync-repos.sh / .ps1    #   Sincronizar repos

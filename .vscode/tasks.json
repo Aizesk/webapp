@@ -6,12 +6,15 @@
       "type": "shell",
       "command": "npm start",
       "options": {
-        "cwd": "c:/Users/Alberto/Desktop/UNIR/2o_CUATRIMESTRE/TFM/Aizesk/frontend/webapp"
+        "cwd": "${workspaceFolder}"
       },
       "isBackground": true,
       "problemMatcher": {
         "owner": "typescript",
-        "pattern": { "regexp": ".", "message": 1 },
+        "pattern": {
+          "regexp": ".",
+          "message": 1
+        },
         "background": {
           "activeOnStart": true,
           "beginsPattern": ".",
@@ -25,16 +28,19 @@
       }
     },
     {
-      "label": "MS: transaction-service (8080)",
+      "label": "MS: auth-service (8081)",
       "type": "shell",
       "command": "mvn spring-boot:run -DskipTests",
       "options": {
-        "cwd": "c:/Users/Alberto/Desktop/UNIR/2o_CUATRIMESTRE/TFM/Aizesk/backend/transaction-service"
+        "cwd": "${workspaceFolder}/../auth-service"
       },
       "isBackground": true,
       "problemMatcher": {
         "owner": "spring-boot",
-        "pattern": { "regexp": ".", "message": 1 },
+        "pattern": {
+          "regexp": ".",
+          "message": 1
+        },
         "background": {
           "activeOnStart": true,
           "beginsPattern": ".",
@@ -48,16 +54,19 @@
       }
     },
     {
-      "label": "MS: reporting-service (8081)",
+      "label": "MS: user-service (8082)",
       "type": "shell",
       "command": "mvn spring-boot:run -DskipTests",
       "options": {
-        "cwd": "c:/Users/Alberto/Desktop/UNIR/2o_CUATRIMESTRE/TFM/Aizesk/backend/reporting-service"
+        "cwd": "${workspaceFolder}/../user-service"
       },
       "isBackground": true,
       "problemMatcher": {
         "owner": "spring-boot",
-        "pattern": { "regexp": ".", "message": 1 },
+        "pattern": {
+          "regexp": ".",
+          "message": 1
+        },
         "background": {
           "activeOnStart": true,
           "beginsPattern": ".",
@@ -71,16 +80,19 @@
       }
     },
     {
-      "label": "MS: auth-service (8082)",
+      "label": "MS: subscription-service (8083)",
       "type": "shell",
       "command": "mvn spring-boot:run -DskipTests",
       "options": {
-        "cwd": "c:/Users/Alberto/Desktop/UNIR/2o_CUATRIMESTRE/TFM/Aizesk/backend/auth-service"
+        "cwd": "${workspaceFolder}/../subscription-service"
       },
       "isBackground": true,
       "problemMatcher": {
         "owner": "spring-boot",
-        "pattern": { "regexp": ".", "message": 1 },
+        "pattern": {
+          "regexp": ".",
+          "message": 1
+        },
         "background": {
           "activeOnStart": true,
           "beginsPattern": ".",
@@ -94,39 +106,19 @@
       }
     },
     {
-      "label": "MS: user-service (8083)",
+      "label": "MS: transaction-service (8084)",
       "type": "shell",
       "command": "mvn spring-boot:run -DskipTests",
       "options": {
-        "cwd": "c:/Users/Alberto/Desktop/UNIR/2o_CUATRIMESTRE/TFM/Aizesk/backend/user-service"
+        "cwd": "${workspaceFolder}/../transaction-service"
       },
       "isBackground": true,
       "problemMatcher": {
         "owner": "spring-boot",
-        "pattern": { "regexp": ".", "message": 1 },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": ".",
-          "endsPattern": "Started .* in .* seconds"
-        }
-      },
-      "presentation": {
-        "reveal": "silent",
-        "panel": "dedicated",
-        "group": "microservices"
-      }
-    },
-    {
-      "label": "MS: subscription-service (8084)",
-      "type": "shell",
-      "command": "mvn spring-boot:run -DskipTests",
-      "options": {
-        "cwd": "c:/Users/Alberto/Desktop/UNIR/2o_CUATRIMESTRE/TFM/Aizesk/backend/subscription-service"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "spring-boot",
-        "pattern": { "regexp": ".", "message": 1 },
+        "pattern": {
+          "regexp": ".",
+          "message": 1
+        },
         "background": {
           "activeOnStart": true,
           "beginsPattern": ".",
@@ -144,12 +136,15 @@
       "type": "shell",
       "command": "mvn spring-boot:run -DskipTests",
       "options": {
-        "cwd": "c:/Users/Alberto/Desktop/UNIR/2o_CUATRIMESTRE/TFM/Aizesk/backend/platform-connection-service"
+        "cwd": "${workspaceFolder}/../platform-connection-service"
       },
       "isBackground": true,
       "problemMatcher": {
         "owner": "spring-boot",
-        "pattern": { "regexp": ".", "message": 1 },
+        "pattern": {
+          "regexp": ".",
+          "message": 1
+        },
         "background": {
           "activeOnStart": true,
           "beginsPattern": ".",
@@ -167,12 +162,15 @@
       "type": "shell",
       "command": "mvn spring-boot:run -DskipTests",
       "options": {
-        "cwd": "c:/Users/Alberto/Desktop/UNIR/2o_CUATRIMESTRE/TFM/Aizesk/backend/notification-service"
+        "cwd": "${workspaceFolder}/../notification-service"
       },
       "isBackground": true,
       "problemMatcher": {
         "owner": "spring-boot",
-        "pattern": { "regexp": ".", "message": 1 },
+        "pattern": {
+          "regexp": ".",
+          "message": 1
+        },
         "background": {
           "activeOnStart": true,
           "beginsPattern": ".",
@@ -186,16 +184,19 @@
       }
     },
     {
-      "label": "MS: admin-service (8087)",
+      "label": "MS: reporting-service (8087)",
       "type": "shell",
       "command": "mvn spring-boot:run -DskipTests",
       "options": {
-        "cwd": "c:/Users/Alberto/Desktop/UNIR/2o_CUATRIMESTRE/TFM/Aizesk/backend/admin-service"
+        "cwd": "${workspaceFolder}/../reporting-service"
       },
       "isBackground": true,
       "problemMatcher": {
         "owner": "spring-boot",
-        "pattern": { "regexp": ".", "message": 1 },
+        "pattern": {
+          "regexp": ".",
+          "message": 1
+        },
         "background": {
           "activeOnStart": true,
           "beginsPattern": ".",
@@ -211,14 +212,13 @@
     {
       "label": "🚀 Start ALL Microservices",
       "dependsOn": [
-        "MS: transaction-service (8080)",
-        "MS: reporting-service (8081)",
-        "MS: auth-service (8082)",
-        "MS: user-service (8083)",
-        "MS: subscription-service (8084)",
+        "MS: auth-service (8081)",
+        "MS: user-service (8082)",
+        "MS: subscription-service (8083)",
+        "MS: transaction-service (8084)",
         "MS: platform-connection-service (8085)",
         "MS: notification-service (8086)",
-        "MS: admin-service (8087)"
+        "MS: reporting-service (8087)"
       ],
       "dependsOrder": "parallel",
       "problemMatcher": [],
@@ -227,14 +227,13 @@
     {
       "label": "🚀 Start ALL (Backend + Frontend)",
       "dependsOn": [
-        "MS: transaction-service (8080)",
-        "MS: reporting-service (8081)",
-        "MS: auth-service (8082)",
-        "MS: user-service (8083)",
-        "MS: subscription-service (8084)",
+        "MS: auth-service (8081)",
+        "MS: user-service (8082)",
+        "MS: subscription-service (8083)",
+        "MS: transaction-service (8084)",
         "MS: platform-connection-service (8085)",
         "MS: notification-service (8086)",
-        "MS: admin-service (8087)",
+        "MS: reporting-service (8087)",
         "Frontend: Start Angular"
       ],
       "dependsOrder": "parallel",
@@ -245,11 +244,14 @@
       }
     },
     {
-      "label": "🐳 Start Docker (MySQL)",
+      "label": "🐳 Docker: Start Infrastructure",
       "type": "shell",
-      "command": "docker-compose up -d",
+      "command": "./start-deployment-docker.sh infra",
+      "windows": {
+        "command": "powershell -ExecutionPolicy Bypass -File .\\start-deployment-docker.ps1 infra"
+      },
       "options": {
-        "cwd": "c:/Users/Alberto/Desktop/UNIR/2o_CUATRIMESTRE/TFM/Aizesk/frontend/webapp/local deployment"
+        "cwd": "${workspaceFolder}/local-deployment"
       },
       "problemMatcher": [],
       "presentation": {
@@ -258,16 +260,69 @@
       }
     },
     {
-      "label": "🐳 Stop Docker (MySQL)",
+      "label": "🐳 Docker: Start ALL (Infra + Services)",
       "type": "shell",
-      "command": "docker-compose down",
+      "command": "./start-deployment-docker.sh all",
+      "windows": {
+        "command": "powershell -ExecutionPolicy Bypass -File .\\start-deployment-docker.ps1 all"
+      },
       "options": {
-        "cwd": "c:/Users/Alberto/Desktop/UNIR/2o_CUATRIMESTRE/TFM/Aizesk/frontend/webapp/local deployment"
+        "cwd": "${workspaceFolder}/local-deployment"
       },
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",
         "panel": "shared"
+      }
+    },
+    {
+      "label": "🐳 Docker: Stop ALL",
+      "type": "shell",
+      "command": "./start-deployment-docker.sh stop",
+      "windows": {
+        "command": "powershell -ExecutionPolicy Bypass -File .\\start-deployment-docker.ps1 stop"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/local-deployment"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "🗄️ DB: Connect to MySQL",
+      "type": "shell",
+      "command": "./scripts/db-utils.sh shell",
+      "windows": {
+        "command": "powershell -ExecutionPolicy Bypass -File .\\scripts\\db-utils.ps1 shell"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/local-deployment"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "focus": true
+      }
+    },
+    {
+      "label": "🗄️ DB: Reset Database",
+      "type": "shell",
+      "command": "./scripts/db-utils.sh reset",
+      "windows": {
+        "command": "powershell -ExecutionPolicy Bypass -File .\\scripts\\db-utils.ps1 reset"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/local-deployment"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "focus": true
       }
     }
   ]
