@@ -7,7 +7,6 @@ export const environment = {
     reporting: '/api/v1/reports',
     subscriptions: '/api/v1/subscriptions',
     platforms: '/api/v1/connections',
-    notifications: '/api/v1/notifications',
-    admin: '/api/v1/admin'
+    notifications: '/api/v1/notifications'
   }
 };

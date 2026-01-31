@@ -210,7 +210,7 @@
       }
     },
     {
-      "label": "🚀 Start ALL Microservices",
+      "label": "\ud83d\ude80 Start ALL Microservices",
       "dependsOn": [
         "MS: auth-service (8081)",
         "MS: user-service (8082)",
@@ -225,7 +225,7 @@
       "group": "build"
     },
     {
-      "label": "🚀 Start ALL (Backend + Frontend)",
+      "label": "\ud83d\ude80 Start ALL (Backend + Frontend)",
       "dependsOn": [
         "MS: auth-service (8081)",
         "MS: user-service (8082)",
@@ -244,7 +244,7 @@
       }
     },
     {
-      "label": "🐳 Docker: Start Infrastructure",
+      "label": "\ud83d\udc33 Docker: Start Infrastructure",
       "type": "shell",
       "command": "./start-deployment-docker.sh infra",
       "windows": {
@@ -260,7 +260,7 @@
       }
     },
     {
-      "label": "🐳 Docker: Start ALL (Infra + Services)",
+      "label": "\ud83d\udc33 Docker: Start ALL (Infra + Services)",
       "type": "shell",
       "command": "./start-deployment-docker.sh all",
       "windows": {
@@ -276,7 +276,7 @@
       }
     },
     {
-      "label": "🐳 Docker: Stop ALL",
+      "label": "\ud83d\udc33 Docker: Stop ALL",
       "type": "shell",
       "command": "./start-deployment-docker.sh stop",
       "windows": {
@@ -292,7 +292,7 @@
       }
     },
     {
-      "label": "🗄️ DB: Connect to MySQL",
+      "label": "\ud83d\uddc4\ufe0f DB: Connect to MySQL",
       "type": "shell",
       "command": "./scripts/db-utils.sh shell",
       "windows": {
@@ -309,7 +309,7 @@
       }
     },
     {
-      "label": "🗄️ DB: Reset Database",
+      "label": "\ud83d\uddc4\ufe0f DB: Reset Database",
       "type": "shell",
       "command": "./scripts/db-utils.sh reset",
       "windows": {
@@ -348,9 +348,7 @@
       "options": {
         "cwd": "${workspaceFolder}/../auth-service"
       },
-      "problemMatcher": [
-        []
-      ],
+      "problemMatcher": [],
       "presentation": {
         "reveal": "silent",
         "panel": "shared"
@@ -364,9 +362,7 @@
       "options": {
         "cwd": "${workspaceFolder}/../user-service"
       },
-      "problemMatcher": [
-        []
-      ],
+      "problemMatcher": [],
       "presentation": {
         "reveal": "silent",
         "panel": "shared"
@@ -380,9 +376,7 @@
       "options": {
         "cwd": "${workspaceFolder}/../subscription-service"
       },
-      "problemMatcher": [
-        []
-      ],
+      "problemMatcher": [],
       "presentation": {
         "reveal": "silent",
         "panel": "shared"
@@ -396,9 +390,7 @@
       "options": {
         "cwd": "${workspaceFolder}/../transaction-service"
       },
-      "problemMatcher": [
-        []
-      ],
+      "problemMatcher": [],
       "presentation": {
         "reveal": "silent",
         "panel": "shared"
@@ -412,9 +404,7 @@
       "options": {
         "cwd": "${workspaceFolder}/../platform-connection-service"
       },
-      "problemMatcher": [
-        []
-      ],
+      "problemMatcher": [],
       "presentation": {
         "reveal": "silent",
         "panel": "shared"
@@ -428,9 +418,7 @@
       "options": {
         "cwd": "${workspaceFolder}/../notification-service"
       },
-      "problemMatcher": [
-        []
-      ],
+      "problemMatcher": [],
       "presentation": {
         "reveal": "silent",
         "panel": "shared"
@@ -444,9 +432,7 @@
       "options": {
         "cwd": "${workspaceFolder}/../reporting-service"
       },
-      "problemMatcher": [
-        []
-      ],
+      "problemMatcher": [],
       "presentation": {
         "reveal": "silent",
         "panel": "shared"
@@ -454,7 +440,7 @@
       "group": "build"
     },
     {
-      "label": "🔨 Build ALL Microservices",
+      "label": "\ud83d\udd28 Build ALL Microservices",
       "dependsOn": [
         "Build: auth-service",
         "Build: user-service",
@@ -469,7 +455,7 @@
       "group": "build"
     },
     {
-      "label": "🔨 Build ALL (Backend + Frontend)",
+      "label": "\ud83d\udd28 Build ALL (Backend + Frontend)",
       "dependsOn": [
         "Build: auth-service",
         "Build: user-service",
