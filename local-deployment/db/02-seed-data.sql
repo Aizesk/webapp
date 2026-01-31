@@ -486,10 +486,11 @@ INSERT INTO transactions (
 
 -- =====================================================
 -- NOTIFICATION-SERVICE: NOTIFICACIONES EMAIL
+-- (Synchronized with EmailNotificationDocument.java)
 -- =====================================================
 
 INSERT IGNORE INTO email_notifications (
-    id, recipient_email, recipient_name, notification_type,
+    id, recipient_email, recipient_name, type,
     subject, template_name, template_variables, status,
     error_message, retry_count, created_at, sent_at
 ) VALUES 
@@ -524,11 +525,12 @@ INSERT IGNORE INTO email_notifications (
 
 -- =====================================================
 -- NOTIFICATION-SERVICE: NOTIFICACIONES IN-APP
+-- (Synchronized with InAppNotificationDocument.java)
 -- =====================================================
 
-INSERT IGNORE INTO inapp_notifications (
-    id, user_id, title, message, notification_type, priority,
-    is_read, read_at, action_url, created_at, expires_at
+INSERT IGNORE INTO in_app_notifications (
+    id, user_id, title, message, type, status, priority,
+    read_at, action_url, created_at, expires_at
 ) VALUES 
 (
     'inapp-0001-0000-0000-000000000001',
@@ -536,8 +538,8 @@ INSERT IGNORE INTO inapp_notifications (
     'Conexión con Wallapop fallida',
     'Tu conexión con Wallapop ha expirado. Por favor, reconecta tu cuenta.',
     'WARNING',
+    'UNREAD',
     'HIGH',
-    0,
     NULL,
     '/settings/connections',
     NOW() - INTERVAL 3 DAY,
@@ -549,8 +551,8 @@ INSERT IGNORE INTO inapp_notifications (
     'Sincronización completada',
     'Se han sincronizado 25 nuevos pedidos de Amazon.',
     'SUCCESS',
+    'READ',
     'NORMAL',
-    1,
     NOW() - INTERVAL 25 MINUTE,
     '/transactions',
     NOW() - INTERVAL 30 MINUTE,
@@ -562,8 +564,8 @@ INSERT IGNORE INTO inapp_notifications (
     'Tu período de prueba termina pronto',
     'Tu suscripción Pro caduca en 15 días. Renueva para no perder acceso.',
     'INFO',
+    'UNREAD',
     'NORMAL',
-    0,
     NULL,
     '/settings/subscription',
     NOW() - INTERVAL 1 DAY,
@@ -575,7 +577,7 @@ INSERT IGNORE INTO inapp_notifications (
 -- =====================================================
 
 INSERT INTO audit_log (user_id, action, resource, ip_address, details, success) VALUES
-(NULL, 'SYSTEM_INIT', 'DATABASE', '127.0.0.1', '{"version": "2.0.0", "environment": "development"}', 1),
+(NULL, 'SYSTEM_INIT', 'DATABASE', '127.0.0.1', '{"version": "2.1.0", "environment": "development"}', 1),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'LOGIN', 'AUTH', '192.168.1.100', '{"method": "email_password"}', 1),
 ('b2c3d4e5-f6a7-8901-bcde-f12345678901', 'LOGIN', 'AUTH', '192.168.1.101', '{"method": "email_password"}', 1);
 
@@ -590,4 +592,5 @@ SELECT
     (SELECT COUNT(*) FROM platform_connections) AS connections,
     (SELECT COUNT(*) FROM transactions) AS transactions,
     (SELECT COUNT(*) FROM email_notifications) AS emails,
-    (SELECT COUNT(*) FROM inapp_notifications) AS notifications;
+    (SELECT COUNT(*) FROM in_app_notifications) AS notifications;
+
