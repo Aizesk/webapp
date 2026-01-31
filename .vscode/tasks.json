@@ -324,6 +324,165 @@
         "panel": "shared",
         "focus": true
       }
+    },
+    {
+      "label": "Build: Frontend",
+      "type": "shell",
+      "command": "npm run build",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "group": "build"
+    },
+    {
+      "label": "Build: auth-service",
+      "type": "shell",
+      "command": "mvn clean package -DskipTests",
+      "options": {
+        "cwd": "${workspaceFolder}/../auth-service"
+      },
+      "problemMatcher": [
+        []
+      ],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "group": "build"
+    },
+    {
+      "label": "Build: user-service",
+      "type": "shell",
+      "command": "mvn clean package -DskipTests",
+      "options": {
+        "cwd": "${workspaceFolder}/../user-service"
+      },
+      "problemMatcher": [
+        []
+      ],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "group": "build"
+    },
+    {
+      "label": "Build: subscription-service",
+      "type": "shell",
+      "command": "mvn clean package -DskipTests",
+      "options": {
+        "cwd": "${workspaceFolder}/../subscription-service"
+      },
+      "problemMatcher": [
+        []
+      ],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "group": "build"
+    },
+    {
+      "label": "Build: transaction-service",
+      "type": "shell",
+      "command": "mvn clean package -DskipTests",
+      "options": {
+        "cwd": "${workspaceFolder}/../transaction-service"
+      },
+      "problemMatcher": [
+        []
+      ],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "group": "build"
+    },
+    {
+      "label": "Build: platform-connection-service",
+      "type": "shell",
+      "command": "mvn clean package -DskipTests",
+      "options": {
+        "cwd": "${workspaceFolder}/../platform-connection-service"
+      },
+      "problemMatcher": [
+        []
+      ],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "group": "build"
+    },
+    {
+      "label": "Build: notification-service",
+      "type": "shell",
+      "command": "mvn clean package -DskipTests",
+      "options": {
+        "cwd": "${workspaceFolder}/../notification-service"
+      },
+      "problemMatcher": [
+        []
+      ],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "group": "build"
+    },
+    {
+      "label": "Build: reporting-service",
+      "type": "shell",
+      "command": "mvn clean package -DskipTests",
+      "options": {
+        "cwd": "${workspaceFolder}/../reporting-service"
+      },
+      "problemMatcher": [
+        []
+      ],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "group": "build"
+    },
+    {
+      "label": "🔨 Build ALL Microservices",
+      "dependsOn": [
+        "Build: auth-service",
+        "Build: user-service",
+        "Build: subscription-service",
+        "Build: transaction-service",
+        "Build: platform-connection-service",
+        "Build: notification-service",
+        "Build: reporting-service"
+      ],
+      "dependsOrder": "parallel",
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "🔨 Build ALL (Backend + Frontend)",
+      "dependsOn": [
+        "Build: auth-service",
+        "Build: user-service",
+        "Build: subscription-service",
+        "Build: transaction-service",
+        "Build: platform-connection-service",
+        "Build: notification-service",
+        "Build: reporting-service",
+        "Build: Frontend"
+      ],
+      "dependsOrder": "parallel",
+      "problemMatcher": [],
+      "group": "build"
     }
   ]
 }
