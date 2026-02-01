@@ -113,7 +113,7 @@ export class ReportsPageComponent {
   protected readonly dateRanges: readonly DateRange[] = [
     { id: 'current-month', label: 'Mes Actual' },
     { id: 'last-quarter', label: 'Trimestre Pasado' },
-    { id: 'fiscal-year', label: 'Ano Fiscal' },
+    { id: 'fiscal-year', label: 'Año Fiscal' },
     { id: 'custom', label: 'Rango Personalizado' },
   ];
 
@@ -129,7 +129,7 @@ export class ReportsPageComponent {
     { id: '1', name: 'Reporte Global Consolidado', generatedAt: new Date(2026, 0, 31, 14, 30), dateRange: 'Enero 2026', format: 'pdf', status: 'ready', downloadUrl: '#' },
     { id: '2', name: 'Reporte Amazon Seller', generatedAt: new Date(2026, 0, 28, 9, 15), dateRange: 'Q4 2025', format: 'excel', status: 'ready', downloadUrl: '#' },
     { id: '3', name: 'Reporte Shopify Store', generatedAt: new Date(2026, 0, 25, 16, 45), dateRange: 'Diciembre 2025', format: 'csv', status: 'ready', downloadUrl: '#' },
-    { id: '4', name: 'Libro Diario Manual', generatedAt: new Date(2026, 0, 20, 11, 0), dateRange: 'Ano Fiscal 2025', format: 'pdf', status: 'ready', downloadUrl: '#' },
+    { id: '4', name: 'Libro Diario Manual', generatedAt: new Date(2026, 0, 20, 11, 0), dateRange: 'Año Fiscal 2025', format: 'pdf', status: 'ready', downloadUrl: '#' },
     { id: '5', name: 'Reporte Global Consolidado', generatedAt: new Date(2026, 0, 15, 8, 30), dateRange: 'Q3 2025', format: 'excel', status: 'ready', downloadUrl: '#' },
   ];
 
