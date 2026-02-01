@@ -8,5 +8,6 @@ export const environment = {
     subscriptions: '/api/v1/subscriptions',
     platforms: '/api/v1/connections',
     notifications: '/api/v1/notifications'
-  }
+  },
+  notificationsWs: 'ws://' + window.location.host + '/ws/notifications'
 };

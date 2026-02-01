@@ -22,12 +22,59 @@
     <button type="button" class="icon-button" aria-label="Buscar">
       <span class="material-symbols-rounded icon-button__glyph" aria-hidden="true">search</span>
     </button>
-    <button type="button" class="icon-button" aria-label="Notificaciones">
-      <span class="material-symbols-rounded icon-button__glyph" aria-hidden="true"
-        >notifications</span
+    <div class="notification-menu-container">
+      <button 
+        type="button" 
+        class="icon-button" 
+        aria-label="Notificaciones"
+        (click)="toggleNotificationMenu()"
+        [attr.aria-expanded]="isNotificationMenuOpen"
       >
-      <span *ngIf="notificationCount > 0" class="badge">{{ notificationCount }}</span>
-    </button>
+        <span class="material-symbols-rounded icon-button__glyph" aria-hidden="true">notifications</span>
+        <span *ngIf="unreadNotificationsCount > 0" class="badge">{{ unreadNotificationsCount }}</span>
+      </button>
+
+      <div class="notification-menu" *ngIf="isNotificationMenuOpen">
+        <div class="notification-menu__header">
+          <p class="notification-menu__title">Notificaciones</p>
+          <button class="notification-menu__action" (click)="markAllAsRead()" *ngIf="unreadNotificationsCount > 0">
+            Marcar todas como leídas
+          </button>
+        </div>
+
+        <div class="notification-menu__list">
+          <div *ngIf="notifications.length === 0" class="notification-menu__empty">
+            <span class="material-symbols-rounded">notifications_off</span>
+            <p>No tienes notificaciones</p>
+          </div>
+
+          <div 
+            *ngFor="let notification of notifications" 
+            class="notification-item"
+            [ngClass]="{ 'notification-item--unread': notification.status === 'UNREAD' }"
+            (click)="markAsRead(notification.id, $event)"
+          >
+            <div class="notification-item__icon" [ngClass]="'notification-item__icon--' + notification.type.toLowerCase()">
+              <span class="material-symbols-rounded">
+                {{ notification.type === 'SUCCESS' ? 'check_circle' : 
+                   notification.type === 'ERROR' ? 'error' : 
+                   notification.type === 'WARNING' ? 'warning' : 'info' }}
+              </span>
+            </div>
+            <div class="notification-item__content">
+              <p class="notification-item__title">{{ notification.title }}</p>
+              <p class="notification-item__message">{{ notification.message }}</p>
+              <p class="notification-item__time">{{ notification.createdAt | date:'shortTime' }}</p>
+            </div>
+            <div *ngIf="notification.status === 'UNREAD'" class="notification-item__dot"></div>
+          </div>
+        </div>
+
+        <div class="notification-menu__footer">
+          <a [routerLink]="'/notifications'" class="notification-menu__all-link">Ver todas las notificaciones</a>
+        </div>
+      </div>
+    </div>
     <button type="button" class="icon-button" aria-label="Centro de ayuda">
       <span class="material-symbols-rounded icon-button__glyph" aria-hidden="true">help</span>
     </button>

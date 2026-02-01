@@ -8,5 +8,6 @@ export const environment = {
     subscriptions: 'http://localhost:8084/api/v1/subscriptions',
     platforms: 'http://localhost:8085/api/v1/connections',
     notifications: 'http://localhost:8086/api/v1/notifications'
-  }
+  },
+  notificationsWs: 'ws://localhost:8086/ws/notifications'
 };
