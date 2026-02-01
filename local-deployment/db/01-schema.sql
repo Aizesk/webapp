@@ -15,6 +15,7 @@ USE aizesk;
 CREATE TABLE IF NOT EXISTS users (
     id VARCHAR(36) PRIMARY KEY COMMENT 'UUID del usuario',
     email VARCHAR(255) NOT NULL UNIQUE COMMENT 'Email único del usuario',
+    password_hash VARCHAR(255) COMMENT 'Hash de la contraseña (BCrypt)',
     full_name VARCHAR(255) COMMENT 'Nombre del usuario',
     last_name VARCHAR(255) COMMENT 'Apellido del usuario',
     phone VARCHAR(50) COMMENT 'Teléfono de contacto',
