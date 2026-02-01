@@ -90,8 +90,8 @@ Sincroniza todos los repositorios con `git pull`.
 | **Notification Service** | 8086 | http://localhost:8086/swagger-ui.html | ✅ Activo |
 | Auth Service | 8081 | - | 🔜 Pendiente |
 | User Service | 8082 | - | 🔜 Pendiente |
-| Subscription Service | 8083 | - | 🔜 Pendiente |
-| Transaction Service | 8084 | - | 🔜 Pendiente |
+| Subscription Service | 8084 | - | 🔜 Pendiente |
+| Transaction Service | 8083 | - | 🔜 Pendiente |
 | Platform Connection Service | 8085 | - | 🔜 Pendiente |
 | Reporting Service | 8087 | - | 🔜 Pendiente |
 

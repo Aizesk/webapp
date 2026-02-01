@@ -50,7 +50,7 @@
       "presentation": {
         "reveal": "silent",
         "panel": "dedicated",
-        "group": "microservices"
+        "group": "ms_auth_service"
       }
     },
     {
@@ -76,11 +76,11 @@
       "presentation": {
         "reveal": "silent",
         "panel": "dedicated",
-        "group": "microservices"
+        "group": "ms_user_service"
       }
     },
     {
-      "label": "MS: subscription-service (8083)",
+      "label": "MS: subscription-service (8084)",
       "type": "shell",
       "command": "mvn spring-boot:run -DskipTests",
       "options": {
@@ -102,11 +102,11 @@
       "presentation": {
         "reveal": "silent",
         "panel": "dedicated",
-        "group": "microservices"
+        "group": "ms_subscription_service"
       }
     },
     {
-      "label": "MS: transaction-service (8084)",
+      "label": "MS: transaction-service (8083)",
       "type": "shell",
       "command": "mvn spring-boot:run -DskipTests",
       "options": {
@@ -128,7 +128,7 @@
       "presentation": {
         "reveal": "silent",
         "panel": "dedicated",
-        "group": "microservices"
+        "group": "ms_transaction_service"
       }
     },
     {
@@ -154,7 +154,7 @@
       "presentation": {
         "reveal": "silent",
         "panel": "dedicated",
-        "group": "microservices"
+        "group": "ms_platform_connection_service"
       }
     },
     {
@@ -180,7 +180,7 @@
       "presentation": {
         "reveal": "silent",
         "panel": "dedicated",
-        "group": "microservices"
+        "group": "ms_notification_service"
       }
     },
     {
@@ -206,7 +206,7 @@
       "presentation": {
         "reveal": "silent",
         "panel": "dedicated",
-        "group": "microservices"
+        "group": "ms_reporting_service"
       }
     },
     {
@@ -214,8 +214,8 @@
       "dependsOn": [
         "MS: auth-service (8081)",
         "MS: user-service (8082)",
-        "MS: subscription-service (8083)",
-        "MS: transaction-service (8084)",
+        "MS: subscription-service (8084)",
+        "MS: transaction-service (8083)",
         "MS: platform-connection-service (8085)",
         "MS: notification-service (8086)",
         "MS: reporting-service (8087)"
@@ -229,8 +229,8 @@
       "dependsOn": [
         "MS: auth-service (8081)",
         "MS: user-service (8082)",
-        "MS: subscription-service (8083)",
-        "MS: transaction-service (8084)",
+        "MS: subscription-service (8084)",
+        "MS: transaction-service (8083)",
         "MS: platform-connection-service (8085)",
         "MS: notification-service (8086)",
         "MS: reporting-service (8087)",
@@ -292,6 +292,32 @@
       }
     },
     {
+      "label": "\ud83d\udc33 Docker: Pause (Keep Data)",
+      "type": "shell",
+      "command": "docker-compose stop",
+      "options": {
+        "cwd": "${workspaceFolder}/local-deployment"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "\ud83d\udc33 Docker: Resume",
+      "type": "shell",
+      "command": "docker-compose start",
+      "options": {
+        "cwd": "${workspaceFolder}/local-deployment"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
       "label": "\ud83d\uddc4\ufe0f DB: Connect to MySQL",
       "type": "shell",
       "command": "./scripts/db-utils.sh shell",
@@ -337,7 +363,8 @@
       ],
       "presentation": {
         "reveal": "always",
-        "panel": "shared"
+        "panel": "dedicated",
+        "group": "build_Frontend"
       },
       "group": "build"
     },
@@ -351,7 +378,8 @@
       "problemMatcher": [],
       "presentation": {
         "reveal": "silent",
-        "panel": "shared"
+        "panel": "dedicated",
+        "group": "build_auth_service"
       },
       "group": "build"
     },
@@ -365,7 +393,8 @@
       "problemMatcher": [],
       "presentation": {
         "reveal": "silent",
-        "panel": "shared"
+        "panel": "dedicated",
+        "group": "build_user_service"
       },
       "group": "build"
     },
@@ -379,7 +408,8 @@
       "problemMatcher": [],
       "presentation": {
         "reveal": "silent",
-        "panel": "shared"
+        "panel": "dedicated",
+        "group": "build_subscription_service"
       },
       "group": "build"
     },
@@ -393,7 +423,8 @@
       "problemMatcher": [],
       "presentation": {
         "reveal": "silent",
-        "panel": "shared"
+        "panel": "dedicated",
+        "group": "build_transaction_service"
       },
       "group": "build"
     },
@@ -407,7 +438,8 @@
       "problemMatcher": [],
       "presentation": {
         "reveal": "silent",
-        "panel": "shared"
+        "panel": "dedicated",
+        "group": "build_platform_connection_service"
       },
       "group": "build"
     },
@@ -421,7 +453,8 @@
       "problemMatcher": [],
       "presentation": {
         "reveal": "silent",
-        "panel": "shared"
+        "panel": "dedicated",
+        "group": "build_notification_service"
       },
       "group": "build"
     },
@@ -435,7 +468,8 @@
       "problemMatcher": [],
       "presentation": {
         "reveal": "silent",
-        "panel": "shared"
+        "panel": "dedicated",
+        "group": "build_reporting_service"
       },
       "group": "build"
     },
