@@ -53,6 +53,13 @@ services:
     ports:
       - "1025:1025"  # SMTP Port
       - "8025:8025"  # Web UI - http://localhost:8025
+    environment:
+      - MH_JIM_ACCEPT_CHANCE=1.0
+      - MH_JIM_DISCONNECT_CHANCE=0.0
+      - MH_JIM_LINK_SPEED_AFFECTED_CHANCE=0.0
+      - MH_JIM_REJECT_SENDER_CHANCE=0.0
+      - MH_JIM_REJECT_RECIPIENT_CHANCE=0.0
+      - MH_JIM_REJECT_AUTH_CHANCE=0.0
     networks:
       - aizesk-network
 
