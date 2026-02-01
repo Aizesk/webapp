@@ -1,9 +1,5 @@
 <section class="transactions">
-  <app-top-navbar
-    [navItems]="navItems"
-    brandTagline="Control de transacciones"
-  >
-  </app-top-navbar>
+  <app-top-navbar [navItems]="navItems" brandTagline="Control de transacciones"> </app-top-navbar>
 
   <ng-container *ngIf="vm$ | async as vm">
     <section class="metrics">
