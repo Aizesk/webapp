@@ -1,7 +1,7 @@
 -- =====================================================
 -- AIZESK Platform - Complete Database Schema
--- Version: 2.0.0
--- Description: Schema for all microservices
+-- Version: 2.1.0
+-- Description: Schema for all microservices (synchronized with JPA entities)
 -- =====================================================
 
 -- Use the database
@@ -246,47 +246,58 @@ CREATE TABLE IF NOT EXISTS transactions (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
--- NOTIFICATION-SERVICE TABLES
+-- NOTIFICATION-SERVICE TABLES (Synchronized with JPA entities)
 -- =====================================================
 
--- TABLE: email_notifications
+-- TABLE: email_notifications (matches EmailNotificationDocument.java)
 CREATE TABLE IF NOT EXISTS email_notifications (
     id VARCHAR(36) PRIMARY KEY,
     recipient_email VARCHAR(255) NOT NULL,
-    recipient_name VARCHAR(255),
-    notification_type VARCHAR(100) NOT NULL COMMENT 'WELCOME, PASSWORD_RESET, INVOICE, etc.',
-    subject VARCHAR(500),
+    recipient_name VARCHAR(100),
+    type VARCHAR(50) COMMENT 'Notification type: WELCOME, PASSWORD_RESET, etc.',
+    subject VARCHAR(255),
     template_name VARCHAR(100),
-    template_variables JSON COMMENT 'Variables para el template',
-    status VARCHAR(50) DEFAULT 'PENDING' COMMENT 'PENDING, SENT, FAILED, RETRYING',
-    error_message VARCHAR(1000),
+    template_variables TEXT COMMENT 'JSON with template variables',
+    status VARCHAR(20) DEFAULT 'PENDING' COMMENT 'PENDING, SENT, FAILED, RETRYING',
+    error_message VARCHAR(2000),
     retry_count INT DEFAULT 0,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     sent_at DATETIME,
     
-    INDEX idx_email_notifications_recipient (recipient_email),
-    INDEX idx_email_notifications_status (status),
-    INDEX idx_email_notifications_type (notification_type),
-    INDEX idx_email_notifications_created_at (created_at)
+    INDEX idx_email_recipient (recipient_email),
+    INDEX idx_email_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- TABLE: inapp_notifications
-CREATE TABLE IF NOT EXISTS inapp_notifications (
+-- TABLE: in_app_notifications (matches InAppNotificationDocument.java)
+CREATE TABLE IF NOT EXISTS in_app_notifications (
     id VARCHAR(36) PRIMARY KEY,
     user_id VARCHAR(36) NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    message VARCHAR(1000),
-    notification_type VARCHAR(100) COMMENT 'INFO, WARNING, ERROR, SUCCESS',
-    priority VARCHAR(20) DEFAULT 'NORMAL' COMMENT 'LOW, NORMAL, HIGH, URGENT',
-    is_read TINYINT(1) DEFAULT 0,
+    type VARCHAR(50) COMMENT 'Notification type: INFO, WARNING, ERROR, SUCCESS, etc.',
+    status VARCHAR(20) COMMENT 'UNREAD, READ, ARCHIVED',
+    priority VARCHAR(20) COMMENT 'LOW, NORMAL, HIGH, URGENT',
+    title VARCHAR(255),
+    message VARCHAR(2000),
+    action_url VARCHAR(500),
+    created_at DATETIME,
     read_at DATETIME,
-    action_url VARCHAR(500) COMMENT 'URL para acción (opcional)',
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    expires_at DATETIME COMMENT 'Fecha de expiración (opcional)',
+    expires_at DATETIME,
     
-    INDEX idx_inapp_notifications_user_id (user_id),
-    INDEX idx_inapp_notifications_is_read (is_read),
-    INDEX idx_inapp_notifications_created_at (created_at)
+    INDEX idx_inapp_user_id (user_id),
+    INDEX idx_inapp_created_at (created_at),
+    INDEX idx_inapp_expires_at (expires_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- TABLE: in_app_notification_metadata (for @ElementCollection in JPA)
+CREATE TABLE IF NOT EXISTS in_app_notification_metadata (
+    notification_id VARCHAR(36) NOT NULL,
+    meta_key VARCHAR(100) NOT NULL,
+    meta_value VARCHAR(500),
+    
+    PRIMARY KEY (notification_id, meta_key),
+    CONSTRAINT fk_notification_metadata 
+        FOREIGN KEY (notification_id) 
+        REFERENCES in_app_notifications(id) 
+        ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
