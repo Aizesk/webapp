@@ -2,7 +2,6 @@
   <app-top-navbar
     [navItems]="navItems"
     brandTagline="Tu control financiero"
-    [notificationCount]="2"
   ></app-top-navbar>
 
   <ng-container *ngIf="dashboardVm$ | async as vm; else dashboardLoading">
