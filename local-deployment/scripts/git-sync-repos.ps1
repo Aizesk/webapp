@@ -15,7 +15,9 @@ param(
 )
 
 # Configuration
-$BaseDir = (Get-Item $PSScriptRoot).Parent.Parent.FullName
+# Script is in: webapp/local-deployment/scripts/
+# Repos are in: TFM/ (3 levels up)
+$BaseDir = (Get-Item $PSScriptRoot).Parent.Parent.Parent.FullName
 
 $Repos = @(
     "admin-service",
@@ -34,7 +36,7 @@ $SyncMain = -not $DevelopOnly
 $SyncDevelop = -not $MainOnly
 
 Write-Host ""
-Write-Host "🔄 Aizesk Repository Sync" -ForegroundColor Cyan
+Write-Host "[SYNC] Aizesk Repository Sync" -ForegroundColor Cyan
 Write-Host "=====================================================" -ForegroundColor Cyan
 Write-Host "Base directory: $BaseDir" -ForegroundColor Yellow
 Write-Host ""
@@ -46,7 +48,7 @@ function Sync-Branch {
     )
     
     if (-not (Test-Path $RepoPath)) {
-        Write-Host "  ⚠️  Directory not found, skipping" -ForegroundColor Yellow
+        Write-Host "  [!] Directory not found, skipping" -ForegroundColor Yellow
         return
     }
     
@@ -63,7 +65,7 @@ function Sync-Branch {
                 git fetch origin $Branch 2>$null
                 git checkout -b $Branch "origin/$Branch" 2>$null
             } else {
-                Write-Host "  ⚠️  Branch '$Branch' not found" -ForegroundColor Yellow
+                Write-Host "  [!] Branch '$Branch' not found" -ForegroundColor Yellow
                 return
             }
         }
@@ -84,10 +86,10 @@ function Sync-Branch {
         $pullResult = git pull origin $Branch 2>&1
         
         if ($LASTEXITCODE -eq 0) {
-            Write-Host "  ✅ $Branch" -ForegroundColor Green -NoNewline
+            Write-Host "  [OK] $Branch" -ForegroundColor Green -NoNewline
             Write-Host " - updated"
         } else {
-            Write-Host "  ❌ $Branch" -ForegroundColor Red -NoNewline
+            Write-Host "  [X] $Branch" -ForegroundColor Red -NoNewline
             Write-Host " - pull failed"
         }
         
@@ -108,12 +110,12 @@ function Sync-Branch {
 
 # Sync each repository
 foreach ($repo in $Repos) {
-    Write-Host "📦 $repo" -ForegroundColor Blue
+    Write-Host "[*] $repo" -ForegroundColor Blue
     
     $repoPath = Join-Path $BaseDir $repo
     
     if (-not (Test-Path (Join-Path $repoPath ".git"))) {
-        Write-Host "  ⚠️  Not a git repository, skipping" -ForegroundColor Yellow
+        Write-Host "  [!] Not a git repository, skipping" -ForegroundColor Yellow
         Write-Host ""
         continue
     }
@@ -130,5 +132,5 @@ foreach ($repo in $Repos) {
 }
 
 Write-Host "=====================================================" -ForegroundColor Cyan
-Write-Host "✅ Sync complete!" -ForegroundColor Green
+Write-Host "[OK] Sync complete!" -ForegroundColor Green
 Write-Host ""
