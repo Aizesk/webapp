@@ -29,14 +29,14 @@
 
             <div class="form-grid">
               <label class="form-field">
-                <span>Descripción</span>
+                <span>Concepto</span>
                 <input
                   type="text"
-                  formControlName="description"
+                  formControlName="concept"
                   placeholder="Ej. Pedido #52003 (Curso Online)"
                 />
-                <small *ngIf="form.get('description')?.invalid && form.get('description')?.touched">
-                  La descripción es obligatoria.
+                <small *ngIf="form.get('concept')?.invalid && form.get('concept')?.touched">
+                  El concepto es obligatorio.
                 </small>
               </label>
 
@@ -115,7 +115,7 @@
               <p class="eyebrow">Resumen</p>
               <h3>Transacción {{ vm.transaction.id }}</h3>
               <p class="summary-amount">
-                {{ vm.transaction.amount | currency : 'USD' : 'symbol' : '1.2-2' }}
+                {{ vm.transaction.amount | currency: 'USD' : 'symbol' : '1.2-2' }}
               </p>
             </div>
             <dl class="summary-list">
@@ -133,7 +133,7 @@
               </div>
               <div>
                 <dt>Fecha</dt>
-                <dd>{{ vm.transaction.date | date : 'longDate' }}</dd>
+                <dd>{{ vm.transaction.date | date: 'longDate' }}</dd>
               </div>
               <div>
                 <dt>Categoría</dt>

@@ -1,3 +1,5 @@
+import { TransactionOrigin, TransactionType } from './transaction-api.model';
+
 export interface TransactionMetric {
   readonly label: string;
   readonly value: number;
@@ -15,13 +17,17 @@ export interface TransactionMetric {
 export interface DetailedTransaction {
   // === Core fields from backend ===
   readonly id: string;
-  readonly origin: string;
+  readonly type: TransactionType;
+  readonly origin: TransactionOrigin;
   readonly date: string;
-  readonly description: string;
-  readonly platform: string;
+  readonly concept: string;
+  readonly platform: string; // Derived from origin
   readonly amount: number;
+  readonly currency: string;
   readonly status: 'Recibido' | 'Pagado' | 'Procesando' | 'Completado' | 'Pendiente' | 'Enviado';
   readonly category: string;
+  readonly createdAt: string;
+  readonly updatedAt?: string;
 
   // === Derived fields (calculated from backend data) ===
   readonly time?: string; // Extracted from backend LocalDateTime

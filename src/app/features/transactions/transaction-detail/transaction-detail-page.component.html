@@ -1,10 +1,5 @@
 <section class="transaction-detail">
-  <app-top-navbar
-    [navItems]="navItems"
-    brandTagline="Detalle de transacción"
-    [notificationCount]="3"
-  >
-  </app-top-navbar>
+  <app-top-navbar [navItems]="navItems" brandTagline="Detalle de transacción"> </app-top-navbar>
 
   <ng-container *ngIf="vm$ | async as vm">
     <ng-container *ngIf="vm.transaction; else notFound">
@@ -63,8 +58,8 @@
             <h2>Detalles de la Transacción</h2>
             <div class="detail-list">
               <div>
-                <p class="label">Descripción</p>
-                <p>{{ vm.transaction.description }}</p>
+                <p class="label">Concepto</p>
+                <p>{{ vm.transaction.concept }}</p>
               </div>
               <div>
                 <p class="label">Fecha</p>

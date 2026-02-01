@@ -33,7 +33,7 @@ type ColumnWidths = {
   select: number;
   origin: number;
   date: number;
-  description: number;
+  concept: number;
   platform: number;
   amount: number;
   status: number;
@@ -89,7 +89,7 @@ export class TransactionsPageComponent implements OnInit, AfterViewInit, OnDestr
     'select',
     'origin',
     'date',
-    'description',
+    'concept',
     'platform',
     'amount',
     'status',
@@ -105,7 +105,7 @@ export class TransactionsPageComponent implements OnInit, AfterViewInit, OnDestr
     select: 48,
     origin: 140,
     date: 140,
-    description: 240,
+    concept: 240,
     platform: 140,
     amount: 140,
     status: 140,
@@ -139,7 +139,7 @@ export class TransactionsPageComponent implements OnInit, AfterViewInit, OnDestr
         }
 
         return (
-          data.description.toLowerCase().includes(term) ||
+          data.concept.toLowerCase().includes(term) ||
           data.platform.toLowerCase().includes(term) ||
           data.category.toLowerCase().includes(term) ||
           (data.reference ?? '').toLowerCase().includes(term) ||
@@ -275,7 +275,7 @@ export class TransactionsPageComponent implements OnInit, AfterViewInit, OnDestr
    */
   protected loadTransactions(page: number, size: number): void {
     this.isProcessing$.next(true);
-    this.transactionService.getTransactions(page, size).subscribe({
+    this.transactionService.getTransactions({ page, size }).subscribe({
       next: () => {
         this.refresh$.next();
         this.isProcessing$.next(false);

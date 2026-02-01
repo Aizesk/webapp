@@ -1,10 +1,5 @@
 <section class="transactions">
-  <app-top-navbar
-    [navItems]="navItems"
-    brandTagline="Control de transacciones"
-    [notificationCount]="3"
-  >
-  </app-top-navbar>
+  <app-top-navbar [navItems]="navItems" brandTagline="Control de transacciones"> </app-top-navbar>
 
   <ng-container *ngIf="vm$ | async as vm">
     <section class="metrics">
@@ -127,23 +122,23 @@
               </td>
             </ng-container>
 
-            <ng-container matColumnDef="description">
+            <ng-container matColumnDef="concept">
               <th
                 mat-header-cell
                 *matHeaderCellDef
                 class="resizable"
-                [style.width.px]="columnWidths.description"
+                [style.width.px]="columnWidths.concept"
               >
-                <span class="th-label">Descripción</span>
-                <span class="resize-handle" (mousedown)="startResize($event, 'description')"></span>
+                <span class="th-label">Concepto</span>
+                <span class="resize-handle" (mousedown)="startResize($event, 'concept')"></span>
               </th>
               <td
                 mat-cell
                 *matCellDef="let tx"
-                class="cell cell--description"
-                [style.width.px]="columnWidths.description"
+                class="cell cell--concept"
+                [style.width.px]="columnWidths.concept"
               >
-                {{ tx.description }}
+                {{ tx.concept }}
               </td>
             </ng-container>
 

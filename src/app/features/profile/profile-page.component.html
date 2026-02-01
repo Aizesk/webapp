@@ -2,7 +2,6 @@
   <app-top-navbar
     [navItems]="navItems"
     brandTagline="Cuida tu identidad digital"
-    [notificationCount]="2"
     [userInitials]="userSummary.avatarInitials"
   ></app-top-navbar>
 
@@ -69,16 +68,32 @@
         <form class="form-grid" [formGroup]="accountForm" (ngSubmit)="handleAccountSubmit()">
           <div class="form-field">
             <label for="fullName">Nombre completo</label>
-            <input id="fullName" type="text" formControlName="fullName" placeholder="Nombre y apellidos" />
-            <p class="form-error" *ngIf="accountForm.get('fullName')?.invalid && accountForm.get('fullName')?.touched">
+            <input
+              id="fullName"
+              type="text"
+              formControlName="fullName"
+              placeholder="Nombre y apellidos"
+            />
+            <p
+              class="form-error"
+              *ngIf="accountForm.get('fullName')?.invalid && accountForm.get('fullName')?.touched"
+            >
               Introduce un nombre válido.
             </p>
           </div>
 
           <div class="form-field">
             <label for="email">Correo electrónico</label>
-            <input id="email" type="email" formControlName="email" placeholder="nombre@empresa.com" />
-            <p class="form-error" *ngIf="accountForm.get('email')?.invalid && accountForm.get('email')?.touched">
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              placeholder="nombre@empresa.com"
+            />
+            <p
+              class="form-error"
+              *ngIf="accountForm.get('email')?.invalid && accountForm.get('email')?.touched"
+            >
               Introduce un correo válido.
             </p>
           </div>
@@ -86,15 +101,26 @@
           <div class="form-field">
             <label for="phone">Teléfono</label>
             <input id="phone" type="tel" formControlName="phone" placeholder="+34 600 000 000" />
-            <p class="form-error" *ngIf="accountForm.get('phone')?.invalid && accountForm.get('phone')?.touched">
+            <p
+              class="form-error"
+              *ngIf="accountForm.get('phone')?.invalid && accountForm.get('phone')?.touched"
+            >
               Añade un teléfono de contacto.
             </p>
           </div>
 
           <div class="form-field">
             <label for="address">Dirección</label>
-            <input id="address" type="text" formControlName="address" placeholder="Calle, número y piso" />
-            <p class="form-error" *ngIf="accountForm.get('address')?.invalid && accountForm.get('address')?.touched">
+            <input
+              id="address"
+              type="text"
+              formControlName="address"
+              placeholder="Calle, número y piso"
+            />
+            <p
+              class="form-error"
+              *ngIf="accountForm.get('address')?.invalid && accountForm.get('address')?.touched"
+            >
               La dirección es obligatoria.
             </p>
           </div>
@@ -106,7 +132,12 @@
 
           <div class="form-field">
             <label for="postalCode">Código postal</label>
-            <input id="postalCode" type="text" formControlName="postalCode" placeholder="Código postal" />
+            <input
+              id="postalCode"
+              type="text"
+              formControlName="postalCode"
+              placeholder="Código postal"
+            />
           </div>
 
           <div class="form-field">
@@ -134,7 +165,11 @@
           </div>
         </header>
 
-        <form class="form-grid form-grid--security" [formGroup]="securityForm" (ngSubmit)="handleSecuritySubmit()">
+        <form
+          class="form-grid form-grid--security"
+          [formGroup]="securityForm"
+          (ngSubmit)="handleSecuritySubmit()"
+        >
           <div class="form-field">
             <label for="currentPassword">Contraseña actual</label>
             <input id="currentPassword" type="password" formControlName="currentPassword" />
@@ -164,13 +199,15 @@
           <div>
             <p class="panel__eyebrow">Preferencias</p>
             <h2 class="panel__title">Notificaciones y comunicaciones</h2>
-            <p class="panel__subtitle">
-              Decide qué tipo de correos y alertas quieres recibir.
-            </p>
+            <p class="panel__subtitle">Decide qué tipo de correos y alertas quieres recibir.</p>
           </div>
         </header>
 
-        <form class="preferences" [formGroup]="preferencesForm" (ngSubmit)="handlePreferencesSubmit()">
+        <form
+          class="preferences"
+          [formGroup]="preferencesForm"
+          (ngSubmit)="handlePreferencesSubmit()"
+        >
           <label
             class="preference-toggle"
             *ngFor="let preference of contactPreferences"
