@@ -4,14 +4,13 @@
 # Extensión requerida: REST Client (humao.rest-client)
 # 
 # SERVICIOS Y PUERTOS:
-# - Auth Service:       http://localhost:8082
-# - User Service:       http://localhost:8083
-# - Transaction Service: http://localhost:8080
-# - Reporting Service:  http://localhost:8081
+# - Auth Service:       http://localhost:8081
+# - User Service:       http://localhost:8082
+# - Transaction Service: http://localhost:8083
 # - Subscription Service: http://localhost:8084
 # - Platform Service:   http://localhost:8085
 # - Notification Service: http://localhost:8086
-# - Admin Service:      http://localhost:8087
+# - Reporting Service:  http://localhost:8087
 # 
 # INSTRUCCIONES:
 # 1. Asegúrate de que Docker esté ejecutando los servicios
@@ -20,10 +19,10 @@
 # ==================================================
 
 ### VARIABLES GLOBALES
-@baseAuthUrl = http://localhost:8082/api/v1/auth
-@baseUserUrl = http://localhost:8083/api/v1/users
-@baseReportUrl = http://localhost:8081/api/v1/reports
-@baseTransactionUrl = http://localhost:8080/api/v1/transactions
+@baseAuthUrl = http://localhost:8081/api/v1/auth
+@baseUserUrl = http://localhost:8082/api/v1/users
+@baseReportUrl = http://localhost:8087/api/v1/reports
+@baseTransactionUrl = http://localhost:8083/api/v1/transactions
 
 # ⚠️ ACTUALIZA ESTE TOKEN después del login exitoso
 @authToken = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2ZDVhMDNlYi05ZTMxLTQ5NjgtYmVlMC1iNmQ4NjJkMDg1NWMiLCJlbWFpbCI6InNtb2tldGVzdEBhaXplc2suY29tIiwibmFtZSI6IlNtb2tlIFRlc3RlciIsInJvbGVzIjoiUk9MRV9VU0VSIiwidHlwZSI6ImFjY2VzcyIsImlhdCI6MTc2OTAxOTY4MCwiZXhwIjoxNzY5MDIzMjgwfQ.yw_j-dG4dnqrrNtB4Q1tMFK8a47MJukTEC4NwHOWU14
@@ -43,7 +42,7 @@
 # @name healthAuth
 # Este endpoint responde 200 si el servicio está activo
 # (aunque el token sea inválido, confirma que el servicio responde)
-POST http://localhost:8082/api/v1/auth/validate
+POST http://localhost:8081/api/v1/auth/validate
 Content-Type: application/json
 Authorization: Bearer test
 
@@ -51,7 +50,7 @@ Authorization: Bearer test
 
 ### 1.0.1 Health Check - User Service  
 # @name healthUser
-GET http://localhost:8083/api/v1/users/health
+GET http://localhost:8082/api/v1/users/health
 Accept: application/json
 
 ###

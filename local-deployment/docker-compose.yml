@@ -184,7 +184,7 @@ services:
   #     dockerfile: Dockerfile
   #   container_name: aizesk-transaction-service
   #   ports:
-  #     - "8084:8084"
+  #     - "8083:8083"
   #   environment:
   #     - SPRING_PROFILES_ACTIVE=docker
   #     - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/aizesk?useSSL=false&allowPublicKeyRetrieval=true
