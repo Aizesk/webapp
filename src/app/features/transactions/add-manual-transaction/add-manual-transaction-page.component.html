@@ -42,14 +42,14 @@
 
         <div class="form-grid">
           <label class="form-field">
-            <span>Descripción</span>
+            <span>Concepto</span>
             <input
               type="text"
-              formControlName="description"
+              formControlName="concept"
               placeholder="Ej. Pedido #52005 (Servicio A)"
             />
-            <small *ngIf="form.get('description')?.invalid && form.get('description')?.touched">
-              Ingresa una descripción válida.
+            <small *ngIf="form.get('concept')?.invalid && form.get('concept')?.touched">
+              Ingresa un concepto válido.
             </small>
           </label>
 

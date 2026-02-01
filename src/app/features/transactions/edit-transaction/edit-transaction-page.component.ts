@@ -44,7 +44,7 @@ export class EditTransactionPageComponent {
   ];
 
   protected readonly form = this.fb.nonNullable.group({
-    description: ['', [Validators.required, Validators.maxLength(120)]],
+    concept: ['', [Validators.required, Validators.maxLength(120)]],
     category: [this.categoryOptions[0] ?? '', Validators.required],
     platform: [this.platformOptions[0] ?? '', Validators.required],
     status: [this.statusOptions[0] ?? '', Validators.required],
@@ -68,7 +68,7 @@ export class EditTransactionPageComponent {
 
       if (transaction) {
         this.form.patchValue({
-          description: transaction.description,
+          concept: transaction.concept,
           category: transaction.category,
           platform: transaction.platform,
           status: transaction.status,
