@@ -1,132 +1,178 @@
-<section class="reports">
+<section class="reports-center">
   <app-top-navbar
     [navItems]="navItems"
-    brandTagline="Escenarios claros para decidir"
+    brandTagline="Centro de Informes"
   ></app-top-navbar>
 
-  <div class="reports__actions">
-    <app-button variant="ghost" size="sm">Exportar todo</app-button>
-    <app-button variant="primary" size="sm">Nuevo informe</app-button>
-  </div>
-
-  <section class="hero">
-    <div class="hero__copy">
-      <p class="eyebrow">Inteligencia de ingresos</p>
-      <h1>Informes generados y recomendaciones listos para tu equipo</h1>
-      <p class="subtitle">
-        Filtra por periodo, automatiza el envío y comparte con stakeholders en segundos. Las
-        plantillas inteligentes se adaptan a tus fuentes de datos conectadas.
+  <!-- 
+       HEADER
+        -->
+  <header class="reports-header">
+    <div class="reports-header__content">
+      <h1 class="reports-header__title">Centro de Informes</h1>
+      <p class="reports-header__subtitle">
+        Genera, exporta y analiza el rendimiento de tus canales digitales
+        (Amazon, Shopify) y registros manuales.
       </p>
-      <div class="hero__cta">
-        <app-button variant="primary" size="sm">Programar briefing semanal</app-button>
-        <app-button variant="ghost" size="sm">Ver historial completo</app-button>
-      </div>
     </div>
-    <div class="hero__filters">
-      <p class="label">Periodo de análisis</p>
-      <div class="filter-chips">
-        <button
-          *ngFor="let filter of periodFilters"
-          type="button"
-          class="filter-chip"
-          [class.filter-chip--active]="selectedPeriod === filter.value"
-          (click)="handlePeriodChange(filter.value)"
-        >
-          {{ filter.label }}
-        </button>
-      </div>
-      <p class="helper">
-        Los cálculos se regeneran automáticamente cuando actualices tus transacciones.
-      </p>
+  </header>
+
+  <!-- 
+       REPORT TYPE SELECTOR (Grid of Cards)
+        -->
+  <section class="report-selector">
+    <h2 class="section-title">Selecciona el tipo de reporte</h2>
+
+    <div class="report-cards-grid">
+      <article
+        *ngFor="let report of reportTypes; trackBy: trackByReportType"
+        class="report-card"
+        [class.report-card--selected]="selectedReportType() === report.id"
+        [style.--accent-color]="report.accentColor"
+        [style.--accent-color-light]="report.accentColorLight"
+        (click)="selectReportType(report.id)"
+        role="button"
+        tabindex="0"
+        (keydown.enter)="selectReportType(report.id)"
+        (keydown.space)="selectReportType(report.id)"
+      >
+        <div class="report-card__icon" [innerHTML]="report.icon"></div>
+        <div class="report-card__content">
+          <h3 class="report-card__title">{{ report.name }}</h3>
+          <p class="report-card__description">{{ report.description }}</p>
+        </div>
+        <div class="report-card__check" *ngIf="selectedReportType() === report.id">
+          <span [innerHTML]="icons.check"></span>
+        </div>
+      </article>
     </div>
   </section>
 
-  <section class="content">
-    <section class="generated">
-      <div class="section-header">
-        <div>
-          <p class="eyebrow">Informes activos</p>
-          <h2>Listos para descargar o automatizar</h2>
-        </div>
-        <app-button variant="ghost" size="sm">Ver plantillas guardadas</app-button>
-      </div>
+  <!-- 
+       CONFIGURATION PANEL (Slide-down)
+        -->
+  <section
+    class="config-panel"
+    [class.config-panel--visible]="isConfigPanelVisible()"
+    [style.--accent-color]="selectedReport()?.accentColor"
+  >
+    <div class="config-panel__inner" *ngIf="isConfigPanelVisible()">
+      <header class="config-panel__header">
+        <h3 class="config-panel__title">
+          Configurar: <span class="config-panel__report-name">{{ selectedReport()?.name }}</span>
+        </h3>
+      </header>
 
-      <div class="reports-grid">
-        <article class="report-card" *ngFor="let report of generatedReports">
-          <header class="report-card__header">
-            <div>
-              <p class="report-title">{{ report.name }}</p>
-              <p class="report-description">{{ report.description }}</p>
-            </div>
-            <span class="report-format">{{ report.format }}</span>
-          </header>
-
-          <div class="report-stats">
-            <p class="report-amount" [class.report-amount--down]="report.trend === 'down'">
-              {{ report.amount }}
-            </p>
-            <span>{{ report.frequency }}</span>
-            <span>{{ report.updatedAt }}</span>
-          </div>
-
-          <ul class="report-highlights">
-            <li *ngFor="let highlight of report.highlights">{{ highlight }}</li>
-          </ul>
-
-          <footer class="report-card__footer">
-            <div class="report-meta">
-              <span>{{ report.sharedWith }} colaboradores</span>
-            </div>
-            <div class="report-actions">
-              <app-button variant="primary" size="sm" (click)="handleDownload(report)">
-                Descargar
-              </app-button>
-              <button type="button" class="text-button" (click)="handleSchedule(report)">
-                Programar envío
-              </button>
-            </div>
-          </footer>
-        </article>
-      </div>
-    </section>
-
-    <aside class="sidebar">
-      <article class="panel metrics">
-        <p class="eyebrow">Estado general</p>
-        <h3>Métricas rápidas</h3>
-        <ul>
-          <li *ngFor="let metric of quickMetrics">
-            <div>
-              <p class="metric-label">{{ metric.label }}</p>
-              <p class="metric-value">{{ metric.value }}</p>
-            </div>
-            <span
-              class="metric-trend"
-              [class.metric-trend--positive]="metric.positive"
-              [class.metric-trend--negative]="!metric.positive"
+      <div class="config-panel__body">
+        <!-- Date Range Selector -->
+        <div class="config-group">
+          <label class="config-group__label">Rango de fechas</label>
+          <div class="config-chips">
+            <button
+              *ngFor="let range of dateRanges"
+              type="button"
+              class="config-chip"
+              [class.config-chip--selected]="selectedDateRange() === range.id"
+              (click)="selectDateRange(range.id)"
             >
-              {{ metric.trendLabel }}
-            </span>
-          </li>
-        </ul>
-      </article>
-
-      <article class="panel suggestions">
-        <p class="eyebrow">Siguientes pasos</p>
-        <h3>Nuevos informes sugeridos</h3>
-        <div class="suggestions__list">
-          <article class="suggestion" *ngFor="let template of suggestedTemplates">
-            <header>
-              <p class="suggestion-title">{{ template.title }}</p>
-              <span class="chip">{{ template.complexity }}</span>
-            </header>
-            <p class="suggestion-description">{{ template.benefit }}</p>
-            <app-button variant="ghost" size="sm" (click)="handleTemplate(template)">
-              Probar plantilla
-            </app-button>
-          </article>
+              {{ range.label }}
+            </button>
+          </div>
         </div>
-      </article>
-    </aside>
+
+        <!-- Export Format Selector -->
+        <div class="config-group">
+          <label class="config-group__label">Formato de exportacion</label>
+          <div class="format-options">
+            <label
+              *ngFor="let format of exportFormats"
+              class="format-option"
+              [class.format-option--selected]="selectedFormat() === format.id"
+            >
+              <input
+                type="radio"
+                name="exportFormat"
+                [value]="format.id"
+                [checked]="selectedFormat() === format.id"
+                (change)="selectFormat(format.id)"
+              />
+              <div class="format-option__icon" [innerHTML]="format.icon"></div>
+              <div class="format-option__content">
+                <span class="format-option__label">{{ format.label }}</span>
+                <span class="format-option__desc">{{ format.description }}</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Generate Button -->
+        <div class="config-actions">
+          <button
+            type="button"
+            class="btn-generate"
+            [disabled]="isGenerating()"
+            (click)="generateReport()"
+          >
+            <span *ngIf="isGenerating()" class="btn-generate__spinner" [innerHTML]="icons.spinner"></span>
+            <span>{{ isGenerating() ? 'Generando...' : 'Generar Reporte' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 
+       REPORT HISTORY TABLE
+        -->
+  <section class="history-section">
+    <header class="history-section__header">
+      <h2 class="section-title">Historial reciente</h2>
+      <button type="button" class="btn-link">Ver todos</button>
+    </header>
+
+    <div class="history-table-wrapper">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Fecha</th>
+            <th>Rango</th>
+            <th>Formato</th>
+            <th>Estado</th>
+            <th>Accion</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let report of reportHistory; trackBy: trackByHistory">
+            <td class="history-table__name">{{ report.name }}</td>
+            <td class="history-table__date">{{ report.generatedAt | date:'dd MMM yyyy, HH:mm' }}</td>
+            <td>{{ report.dateRange }}</td>
+            <td>
+              <span class="format-badge" [class]="'format-badge--' + report.format">
+                <span class="format-badge__icon" [innerHTML]="getFormatIcon(report.format)"></span>
+                {{ report.format | uppercase }}
+              </span>
+            </td>
+            <td>
+              <span class="status-badge" [class]="'status-badge--' + report.status">
+                <span class="status-badge__icon" [innerHTML]="getStatusIcon(report.status)"></span>
+                {{ report.status === 'ready' ? 'Listo' : report.status === 'processing' ? 'Procesando' : 'Error' }}
+              </span>
+            </td>
+            <td>
+              <button
+                type="button"
+                class="btn-download"
+                [disabled]="report.status !== 'ready'"
+                (click)="downloadReport(report)"
+              >
+                <span [innerHTML]="icons.download"></span>
+                Descargar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 </section>
