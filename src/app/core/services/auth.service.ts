@@ -64,7 +64,7 @@ export class AuthService {
   constructor(
     private readonly http: HttpClient,
     private readonly router: Router
-  ) {}
+  ) { }
 
   /**
    * Login with email/password credentials.
@@ -132,8 +132,28 @@ export class AuthService {
 
   /**
    * Logout and clear all stored credentials.
+   * Calls the backend to invalidate the session, then clears local storage.
    */
   logout(): void {
+    const refreshToken = this.getRefreshToken();
+
+    // Call backend logout (fire-and-forget - don't wait for response)
+    if (refreshToken) {
+      this.http.post<{ success: boolean; message: string }>(
+        `${this.apiUrl}/logout`,
+        { refreshToken }
+      ).pipe(
+        catchError(() => of({ success: false, message: 'Logout request failed' }))
+      ).subscribe({
+        next: (response) => {
+          if (!environment.production) {
+            console.log('Logout response:', response);
+          }
+        }
+      });
+    }
+
+    // Clear local storage immediately (don't wait for backend)
     this.clearStorage();
     this._isAuthenticated.set(false);
     this._currentUser.set(null);
