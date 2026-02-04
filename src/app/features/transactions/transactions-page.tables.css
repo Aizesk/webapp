@@ -306,6 +306,38 @@ td {
   color: #4338ca;
 }
 
+/* Transaction type chips */
+.chip--income {
+  background: rgba(16, 185, 129, 0.15);
+  color: #047857;
+}
+
+.chip--expense {
+  background: rgba(239, 68, 68, 0.15);
+  color: #dc2626;
+}
+
+.chip--transfer {
+  background: rgba(59, 130, 246, 0.15);
+  color: #1d4ed8;
+}
+
+/* Amount styling based on type */
+.amount--positive {
+  color: #047857;
+  font-weight: 600;
+}
+
+.amount--negative {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.cell--type .chip,
+.cell--origin .chip {
+  text-transform: capitalize;
+}
+
 .status {
   padding: 0.2rem 0.8rem;
   border-radius: 999px;

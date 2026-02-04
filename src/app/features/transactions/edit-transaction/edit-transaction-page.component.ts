@@ -26,16 +26,13 @@ export class EditTransactionPageComponent {
   private readonly router = inject(Router);
   private readonly transactionService = inject(TransactionService);
 
-  protected readonly originOptions = ['Terceros', 'Manual'];
-  protected readonly platformOptions = ['Amazon', 'Shopify'];
-  protected readonly statusOptions: DetailedTransaction['status'][] = [
-    'Recibido',
-    'Pagado',
-    'Procesando',
-    'Completado',
-    'Pendiente',
-    'Enviado'
-  ];
+  protected readonly originOptions = ['MANUAL', 'AMAZON', 'SHOPIFY', 'EBAY', 'ETSY', 'WOOCOMMERCE', 'OTHER'];
+  protected readonly platformOptions = ['Amazon', 'Shopify', 'eBay', 'Etsy', 'WooCommerce', 'Other'];
+  protected readonly typeOptions: DetailedTransaction['type'][] = ['INCOME', 'EXPENSE'];
+  protected readonly typeLabels: Record<string, string> = {
+    'INCOME': 'Ingreso',
+    'EXPENSE': 'Gasto'
+  };
   protected readonly categoryOptions = [
     'Venta de Productos',
     'Ingreso por Publicidad',
@@ -47,7 +44,7 @@ export class EditTransactionPageComponent {
     concept: ['', [Validators.required, Validators.maxLength(120)]],
     category: [this.categoryOptions[0] ?? '', Validators.required],
     platform: [this.platformOptions[0] ?? '', Validators.required],
-    status: [this.statusOptions[0] ?? '', Validators.required],
+    type: [this.typeOptions[0] ?? 'INCOME', Validators.required],
     origin: [this.originOptions[0] ?? '', Validators.required],
     amount: [0, [Validators.required, Validators.min(0)]],
     date: ['', Validators.required],
@@ -71,7 +68,7 @@ export class EditTransactionPageComponent {
           concept: transaction.concept,
           category: transaction.category,
           platform: transaction.platform,
-          status: transaction.status,
+          type: transaction.type,
           origin: transaction.origin,
           amount: transaction.amount,
           date: transaction.date,

@@ -68,17 +68,20 @@ export class AuthService {
 
   /**
    * Login with email/password credentials.
-   * In development mode, uses mock authentication to allow testing without backend.
+   * Always uses real backend for proper JWT token generation.
+   * Mock login is kept as fallback only if backend is unavailable.
    */
   login(credentials: LoginCredentials): Observable<AuthResponse> {
-    // In development mode, use mock login directly to avoid backend dependency
-    if (!environment.production) {
-      return this.mockLogin(credentials);
-    }
-
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => this.handleAuthSuccess(response, credentials.rememberSession)),
-      catchError(this.handleError)
+      catchError(err => {
+        // If backend is unavailable in development, fall back to mock
+        if (!environment.production && err.status === 0) {
+          console.warn('Backend unavailable, using mock login');
+          return this.mockLogin(credentials);
+        }
+        return this.handleError(err);
+      })
     );
   }
 
