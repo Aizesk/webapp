@@ -142,7 +142,12 @@ export class ReportService {
 
     this.downloadReport(report.id).subscribe({
       next: blob => {
-        const extension = report.format.toLowerCase();
+        const extensionMap: Record<ReportFormat, string> = {
+          'PDF': 'pdf',
+          'EXCEL': 'xlsx',
+          'CSV': 'csv'
+        };
+        const extension = extensionMap[report.format] || report.format.toLowerCase();
         const filename = `${report.typeDisplayName.replace(/\s+/g, '_')}_${report.dateRangeDisplay.replace(/\s+/g, '_')}.${extension}`;
         
         const url = window.URL.createObjectURL(blob);
