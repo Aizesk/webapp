@@ -47,7 +47,7 @@ export class NotificationService {
         // Get JWT token for WebSocket authentication
         const token = this.authService.getAccessToken();
         if (!token) {
-            console.warn('⚠️ No JWT token available, cannot connect to notifications WebSocket');
+            console.warn('No JWT token available, cannot connect to notifications WebSocket');
             return;
         }
 
@@ -59,7 +59,7 @@ export class NotificationService {
             openObserver: {
                 next: () => {
                     this._isConnected.set(true);
-                    console.log('🔔 ✅ Authenticated WebSocket connection established');
+                    console.log('Authenticated WebSocket connection established');
                 }
             },
             closeObserver: {
@@ -67,9 +67,9 @@ export class NotificationService {
                     this._isConnected.set(false);
                     this.socket$ = undefined;
                     if (event.code === 1008) { // POLICY_VIOLATION
-                        console.error('🔒 WebSocket authentication failed:', event.reason);
+                        console.error('WebSocket authentication failed:', event.reason);
                     } else {
-                        console.log('🔕 Disconnected from notifications server');
+                        console.log('Disconnected from notifications server');
                     }
                 }
             }
@@ -78,7 +78,7 @@ export class NotificationService {
         this.socket$.pipe(
             retry({ delay: 5000 }), // Automatically reconnect after 5 seconds
             catchError(err => {
-                console.error('❌ Notification WebSocket Error:', err);
+                console.error('Notification WebSocket Error:', err);
                 return of(null);
             })
         ).subscribe(message => {
