@@ -45,7 +45,7 @@ export class NotificationService {
         if (!user || this.socket$) return;
 
         // Get JWT token for WebSocket authentication
-        const token = this.authService.getToken();
+        const token = this.authService.getAccessToken();
         if (!token) {
             console.warn('⚠️ No JWT token available, cannot connect to notifications WebSocket');
             return;
