@@ -31,17 +31,16 @@ import { MAIN_NAV_ITEMS } from '../../shared/models/navigation.model';
 
 type ColumnWidths = {
   select: number;
+  type: number;
   origin: number;
   date: number;
   concept: number;
-  platform: number;
   amount: number;
-  status: number;
   category: number;
   actions: number;
 };
 
-type SortField = 'origin' | 'date' | 'amount' | 'platform' | 'status';
+type SortField = 'type' | 'origin' | 'date' | 'amount' | 'category';
 
 @Component({
   selector: 'app-transactions-page',
@@ -87,12 +86,11 @@ export class TransactionsPageComponent implements OnInit, AfterViewInit, OnDestr
   protected readonly pageSizeOptions = [5, 10, 20];
   protected readonly displayedColumns: (keyof ColumnWidths | 'actions')[] = [
     'select',
+    'type',
     'origin',
     'date',
     'concept',
-    'platform',
     'amount',
-    'status',
     'category',
     'actions'
   ];
@@ -103,12 +101,11 @@ export class TransactionsPageComponent implements OnInit, AfterViewInit, OnDestr
   private renderedSub?: Subscription;
   protected columnWidths: ColumnWidths = {
     select: 48,
-    origin: 140,
+    type: 120,
+    origin: 120,
     date: 140,
-    concept: 240,
-    platform: 140,
+    concept: 260,
     amount: 140,
-    status: 140,
     category: 140,
     actions: 130
   };
@@ -149,16 +146,14 @@ export class TransactionsPageComponent implements OnInit, AfterViewInit, OnDestr
 
       this.dataSource.sortingDataAccessor = (item, property) => {
         switch (property) {
+          case 'type':
+            return item.type;
           case 'origin':
             return item.origin;
           case 'date':
             return new Date(item.date).getTime();
           case 'amount':
             return item.amount;
-          case 'platform':
-            return item.platform;
-          case 'status':
-            return item.status;
           case 'category':
             return item.category;
           default:

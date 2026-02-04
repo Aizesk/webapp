@@ -278,7 +278,6 @@ export class TransactionService {
       platform: this.mapOriginToPlatform(tx.origin),
       amount: tx.amount,
       currency: tx.currency,
-      status: 'Completado', // Default status since backend doesn't track this
       category: tx.category || 'Sin categoría',
       createdAt: tx.createdAt,
       updatedAt: tx.updatedAt || undefined,

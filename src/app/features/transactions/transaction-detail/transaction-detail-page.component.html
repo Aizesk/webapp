@@ -34,18 +34,22 @@
             <h2>Información General</h2>
             <div class="info-grid">
               <div>
-                <p class="label">Estado</p>
-                <span class="status" [ngClass]="getStatusClass(vm.transaction.status)">
-                  {{ vm.transaction.status }}
+                <p class="label">Tipo</p>
+                <span class="chip" [ngClass]="{
+                  'chip--income': vm.transaction.type === 'INCOME',
+                  'chip--expense': vm.transaction.type === 'EXPENSE',
+                  'chip--transfer': vm.transaction.type === 'TRANSFER'
+                }">
+                  {{ vm.transaction.type === 'INCOME' ? 'Ingreso' : vm.transaction.type === 'EXPENSE' ? 'Gasto' : 'Transferencia' }}
                 </span>
-              </div>
-              <div>
-                <p class="label">Plataforma</p>
-                <p>{{ vm.transaction.platform }}</p>
               </div>
               <div>
                 <p class="label">Origen</p>
                 <p>{{ vm.transaction.origin }}</p>
+              </div>
+              <div>
+                <p class="label">Plataforma</p>
+                <p>{{ vm.transaction.platform }}</p>
               </div>
               <div>
                 <p class="label">Categoría</p>
@@ -105,28 +109,40 @@
             <ul>
               <li>
                 <div>
-                  <p class="label">Cantidad Total</p>
-                  <p class="amount amount--primary">
-                    {{ vm.totalAmount | currency: 'USD' : 'symbol' : '1.2-2' }}
+                  <p class="label">Importe</p>
+                  <p class="amount" [ngClass]="{
+                    'amount--success': vm.transaction.type === 'INCOME',
+                    'amount--danger': vm.transaction.type === 'EXPENSE',
+                    'amount--primary': vm.transaction.type === 'TRANSFER'
+                  }">
+                    @if (vm.transaction.type === 'INCOME') {
+                      <span>+</span>
+                    }
+                    @if (vm.transaction.type === 'EXPENSE') {
+                      <span>-</span>
+                    }
+                    {{ vm.totalAmount | currency: vm.transaction.currency : 'symbol' : '1.2-2' }}
                   </p>
                 </div>
               </li>
-              <li>
-                <div>
-                  <p class="label">Comisión</p>
-                  <p class="amount amount--muted">
-                    -{{ vm.fee | currency: 'USD' : 'symbol' : '1.2-2' }}
-                  </p>
-                </div>
-              </li>
-              <li>
-                <div>
-                  <p class="label">Cantidad Neta</p>
-                  <p class="amount amount--success">
-                    {{ vm.netAmount | currency: 'USD' : 'symbol' : '1.2-2' }}
-                  </p>
-                </div>
-              </li>
+              @if (vm.fee > 0) {
+                <li>
+                  <div>
+                    <p class="label">Comisión</p>
+                    <p class="amount amount--muted">
+                      -{{ vm.fee | currency: vm.transaction.currency : 'symbol' : '1.2-2' }}
+                    </p>
+                  </div>
+                </li>
+                <li>
+                  <div>
+                    <p class="label">Cantidad Neta</p>
+                    <p class="amount amount--success">
+                      {{ vm.netAmount | currency: vm.transaction.currency : 'symbol' : '1.2-2' }}
+                    </p>
+                  </div>
+                </li>
+              }
             </ul>
           </article>
 

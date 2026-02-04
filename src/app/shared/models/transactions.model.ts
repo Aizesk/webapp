@@ -21,10 +21,9 @@ export interface DetailedTransaction {
   readonly origin: TransactionOrigin;
   readonly date: string;
   readonly concept: string;
-  readonly platform: string; // Derived from origin
+  readonly platform: string; // Derived from origin (for display)
   readonly amount: number;
   readonly currency: string;
-  readonly status: 'Recibido' | 'Pagado' | 'Procesando' | 'Completado' | 'Pendiente' | 'Enviado';
   readonly category: string;
   readonly createdAt: string;
   readonly updatedAt?: string;

@@ -72,10 +72,10 @@
               </label>
 
               <label class="form-field">
-                <span>Estado</span>
-                <select formControlName="status">
-                  <option *ngFor="let option of statusOptions" [value]="option">
-                    {{ option }}
+                <span>Tipo</span>
+                <select formControlName="type">
+                  <option *ngFor="let option of typeOptions" [value]="option">
+                    {{ typeLabels[option] || option }}
                   </option>
                 </select>
               </label>
@@ -115,15 +115,15 @@
               <p class="eyebrow">Resumen</p>
               <h3>Transacción {{ vm.transaction.id }}</h3>
               <p class="summary-amount">
-                {{ vm.transaction.amount | currency: 'USD' : 'symbol' : '1.2-2' }}
+                {{ vm.transaction.amount | currency: vm.transaction.currency : 'symbol' : '1.2-2' }}
               </p>
             </div>
             <dl class="summary-list">
               <div>
-                <dt>Estado</dt>
+                <dt>Tipo</dt>
                 <dd>
-                  <span class="status" [ngClass]="vm.transaction.status.toLowerCase()">{{
-                    vm.transaction.status
+                  <span class="type-badge" [ngClass]="vm.transaction.type.toLowerCase()">{{
+                    typeLabels[vm.transaction.type] || vm.transaction.type
                   }}</span>
                 </dd>
               </div>

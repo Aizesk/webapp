@@ -219,31 +219,28 @@ CREATE TABLE IF NOT EXISTS sync_logs (
 
 -- =====================================================
 -- TRANSACTION-SERVICE TABLES
+-- (Synchronized with Transaction.java entity)
 -- =====================================================
 
 -- TABLE: transactions
 CREATE TABLE IF NOT EXISTS transactions (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id VARCHAR(36) NOT NULL,
+    user_id VARCHAR(36) NOT NULL COMMENT 'UUID del usuario propietario',
     type VARCHAR(50) NOT NULL COMMENT 'INCOME, EXPENSE',
-    amount DECIMAL(19, 4) NOT NULL,
-    currency VARCHAR(3) DEFAULT 'EUR',
-    description VARCHAR(500),
-    category VARCHAR(100),
-    transaction_date DATETIME NOT NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME ON UPDATE CURRENT_TIMESTAMP,
-    
-    -- Campos de conexión con plataformas
-    platform_connection_id VARCHAR(36) COMMENT 'ID de la conexión de plataforma',
-    platform_order_id VARCHAR(255) COMMENT 'ID del pedido en la plataforma',
-    platform_type VARCHAR(50) COMMENT 'AMAZON, EBAY, SHOPIFY, etc.',
+    amount DECIMAL(19, 4) NOT NULL COMMENT 'Cantidad de la transacción',
+    currency VARCHAR(3) NOT NULL DEFAULT 'EUR' COMMENT 'Código de moneda ISO 4217',
+    concept VARCHAR(500) NOT NULL COMMENT 'Concepto/descripción de la transacción',
+    category VARCHAR(100) COMMENT 'Categoría de la transacción',
+    origin VARCHAR(50) NOT NULL COMMENT 'MANUAL, AMAZON, SHOPIFY, EBAY, ETSY, WOOCOMMERCE, OTHER',
+    transaction_date DATETIME NOT NULL COMMENT 'Fecha de la transacción',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Fecha de creación del registro',
+    updated_at DATETIME ON UPDATE CURRENT_TIMESTAMP COMMENT 'Fecha de última actualización',
     
     INDEX idx_transactions_user_id (user_id),
     INDEX idx_transactions_type (type),
     INDEX idx_transactions_category (category),
-    INDEX idx_transactions_date (transaction_date),
-    INDEX idx_transactions_platform (platform_connection_id)
+    INDEX idx_transactions_origin (origin),
+    INDEX idx_transactions_date (transaction_date)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
