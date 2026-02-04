@@ -6,6 +6,10 @@
 
 USE aizesk;
 
+-- Set UTF-8 encoding for proper Spanish characters
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+
 -- =====================================================
 -- USER-SERVICE: USUARIOS DE PRUEBA
 -- =====================================================
