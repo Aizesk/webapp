@@ -1,25 +1,16 @@
 <section class="reports-center">
-  <app-top-navbar
-    [navItems]="navItems"
-    brandTagline="Centro de Informes"
-  ></app-top-navbar>
+  <app-top-navbar [navItems]="navItems" brandTagline="Centro de Informes"></app-top-navbar>
 
-  <!-- 
-       HEADER
-        -->
   <header class="reports-header">
     <div class="reports-header__content">
       <h1 class="reports-header__title">Centro de Informes</h1>
       <p class="reports-header__subtitle">
-        Genera, exporta y analiza el rendimiento de tus canales digitales
-        (Amazon, Shopify) y registros manuales.
+        Genera, exporta y analiza el rendimiento de tus canales digitales (Amazon, Shopify) y
+        registros manuales.
       </p>
     </div>
   </header>
 
-  <!-- 
-       REPORT TYPE SELECTOR (Grid of Cards)
-        -->
   <section class="report-selector">
     <h2 class="section-title">Selecciona el tipo de reporte</h2>
 
@@ -36,21 +27,20 @@
         (keydown.enter)="selectReportType(report.id)"
         (keydown.space)="selectReportType(report.id)"
       >
-        <div class="report-card__icon" [innerHTML]="report.icon"></div>
+        <div class="report-card__icon">
+          <span class="material-symbols-rounded">{{ report.icon }}</span>
+        </div>
         <div class="report-card__content">
           <h3 class="report-card__title">{{ report.name }}</h3>
           <p class="report-card__description">{{ report.description }}</p>
         </div>
         <div class="report-card__check" *ngIf="selectedReportType() === report.id">
-          <span [innerHTML]="icons.check"></span>
+          <span class="material-symbols-rounded">check</span>
         </div>
       </article>
     </div>
   </section>
 
-  <!-- 
-       CONFIGURATION PANEL (Slide-down)
-        -->
   <section
     class="config-panel"
     [class.config-panel--visible]="isConfigPanelVisible()"
@@ -64,7 +54,17 @@
       </header>
 
       <div class="config-panel__body">
-        <!-- Date Range Selector -->
+        <div class="config-group">
+          <label class="config-group__label">Título del reporte (opcional)</label>
+          <input
+            type="text"
+            class="config-input"
+            placeholder="Ej: Reporte mensual ventas"
+            [value]="reportTitle()"
+            (input)="onTitleChange($event)"
+          />
+        </div>
+
         <div class="config-group">
           <label class="config-group__label">Rango de fechas</label>
           <div class="config-chips">
@@ -78,11 +78,31 @@
               {{ range.label }}
             </button>
           </div>
+
+          <div class="custom-date-range" *ngIf="isCustomDateRange()">
+            <div class="date-input-group">
+              <label class="date-label">Desde</label>
+              <input
+                type="date"
+                class="date-input"
+                [value]="customStartDate()"
+                (input)="onCustomStartDateChange($event)"
+              />
+            </div>
+            <div class="date-input-group">
+              <label class="date-label">Hasta</label>
+              <input
+                type="date"
+                class="date-input"
+                [value]="customEndDate()"
+                (input)="onCustomEndDateChange($event)"
+              />
+            </div>
+          </div>
         </div>
 
-        <!-- Export Format Selector -->
         <div class="config-group">
-          <label class="config-group__label">Formato de exportacion</label>
+          <label class="config-group__label">Formato de exportación</label>
           <div class="format-options">
             <label
               *ngFor="let format of exportFormats"
@@ -96,7 +116,9 @@
                 [checked]="selectedFormat() === format.id"
                 (change)="selectFormat(format.id)"
               />
-              <div class="format-option__icon" [innerHTML]="format.icon"></div>
+              <div class="format-option__icon">
+                <span class="material-symbols-rounded">{{ format.icon }}</span>
+              </div>
               <div class="format-option__content">
                 <span class="format-option__label">{{ format.label }}</span>
                 <span class="format-option__desc">{{ format.description }}</span>
@@ -105,7 +127,6 @@
           </div>
         </div>
 
-        <!-- Generate Button -->
         <div class="config-actions">
           <button
             type="button"
@@ -113,7 +134,9 @@
             [disabled]="isGenerating()"
             (click)="generateReport()"
           >
-            <span *ngIf="isGenerating()" class="btn-generate__spinner" [innerHTML]="icons.spinner"></span>
+            <span *ngIf="isGenerating()" class="btn-generate__spinner">
+              <span class="material-symbols-rounded spinning">sync</span>
+            </span>
             <span>{{ isGenerating() ? 'Generando...' : 'Generar Reporte' }}</span>
           </button>
         </div>
@@ -121,54 +144,81 @@
     </div>
   </section>
 
-  <!-- 
-       REPORT HISTORY TABLE
-        -->
   <section class="history-section">
     <header class="history-section__header">
-      <h2 class="section-title">Historial reciente</h2>
-      <button type="button" class="btn-link">Ver todos</button>
+      <h2 class="section-title">Historial de reportes</h2>
+      <button type="button" class="btn-link" (click)="loadReportHistory()">
+        <span class="material-symbols-rounded">refresh</span>
+        Actualizar
+      </button>
     </header>
 
-    <div class="history-table-wrapper">
+    <div class="history-loading" *ngIf="isLoading()">
+      <span class="material-symbols-rounded spinning">sync</span>
+      Cargando historial...
+    </div>
+
+    <div class="history-empty" *ngIf="!isLoading() && reportHistory().length === 0">
+      <span class="material-symbols-rounded">description</span>
+      <p>No hay reportes generados aún</p>
+    </div>
+
+    <div class="history-table-wrapper" *ngIf="!isLoading() && reportHistory().length > 0">
       <table class="history-table">
         <thead>
           <tr>
-            <th>Nombre</th>
-            <th>Fecha</th>
-            <th>Rango</th>
+            <th>Tipo</th>
+            <th>Período</th>
             <th>Formato</th>
+            <th>Solicitado</th>
             <th>Estado</th>
-            <th>Accion</th>
+            <th>Acción</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let report of reportHistory; trackBy: trackByHistory">
-            <td class="history-table__name">{{ report.name }}</td>
-            <td class="history-table__date">{{ report.generatedAt | date:'dd MMM yyyy, HH:mm' }}</td>
-            <td>{{ report.dateRange }}</td>
+          <tr *ngFor="let report of reportHistory(); trackBy: trackByHistory">
+            <td class="history-table__name">{{ report.typeDisplayName }}</td>
+            <td>{{ report.dateRangeDisplay }}</td>
             <td>
-              <span class="format-badge" [class]="'format-badge--' + report.format">
-                <span class="format-badge__icon" [innerHTML]="getFormatIcon(report.format)"></span>
-                {{ report.format | uppercase }}
+              <span class="format-badge" [class]="'format-badge--' + report.format.toLowerCase()">
+                <span class="format-badge__icon">
+                  <span class="material-symbols-rounded">{{ getFormatIcon(report.format) }}</span>
+                </span>
+                {{ report.format }}
               </span>
             </td>
+            <td class="history-table__date">
+              {{ report.requestedAt | date: 'dd MMM yyyy, HH:mm' }}
+            </td>
             <td>
-              <span class="status-badge" [class]="'status-badge--' + report.status">
-                <span class="status-badge__icon" [innerHTML]="getStatusIcon(report.status)"></span>
-                {{ report.status === 'ready' ? 'Listo' : report.status === 'processing' ? 'Procesando' : 'Error' }}
+              <span class="status-badge" [class]="'status-badge--' + report.status.toLowerCase()">
+                <span class="status-badge__icon" [class.spinning]="report.status === 'PROCESSING' || report.status === 'PENDING'">
+                  <span class="material-symbols-rounded">{{ getStatusIcon(report.status) }}</span>
+                </span>
+                {{ getStatusLabel(report.status) }}
               </span>
             </td>
             <td>
               <button
+                *ngIf="report.downloadable"
                 type="button"
                 class="btn-download"
-                [disabled]="report.status !== 'ready'"
                 (click)="downloadReport(report)"
               >
-                <span [innerHTML]="icons.download"></span>
+                <span class="material-symbols-rounded">download</span>
                 Descargar
               </button>
+              <button
+                *ngIf="report.status === 'PENDING' || report.status === 'PROCESSING'"
+                type="button"
+                class="btn-refresh"
+                (click)="refreshReportStatus(report)"
+              >
+                <span class="material-symbols-rounded">refresh</span>
+              </button>
+              <span *ngIf="report.status === 'FAILED'" class="error-hint" [title]="report.errorMessage">
+                <span class="material-symbols-rounded">info</span>
+              </span>
             </td>
           </tr>
         </tbody>
