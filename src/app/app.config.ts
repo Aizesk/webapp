@@ -9,6 +9,7 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { jwtInterceptor } from './core/interceptors/jwt.interceptor';
+import { authRefreshInterceptor } from './core/interceptors/auth-refresh.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,6 +17,7 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideAnimations(),
-    provideHttpClient(withInterceptors([jwtInterceptor]))
+    // Order matters: jwtInterceptor adds token, authRefreshInterceptor handles refresh on 401
+    provideHttpClient(withInterceptors([jwtInterceptor, authRefreshInterceptor]))
   ]
 };

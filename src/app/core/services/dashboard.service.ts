@@ -38,7 +38,7 @@ export class DashboardService {
   constructor(
     private readonly http: HttpClient,
     private readonly authService: AuthService
-  ) {}
+  ) { }
 
   /**
    * Fetch dashboard stats AND monthly data from backend.

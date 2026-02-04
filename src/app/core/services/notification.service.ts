@@ -44,21 +44,33 @@ export class NotificationService {
         const user = this.authService.currentUser();
         if (!user || this.socket$) return;
 
-        const wsUrlWithUser = `${this.wsUrl}/${user.userId}`;
+        // Get JWT token for WebSocket authentication
+        const token = this.authService.getAccessToken();
+        if (!token) {
+            console.warn('No JWT token available, cannot connect to notifications WebSocket');
+            return;
+        }
+
+        // Include token as query parameter for authentication during handshake
+        const wsUrlWithUser = `${this.wsUrl}/${user.userId}?token=${token}`;
 
         this.socket$ = webSocket<NotificationWebSocketMessage>({
             url: wsUrlWithUser,
             openObserver: {
                 next: () => {
                     this._isConnected.set(true);
-                    console.log('🔔 Connected to notifications server');
+                    console.log('Authenticated WebSocket connection established');
                 }
             },
             closeObserver: {
-                next: () => {
+                next: (event) => {
                     this._isConnected.set(false);
                     this.socket$ = undefined;
-                    console.log('🔕 Disconnected from notifications server');
+                    if (event.code === 1008) { // POLICY_VIOLATION
+                        console.error('WebSocket authentication failed:', event.reason);
+                    } else {
+                        console.log('Disconnected from notifications server');
+                    }
                 }
             }
         });
@@ -66,7 +78,7 @@ export class NotificationService {
         this.socket$.pipe(
             retry({ delay: 5000 }), // Automatically reconnect after 5 seconds
             catchError(err => {
-                console.error('❌ Notification WebSocket Error:', err);
+                console.error('Notification WebSocket Error:', err);
                 return of(null);
             })
         ).subscribe(message => {
