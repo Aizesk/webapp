@@ -484,6 +484,25 @@
   line-height: 1;
 }
 
+.profile-menu__divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: 0.5rem 0;
+}
+
+.profile-menu__item--logout {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+.profile-menu__item--logout:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
 @media (max-width: 768px) {
   .app-navbar {
     flex-direction: column;

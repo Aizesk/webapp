@@ -3,6 +3,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AppNavItem } from '../../models/navigation.model';
 import { ThemeService, Theme } from '../../../core/services/theme.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 
 @Component({
@@ -23,6 +24,7 @@ export class TopNavbarComponent {
 
   private readonly themeService = inject(ThemeService);
   private readonly notificationService = inject(NotificationService);
+  private readonly authService = inject(AuthService);
 
   isProfileMenuOpen = false;
   isSettingsMenuOpen = false;
@@ -80,5 +82,12 @@ export class TopNavbarComponent {
 
   setLanguagePreference(language: 'es' | 'en'): void {
     this.languagePreference = language;
+  }
+
+  /**
+   * Logout the user and redirect to login page.
+   */
+  logout(): void {
+    this.authService.logout();
   }
 }
