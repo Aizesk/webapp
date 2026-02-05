@@ -100,7 +100,7 @@ export class DashboardService {
       monthlyIncomeVsExpense: this.mapMonthlyToComparison(monthly),
       transactions: this.mapRecentTransactions(stats.recentTransactions),
       accounts: this.generateDefaultAccounts(),
-      channelRevenue: this.mapCategoriesToChannelRevenue(stats.incomesByCategory),
+      channelRevenue: this.mapOriginToChannelRevenue(stats.incomesByOrigin || {}),
       reconciliation: this.generateDefaultReconciliation()
     };
   }
@@ -211,23 +211,47 @@ export class DashboardService {
   }
 
   /**
-   * Map backend incomesByCategory to frontend ChannelRevenueShare[].
+   * Map backend incomesByOrigin to frontend ChannelRevenueShare[].
+   * Uses platform-specific colors for Amazon, Shopify, eBay, etc.
    */
-  private mapCategoriesToChannelRevenue(categories: { [key: string]: number }): readonly ChannelRevenueShare[] {
-    const colors = ['#0f62fe', '#16a34a', '#f97316', '#8b5cf6', '#0ea5e9', '#c026d3'];
+  private mapOriginToChannelRevenue(origins: { [key: string]: number }): readonly ChannelRevenueShare[] {
+    // Platform-specific colors matching brand colors
+    const platformColors: { [key: string]: string } = {
+      'AMAZON': '#FF9900',      // Amazon Orange
+      'SHOPIFY': '#96bf48',     // Shopify Green
+      'EBAY': '#0064D2',        // eBay Blue
+      'MANUAL': '#6B7280',      // Neutral Gray
+      'OTHER': '#8B5CF6',       // Purple for other
+      'WALLAPOP': '#13C1AC',    // Wallapop Teal
+      'ETSY': '#F56400'         // Etsy Orange
+    };
 
-    if (!categories || Object.keys(categories).length === 0) {
+    // Display names for platforms
+    const platformNames: { [key: string]: string } = {
+      'AMAZON': 'Amazon',
+      'SHOPIFY': 'Shopify',
+      'EBAY': 'eBay',
+      'MANUAL': 'Manual',
+      'OTHER': 'Otros',
+      'WALLAPOP': 'Wallapop',
+      'ETSY': 'Etsy'
+    };
+
+    if (!origins || Object.keys(origins).length === 0) {
       return this.generateDefaultChannelRevenue();
     }
 
-    const total = Object.values(categories).reduce((sum, val) => sum + val, 0);
+    const total = Object.values(origins).reduce((sum, val) => sum + val, 0);
 
-    return Object.entries(categories).map(([category, amount], index) => ({
-      channel: this.fixEncoding(category),
-      amount: amount,
-      percentage: total > 0 ? Math.round((amount / total) * 100) : 0,
-      color: colors[index % colors.length]
-    }));
+    return Object.entries(origins)
+      .filter(([, amount]) => amount > 0) // Only show platforms with revenue
+      .sort((a, b) => b[1] - a[1]) // Sort by amount descending
+      .map(([origin, amount]) => ({
+        channel: platformNames[origin] || origin,
+        amount: amount,
+        percentage: total > 0 ? Math.round((amount / total) * 100) : 0,
+        color: platformColors[origin] || '#8B5CF6'
+      }));
   }
 
   // ========== DEFAULT/MOCK DATA GENERATORS ==========

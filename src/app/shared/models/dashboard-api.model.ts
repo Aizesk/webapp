@@ -54,6 +54,9 @@ export interface DashboardStats {
   readonly transactionCount: number;
   readonly expensesByCategory: { [key: string]: number };
   readonly incomesByCategory: { [key: string]: number };
+  readonly incomesByOrigin: { [key: string]: number };
+  readonly expensesByOrigin: { [key: string]: number };
+  readonly countByOrigin: { [key: string]: number };
   readonly recentTransactions: TransactionDto[];
   readonly generatedAt: string;
 }
