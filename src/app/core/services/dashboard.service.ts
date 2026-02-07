@@ -1,9 +1,9 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, forkJoin } from 'rxjs';
 import { tap, catchError, map, shareReplay } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { DashboardStats, MonthlyStatsDto, TransactionDto } from '../../shared/models/dashboard-api.model';
+import { DashboardStats, TrendDataDto, TransactionDto } from '../../shared/models/dashboard-api.model';
 import {
   DashboardSnapshot,
   SummaryCard,
@@ -12,7 +12,8 @@ import {
   ChannelRevenueShare,
   ReconciliationStatus,
   TransactionItem,
-  ConnectedAccount
+  ConnectedAccount,
+  CategoryExpense
 } from '../../shared/models/dashboard.model';
 import { AuthService } from './auth.service';
 import {
@@ -20,14 +21,21 @@ import {
   DEFAULT_TIME_RANGE,
   CACHE_TTL_MS,
   getPlatformConfig,
-  getMonthsForRange,
+  getDaysForRange,
   InsightSeverity,
-  INSIGHT_SEVERITY_CONFIG
+  INSIGHT_SEVERITY_CONFIG,
+  PlatformOrigin,
+  CustomDateRange
 } from '../config/dashboard.constants';
 
 // ============================================================================
 // TYPES & INTERFACES
 // ============================================================================
+
+/**
+ * Platform filter type - includes 'GLOBAL' for all platforms.
+ */
+export type PlatformFilter = PlatformOrigin | 'GLOBAL' | null;
 
 /**
  * Dashboard insight/recommendation for the UI.
@@ -53,6 +61,7 @@ interface CacheEntry<T> {
   readonly data: T;
   readonly timestamp: number;
   readonly timeRange: TimeRange;
+  readonly origin: PlatformFilter;
 }
 
 // ============================================================================
@@ -65,12 +74,13 @@ interface CacheEntry<T> {
  * Features:
  * - Signal-based reactive state management
  * - Time range filtering with query params
+ * - Platform origin filtering (AMAZON, SHOPIFY, etc.)
  * - Smart caching with TTL
  * - Parallel HTTP requests with forkJoin
  * - Insights/Alerts system
  *
  * @author Aizesk Development Team
- * @version 2.0.0
+ * @version 3.0.0
  */
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
@@ -81,16 +91,18 @@ export class DashboardService {
   private readonly _snapshot = signal<DashboardSnapshot | null>(null);
   private readonly _loading = signal<boolean>(false);
   private readonly _error = signal<string | null>(null);
-  private readonly _monthlyStats = signal<MonthlyStatsDto[]>([]);
+  private readonly _trendData = signal<TrendDataDto[]>([]);
   private readonly _currentTimeRange = signal<TimeRange>(DEFAULT_TIME_RANGE);
+  private readonly _currentOrigin = signal<PlatformFilter>('GLOBAL');
   private readonly _insights = signal<DashboardInsight[]>([]);
 
   // Public readonly signals
   readonly snapshot = this._snapshot.asReadonly();
   readonly loading = this._loading.asReadonly();
   readonly error = this._error.asReadonly();
-  readonly monthlyStats = this._monthlyStats.asReadonly();
+  readonly trendData = this._trendData.asReadonly();
   readonly currentTimeRange = this._currentTimeRange.asReadonly();
+  readonly currentOrigin = this._currentOrigin.asReadonly();
   readonly insights = this._insights.asReadonly();
 
   // Computed signals
@@ -110,19 +122,26 @@ export class DashboardService {
   // ==================== PUBLIC API ====================
 
   /**
-   * Fetch dashboard data with optional time range filter.
+   * Fetch dashboard data with time range and origin filters.
    * Implements smart caching - returns cached data if valid.
    *
    * @param timeRange - Time range filter (default: '30D')
+   * @param origin - Platform origin filter (default: 'GLOBAL' = all platforms)
    * @param forceRefresh - Bypass cache and fetch fresh data
+   * @param customStartDate - Custom start date (for CUSTOM range)
+   * @param customEndDate - Custom end date (for CUSTOM range)
    * @returns Observable<DashboardSnapshot>
    */
   getDashboard(
     timeRange: TimeRange = DEFAULT_TIME_RANGE,
-    forceRefresh = false
+    origin: PlatformFilter = 'GLOBAL',
+    forceRefresh = false,
+    customStartDate?: Date,
+    customEndDate?: Date
   ): Observable<DashboardSnapshot> {
-    // Check cache validity
-    if (!forceRefresh && this.isCacheValid(timeRange)) {
+    // Check cache validity (skip cache for custom ranges)
+    const isCustomRange = timeRange === 'CUSTOM' || timeRange === 'THIS_MONTH' || timeRange === 'LAST_MONTH';
+    if (!forceRefresh && !isCustomRange && this.isCacheValid(timeRange, origin)) {
       return of(this.cache!.data);
     }
 
@@ -134,27 +153,31 @@ export class DashboardService {
     this._loading.set(true);
     this._error.set(null);
     this._currentTimeRange.set(timeRange);
+    this._currentOrigin.set(origin);
 
     const userId = this.authService.currentUser()?.userId || 'demo-user-001';
-    const months = getMonthsForRange(timeRange);
+
+    // Build query params for both endpoints
+    const dashboardParams = this.buildParams(timeRange, origin, customStartDate, customEndDate);
+    const trendParams = this.buildTrendParams(timeRange, origin, customStartDate, customEndDate);
 
     // Create shared request (prevents duplicate HTTP calls)
     this.pendingRequest$ = forkJoin({
       dashboard: this.http.get<DashboardStats>(
         `${this.apiUrl}/dashboard/${userId}`,
-        { params: { range: timeRange.toLowerCase() } }
+        { params: dashboardParams }
       ),
-      monthly: this.http.get<MonthlyStatsDto[]>(
-        `${this.apiUrl}/monthly/${userId}`,
-        { params: { months: months.toString() } }
+      trend: this.http.get<TrendDataDto[]>(
+        `${this.apiUrl}/trend/${userId}`,
+        { params: trendParams }
       )
     }).pipe(
-      map(({ dashboard, monthly }) => {
-        this._monthlyStats.set(monthly);
-        return this.mapToSnapshot(dashboard, monthly);
+      map(({ dashboard, trend }) => {
+        this._trendData.set(trend);
+        return this.mapToSnapshot(dashboard, trend);
       }),
       tap(snapshot => {
-        this.updateCache(snapshot, timeRange);
+        this.updateCache(snapshot, timeRange, origin);
         this._snapshot.set(snapshot);
         this._loading.set(false);
         this.pendingRequest$ = null;
@@ -177,8 +200,12 @@ export class DashboardService {
   /**
    * Force refresh dashboard data (bypasses cache).
    */
-  refreshDashboard(timeRange?: TimeRange): Observable<DashboardSnapshot> {
-    return this.getDashboard(timeRange ?? this._currentTimeRange(), true);
+  refreshDashboard(timeRange?: TimeRange, origin?: PlatformFilter): Observable<DashboardSnapshot> {
+    return this.getDashboard(
+      timeRange ?? this._currentTimeRange(),
+      origin ?? this._currentOrigin(),
+      true
+    );
   }
 
   /**
@@ -197,6 +224,64 @@ export class DashboardService {
 
     // Otherwise, return default insights
     return of(this.generateDefaultInsights());
+  }
+
+  // ==================== PRIVATE HELPERS ====================
+
+  private buildParams(timeRange: TimeRange, origin: PlatformFilter, customStartDate?: Date, customEndDate?: Date): HttpParams {
+    let params = new HttpParams();
+    const now = new Date();
+
+    // Handle special date ranges
+    if (timeRange === 'THIS_MONTH') {
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      params = params.set('startDate', firstDay.toISOString().split('T')[0]);
+      params = params.set('endDate', lastDay.toISOString().split('T')[0]);
+    } else if (timeRange === 'LAST_MONTH') {
+      const firstDay = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const lastDay = new Date(now.getFullYear(), now.getMonth(), 0);
+      params = params.set('startDate', firstDay.toISOString().split('T')[0]);
+      params = params.set('endDate', lastDay.toISOString().split('T')[0]);
+    } else if (timeRange === 'CUSTOM' && customStartDate && customEndDate) {
+      params = params.set('startDate', customStartDate.toISOString().split('T')[0]);
+      params = params.set('endDate', customEndDate.toISOString().split('T')[0]);
+    } else {
+      params = params.set('range', timeRange.toLowerCase());
+    }
+
+    if (origin && origin !== 'GLOBAL') {
+      params = params.set('origin', origin);
+    }
+    return params;
+  }
+
+  private buildTrendParams(timeRange: TimeRange, origin: PlatformFilter, customStartDate?: Date, customEndDate?: Date): HttpParams {
+    let params = new HttpParams();
+    const now = new Date();
+
+    // Handle special date ranges
+    if (timeRange === 'THIS_MONTH') {
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      params = params.set('startDate', firstDay.toISOString().split('T')[0]);
+      params = params.set('endDate', lastDay.toISOString().split('T')[0]);
+    } else if (timeRange === 'LAST_MONTH') {
+      const firstDay = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const lastDay = new Date(now.getFullYear(), now.getMonth(), 0);
+      params = params.set('startDate', firstDay.toISOString().split('T')[0]);
+      params = params.set('endDate', lastDay.toISOString().split('T')[0]);
+    } else if (timeRange === 'CUSTOM' && customStartDate && customEndDate) {
+      params = params.set('startDate', customStartDate.toISOString().split('T')[0]);
+      params = params.set('endDate', customEndDate.toISOString().split('T')[0]);
+    } else {
+      params = params.set('range', timeRange.toLowerCase());
+    }
+
+    if (origin && origin !== 'GLOBAL') {
+      params = params.set('origin', origin);
+    }
+    return params;
   }
 
   /**
@@ -223,60 +308,125 @@ export class DashboardService {
 
   // ==================== CACHE LOGIC ====================
 
-  private isCacheValid(timeRange: TimeRange): boolean {
+  private isCacheValid(timeRange: TimeRange, origin: PlatformFilter): boolean {
     if (!this.cache) return false;
     if (this.cache.timeRange !== timeRange) return false;
+    if (this.cache.origin !== origin) return false;
 
     const age = Date.now() - this.cache.timestamp;
     return age < CACHE_TTL_MS;
   }
 
-  private updateCache(data: DashboardSnapshot, timeRange: TimeRange): void {
+  private updateCache(data: DashboardSnapshot, timeRange: TimeRange, origin: PlatformFilter): void {
     this.cache = {
       data,
       timestamp: Date.now(),
-      timeRange
+      timeRange,
+      origin
     };
   }
 
   // ==================== MAPPING LOGIC ====================
 
-  private mapToSnapshot(stats: DashboardStats, monthly: MonthlyStatsDto[]): DashboardSnapshot {
+  private mapToSnapshot(stats: DashboardStats, trend: TrendDataDto[]): DashboardSnapshot {
+    const expensesByCategory = this.mapCategoryData(stats.expensesByCategory || {}, 'expense');
+    const incomesByCategory = this.mapCategoryData(stats.incomesByCategory || {}, 'income');
+    
+    // Calculate totals for percentage bars
+    const totalExpenseAmount = Object.values(stats.expensesByCategory || {}).reduce((sum, val) => sum + Math.abs(val), 0);
+    const totalIncomeAmount = Object.values(stats.incomesByCategory || {}).reduce((sum, val) => sum + Math.abs(val), 0);
+    
     return {
-      summaryCards: this.buildSummaryCards(stats, monthly),
-      weeklyIncome: this.mapMonthlyToWeeklyIncome(monthly),
-      monthlyIncomeVsExpense: this.mapMonthlyToComparison(monthly),
+      summaryCards: this.buildSummaryCards(stats, trend),
+      weeklyIncome: this.mapTrendToWeeklyIncome(trend),
+      monthlyIncomeVsExpense: this.mapTrendToComparison(trend),
       transactions: this.mapRecentTransactions(stats.recentTransactions),
       accounts: this.generateDefaultAccounts(),
       channelRevenue: this.mapOriginToChannelRevenue(stats.incomesByOrigin || {}),
-      reconciliation: this.generateDefaultReconciliation()
+      reconciliation: this.generateDefaultReconciliation(),
+      expensesByCategory,
+      incomesByCategory,
+      totalExpenseAmount,
+      totalIncomeAmount
     };
   }
 
-  private mapMonthlyToWeeklyIncome(monthly: MonthlyStatsDto[]): readonly WeeklyIncomePoint[] {
-    return [...monthly].reverse().map(m => ({
-      label: m.label,
-      amount: m.income
+  private mapCategoryData(data: Record<string, number>, type: 'income' | 'expense'): readonly CategoryExpense[] {
+    if (!data || Object.keys(data).length === 0) {
+      return [];
+    }
+
+    const total = Object.values(data).reduce((sum, val) => sum + Math.abs(val), 0);
+    
+    // Category configurations with colors and icons
+    const categoryConfig: Record<string, { color: string; icon: string }> = {
+      'Alimentación': { color: '#EF4444', icon: 'restaurant' },
+      'Software y Herramientas': { color: '#8B5CF6', icon: 'code' },
+      'Publicidad': { color: '#F59E0B', icon: 'campaign' },
+      'Envíos': { color: '#3B82F6', icon: 'local_shipping' },
+      'Comisiones': { color: '#EC4899', icon: 'receipt_long' },
+      'Inventario': { color: '#10B981', icon: 'inventory_2' },
+      'Servicios Profesionales': { color: '#6366F1', icon: 'work' },
+      'Impuestos': { color: '#14B8A6', icon: 'account_balance' },
+      'Devoluciones': { color: '#F97316', icon: 'keyboard_return' },
+      'Vivienda': { color: '#0EA5E9', icon: 'home' },
+      'Regalos': { color: '#A855F7', icon: 'redeem' },
+      'Suministros': { color: '#22C55E', icon: 'bolt' },
+      'Restaurantes': { color: '#F43F5E', icon: 'local_dining' },
+      'Transporte': { color: '#6366F1', icon: 'directions_car' },
+      'Ventas Online': { color: '#10B981', icon: 'shopping_cart' },
+      'Entretenimiento': { color: '#EC4899', icon: 'theaters' },
+      'Salud': { color: '#14B8A6', icon: 'health_and_safety' },
+      'Educación': { color: '#3B82F6', icon: 'school' },
+      'Ropa': { color: '#F59E0B', icon: 'checkroom' },
+      'Otros': { color: '#6B7280', icon: 'category' }
+    };
+
+    return Object.entries(data)
+      .filter(([, amount]) => amount !== 0)
+      .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))
+      .slice(0, 5) // Top 5 categories
+      .map(([category, amount]) => {
+        const config = categoryConfig[category] || { color: '#6B7280', icon: 'category' };
+        return {
+          category,
+          amount: Math.abs(amount),
+          percentage: total > 0 ? Math.round((Math.abs(amount) / total) * 100) : 0,
+          color: config.color,
+          icon: config.icon
+        };
+      });
+  }
+
+  private mapTrendToWeeklyIncome(trend: TrendDataDto[]): readonly WeeklyIncomePoint[] {
+    // Backend returns data in chronological order (oldest first) - keep it that way
+    return trend.map(t => ({
+      label: t.label,
+      amount: t.income
     }));
   }
 
-  private mapMonthlyToComparison(monthly: MonthlyStatsDto[]): readonly MonthlyIncomeVsExpensePoint[] {
-    return [...monthly].reverse().map(m => ({
-      label: m.month,
-      income: m.income,
-      expense: m.expense
+  private mapTrendToComparison(trend: TrendDataDto[]): readonly MonthlyIncomeVsExpensePoint[] {
+    // Backend returns data in chronological order (oldest first)
+    // No need to reverse - keep left=past, right=present for proper chart display
+    return trend.map(t => ({
+      label: t.label,
+      income: t.income,
+      expense: t.expense
     }));
   }
 
-  private buildSummaryCards(stats: DashboardStats, monthly: MonthlyStatsDto[]): readonly SummaryCard[] {
-    const currentMonth = monthly[0];
-    const previousMonth = monthly[1];
+  private buildSummaryCards(stats: DashboardStats, trend: TrendDataDto[]): readonly SummaryCard[] {
+    // Data is now in chronological order (oldest first)
+    // Current period is the LAST element, previous period is second to last
+    const currentPeriod = trend[trend.length - 1];
+    const previousPeriod = trend[trend.length - 2];
 
-    const incomeTrend = previousMonth?.income > 0
-      ? ((currentMonth.income - previousMonth.income) / previousMonth.income * 100).toFixed(1)
+    const incomeTrend = previousPeriod?.income > 0
+      ? ((currentPeriod.income - previousPeriod.income) / previousPeriod.income * 100).toFixed(1)
       : '0';
-    const expenseTrend = previousMonth?.expense > 0
-      ? ((currentMonth.expense - previousMonth.expense) / previousMonth.expense * 100).toFixed(1)
+    const expenseTrend = previousPeriod?.expense > 0
+      ? ((currentPeriod.expense - previousPeriod.expense) / previousPeriod.expense * 100).toFixed(1)
       : '0';
 
     return [
@@ -285,21 +435,21 @@ export class DashboardService {
         value: stats.totalIncome,
         trend: `${Number(incomeTrend) >= 0 ? '+' : ''}${incomeTrend}%`,
         trendColor: Number(incomeTrend) >= 0 ? 'positive' : 'negative',
-        sparkline: monthly.map(m => m.income).reverse()
+        sparkline: trend.map(t => t.income) // Already in chronological order
       },
       {
         label: 'Gastos Netos',
         value: stats.totalExpense,
         trend: `${Number(expenseTrend) >= 0 ? '+' : ''}${expenseTrend}%`,
         trendColor: Number(expenseTrend) <= 0 ? 'positive' : 'negative',
-        sparkline: monthly.map(m => m.expense).reverse()
+        sparkline: trend.map(t => t.expense) // Already in chronological order
       },
       {
         label: 'Balance Neto',
         value: stats.totalBalance,
         trend: `${Number(incomeTrend) >= 0 ? '+' : ''}${incomeTrend}%`,
         trendColor: stats.totalBalance >= 0 ? 'positive' : 'negative',
-        sparkline: monthly.map(m => m.balance).reverse()
+        sparkline: trend.map(t => t.balance) // Already in chronological order
       }
     ];
   }
@@ -318,7 +468,8 @@ export class DashboardService {
         day: '2-digit',
         month: 'short',
         year: 'numeric'
-      })
+      }),
+      origin: tx.origin || 'MANUAL'
     }));
   }
 

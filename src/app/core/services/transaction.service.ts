@@ -109,6 +109,7 @@ export class TransactionService {
   /**
    * Fetch paginated transactions from backend with optional filters.
    * Backend extracts userId from JWT token automatically.
+   * Supports complex filtering: type, origin, date range, and text search.
    */
   getTransactions(filters: TransactionFilterParams = {}): Observable<PaginatedResponse<DetailedTransaction>> {
     this._loading.set(true);
@@ -125,6 +126,7 @@ export class TransactionService {
     if (filters.origin) params = params.set('origin', filters.origin);
     if (filters.dateFrom) params = params.set('dateFrom', filters.dateFrom);
     if (filters.dateTo) params = params.set('dateTo', filters.dateTo);
+    if (filters.search) params = params.set('search', filters.search);
 
     return this.http.get<PaginatedResponse<TransactionApiResponse>>(this.apiUrl, { params }).pipe(
       map(response => this.mapPaginatedResponse(response)),

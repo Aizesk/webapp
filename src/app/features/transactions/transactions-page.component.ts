@@ -1,33 +1,66 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  HostListener,
+  computed,
+  effect,
+  inject,
   OnDestroy,
   OnInit,
-  ViewChild,
-  inject,
-  computed,
-  effect
+  signal,
+  ViewChild
 } from '@angular/core';
-import { AsyncPipe, CurrencyPipe, DatePipe, DecimalPipe, NgClass, NgFor, NgIf } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { BehaviorSubject, Subscription, combineLatest, map, shareReplay, tap, of, catchError } from 'rxjs';
-import { toObservable } from '@angular/core/rxjs-interop';
+import { CommonModule, CurrencyPipe, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { SelectionModel } from '@angular/cdk/collections';
-import {
-  DetailedTransaction,
-  PlatformDistribution,
-  TransactionMetric
-} from '../../shared/models/transactions.model';
+import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+
+import { DetailedTransaction } from '../../shared/models/transactions.model';
 import { TransactionService } from '../../core/services/transaction.service';
+import { TransactionFilterParams, TransactionOrigin, TransactionType } from '../../shared/models/transaction-api.model';
 import { TopNavbarComponent } from '../../shared/components/top-navbar/top-navbar.component';
 import { MAIN_NAV_ITEMS } from '../../shared/models/navigation.model';
+
+import {
+  TransactionDetailDialogComponent,
+  TransactionFormDialogComponent,
+  TransactionFormDialogData,
+  TransactionFormDialogResult,
+  DeleteConfirmDialogComponent,
+  DeleteConfirmDialogResult
+} from './dialogs';
+
+// Date range options (simplified, no redundant filters)
+const DATE_RANGES = [
+  { id: 'THIS_MONTH', label: 'Este Mes', days: -1 },
+  { id: 'LAST_MONTH', label: 'Mes Anterior', days: -2 },
+  { id: '6M', label: '6 Meses', days: 180 },
+  { id: '1Y', label: '1 Año', days: 365 },
+  { id: 'CUSTOM', label: 'Personalizado', days: -3 },
+  { id: 'ALL', label: 'Todo', days: 0 }
+] as const;
+
+// Origin filter options
+const ORIGIN_OPTIONS: { id: TransactionOrigin | 'ALL'; label: string; icon: string }[] = [
+  { id: 'ALL', label: 'Todos', icon: 'language' },
+  { id: 'AMAZON', label: 'Amazon', icon: 'shopping_cart' },
+  { id: 'SHOPIFY', label: 'Shopify', icon: 'storefront' },
+  { id: 'MANUAL', label: 'Manual', icon: 'edit_note' },
+  { id: 'STRIPE', label: 'Stripe', icon: 'credit_card' },
+  { id: 'PAYPAL', label: 'PayPal', icon: 'account_balance_wallet' }
+];
 
 type ColumnWidths = {
   select: number;
@@ -40,50 +73,141 @@ type ColumnWidths = {
   actions: number;
 };
 
-type SortField = 'type' | 'origin' | 'date' | 'amount' | 'category';
-
 @Component({
   selector: 'app-transactions-page',
   standalone: true,
   imports: [
+    CommonModule,
     NgFor,
     NgClass,
     NgIf,
-    AsyncPipe,
+    FormsModule,
     CurrencyPipe,
     DatePipe,
-    DecimalPipe,
-    RouterLink,
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
     MatCheckboxModule,
     MatProgressSpinnerModule,
+    MatDialogModule,
+    MatSnackBarModule,
+    MatTooltipModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatMenuModule,
     TopNavbarComponent
   ],
   templateUrl: './transactions-page.component.html',
   styleUrls: ['./transactions-page.component.css', './transactions-page.tables.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TransactionsPageComponent implements OnInit, AfterViewInit, OnDestroy {
-  // Using the new core TransactionService that calls real backend
+export class TransactionsPageComponent implements OnInit, OnDestroy {
   private readonly transactionService = inject(TransactionService);
-  private readonly search$ = new BehaviorSubject<string>('');
-  private readonly sort$ = new BehaviorSubject<{ field: SortField; direction: 'asc' | 'desc' }>({
-    field: 'date',
-    direction: 'desc'
-  });
-  private readonly refresh$ = new BehaviorSubject<void>(undefined);
+  private readonly dialog = inject(MatDialog);
+  private readonly snackBar = inject(MatSnackBar);
+  private readonly destroy$ = new Subject<void>();
+  private readonly searchInput$ = new Subject<string>();
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  private resizingColumn: keyof ColumnWidths | null = null;
-  private startX = 0;
-  private startWidth = 0;
-
+  // Navigation
   protected readonly navItems = MAIN_NAV_ITEMS;
-  protected readonly pageSizeOptions = [5, 10, 20];
+
+  // Filter options
+  protected readonly dateRanges = DATE_RANGES;
+  protected readonly originOptions = ORIGIN_OPTIONS;
+
+  // Reactive filter state
+  protected readonly selectedDateRange = signal<string>('ALL');
+  protected readonly selectedOrigin = signal<TransactionOrigin | 'ALL'>('ALL');
+  protected readonly searchText = signal<string>('');
+
+  // Custom date range state
+  protected readonly customDateFrom = signal<Date | null>(null);
+  protected readonly customDateTo = signal<Date | null>(null);
+  protected readonly showDatePicker = signal<boolean>(false);
+
+  // Get current date range label for display
+  protected readonly currentDateRangeLabel = computed(() => {
+    const rangeId = this.selectedDateRange();
+    if (rangeId === 'CUSTOM') {
+      const from = this.customDateFrom();
+      const to = this.customDateTo();
+      if (from && to) {
+        return `${from.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })} - ${to.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })}`;
+      }
+      return 'Seleccionar fechas';
+    }
+    return DATE_RANGES.find(r => r.id === rangeId)?.label || 'Todo';
+  });
+
+  // Pagination state
+  protected readonly pageSize = signal<number>(20);
+  protected readonly currentPage = signal<number>(0);
+  protected readonly pageSizeOptions = [10, 20, 50, 100];
+
+  // Sort state
+  protected readonly sortBy = signal<string>('transactionDate');
+  protected readonly sortDir = signal<'asc' | 'desc'>('desc');
+
+  // UI state
+  protected readonly isLoading = signal<boolean>(false);
+
+  // Computed filter params
+  protected readonly filterParams = computed<TransactionFilterParams>(() => {
+    const dateRange = this.selectedDateRange();
+    const dateConfig = DATE_RANGES.find(r => r.id === dateRange);
+    
+    let dateFrom: string | undefined;
+    let dateTo: string | undefined;
+    const now = new Date();
+    
+    // Handle special date ranges
+    if (dateRange === 'THIS_MONTH') {
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+      dateFrom = firstDay.toISOString();
+      dateTo = lastDay.toISOString();
+    } else if (dateRange === 'LAST_MONTH') {
+      const firstDay = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const lastDay = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+      dateFrom = firstDay.toISOString();
+      dateTo = lastDay.toISOString();
+    } else if (dateRange === 'CUSTOM') {
+      const from = this.customDateFrom();
+      const to = this.customDateTo();
+      if (from && to) {
+        dateFrom = from.toISOString();
+        // Set to end of day for dateTo
+        const endOfDay = new Date(to);
+        endOfDay.setHours(23, 59, 59, 999);
+        dateTo = endOfDay.toISOString();
+      }
+    } else if (dateConfig && dateConfig.days > 0) {
+      const from = new Date(now);
+      from.setDate(from.getDate() - dateConfig.days);
+      dateFrom = from.toISOString();
+      dateTo = now.toISOString();
+    }
+
+    const origin = this.selectedOrigin();
+
+    return {
+      page: this.currentPage(),
+      size: this.pageSize(),
+      sortBy: this.sortBy(),
+      sortDir: this.sortDir(),
+      origin: origin === 'ALL' ? undefined : origin,
+      dateFrom,
+      dateTo,
+      search: this.searchText() || undefined
+    };
+  });
+
+  // Table config
   protected readonly displayedColumns: (keyof ColumnWidths | 'actions')[] = [
     'select',
     'type',
@@ -96,260 +220,273 @@ export class TransactionsPageComponent implements OnInit, AfterViewInit, OnDestr
   ];
   protected readonly dataSource = new MatTableDataSource<DetailedTransaction>([]);
   protected readonly selection = new SelectionModel<DetailedTransaction>(true, []);
-  protected readonly isProcessing$ = new BehaviorSubject<boolean>(false);
-  protected renderedPage: DetailedTransaction[] = [];
-  private renderedSub?: Subscription;
+
   protected columnWidths: ColumnWidths = {
     select: 48,
-    type: 120,
-    origin: 120,
-    date: 140,
-    concept: 260,
-    amount: 140,
-    category: 140,
-    actions: 130
+    type: 100,
+    origin: 100,
+    date: 130,
+    concept: 280,
+    amount: 130,
+    category: 130,
+    actions: 140
   };
 
-  // Default distribution for visualization (backend doesn't provide this yet)
-  private readonly defaultDistribution: PlatformDistribution[] = [
-    { platform: 'Amazon', amount: 0, color: '#f97316' },
-    { platform: 'Shopify', amount: 0, color: '#22c55e' }
-  ];
+  // Expose service signals
+  protected readonly transactions = this.transactionService.transactions;
+  protected readonly totalElements = this.transactionService.totalElements;
+  protected readonly totalPages = this.transactionService.totalPages;
 
-  // Convert signals to observables for combineLatest
-  private readonly transactions$ = toObservable(this.transactionService.transactions);
-  private readonly metrics$ = toObservable(this.transactionService.metrics);
-
-  protected readonly vm$ = combineLatest([
-    this.transactions$,
-    this.metrics$,
-    this.search$,
-    this.sort$,
-    this.refresh$
-  ]).pipe(
-    tap(([transactions]) => {
-      this.dataSource.data = [...transactions];
-      this.dataSource.filterPredicate = (data, filterValue) => {
-        const term = filterValue.trim().toLowerCase();
-        if (!term) {
-          return true;
-        }
-
-        return (
-          data.concept.toLowerCase().includes(term) ||
-          data.platform.toLowerCase().includes(term) ||
-          data.category.toLowerCase().includes(term) ||
-          (data.reference ?? '').toLowerCase().includes(term) ||
-          (data.customer?.name ?? '').toLowerCase().includes(term)
-        );
-      };
-
-      this.dataSource.sortingDataAccessor = (item, property) => {
-        switch (property) {
-          case 'type':
-            return item.type;
-          case 'origin':
-            return item.origin;
-          case 'date':
-            return new Date(item.date).getTime();
-          case 'amount':
-            return item.amount;
-          case 'category':
-            return item.category;
-          default:
-            return (item as any)[property];
-        }
-      };
-    }),
-    map(([transactions, metrics, search, sort]) => {
-      // Build distribution from actual transaction data
-      const platformAmounts = new Map<string, number>();
-      transactions.forEach(tx => {
-        const current = platformAmounts.get(tx.platform) || 0;
-        platformAmounts.set(tx.platform, current + Math.abs(tx.amount));
-      });
-
-      const colors: Record<string, string> = {
-        'Amazon': '#f97316',
-        'Shopify': '#22c55e',
-        'default': '#94a3b8'
-      };
-
-      const distribution: PlatformDistribution[] = Array.from(platformAmounts.entries()).map(([platform, amount]) => ({
-        platform,
-        amount,
-        color: colors[platform] || colors['default']
-      }));
-
-      const distributionTotal = distribution.reduce((acc, item) => acc + item.amount, 0);
-
-      return {
-        metrics,
-        distribution: distribution.length > 0 ? distribution : this.defaultDistribution,
-        distributionTotal,
-        distributionGradient: this.buildGradient(distribution.length > 0 ? distribution : this.defaultDistribution),
-        totalElements: this.transactionService.totalElements(),
-        totalPages: this.transactionService.totalPages(),
-        currentPage: this.transactionService.currentPage(),
-        filters: {
-          search
-        },
-        sort
-      };
-    }),
-    shareReplay({ bufferSize: 1, refCount: true })
-  );
-
-  protected trackByMetric = (_: number, metric: TransactionMetric): string => metric.label;
-  protected trackByPlatform = (_: number, dist: PlatformDistribution): string => dist.platform;
-  protected startResize(event: MouseEvent, column: keyof ColumnWidths): void {
-    this.resizingColumn = column;
-    this.startX = event.clientX;
-    this.startWidth = this.columnWidths[column];
-    event.preventDefault();
-  }
-
-  @HostListener('document:mouseup')
-  protected stopResize(): void {
-    this.resizingColumn = null;
-  }
-
-  @HostListener('document:mousemove', ['$event'])
-  protected handleResize(event: MouseEvent): void {
-    if (!this.resizingColumn) {
-      return;
-    }
-
-    const delta = event.clientX - this.startX;
-    const nextWidth = Math.max(110, this.startWidth + delta);
-    this.columnWidths = { ...this.columnWidths, [this.resizingColumn]: nextWidth };
-  }
-
-  // ========== Lifecycle Hooks ==========
-
-  ngOnInit(): void {
-    this.loadTransactions(0, 20);
-  }
-
-  protected setSearch(value: string): void {
-    this.isProcessing$.next(true);
-    this.search$.next(value);
-    const term = value.trim().toLowerCase();
-    this.dataSource.filter = term;
-    this.dataSource.paginator?.firstPage();
-    setTimeout(() => this.isProcessing$.next(false));
-  }
-
-  protected changeSortFromColumn(field: SortField): void {
-    this.isProcessing$.next(true);
-    const current = this.sort$.value;
-    const isSameField = current.field === field;
-    const direction = isSameField ? (current.direction === 'asc' ? 'desc' : 'asc') : 'desc';
-
-    this.sort$.next({ field, direction });
-    if (this.sort) {
-      this.sort.active = field;
-      this.sort.direction = direction;
-      this.sort.sortChange.emit({ active: field, direction });
-    }
-    setTimeout(() => this.isProcessing$.next(false));
-  }
-
-  protected toggleSelection(row: DetailedTransaction, checked: boolean): void {
-    if (checked) {
-      this.selection.select(row);
-    } else {
-      this.selection.deselect(row);
-    }
-  }
-
-  // ========== Backend Pagination ==========
-
-  /**
-   * Load transactions from backend with pagination.
-   */
-  protected loadTransactions(page: number, size: number): void {
-    this.isProcessing$.next(true);
-    this.transactionService.getTransactions({ page, size }).subscribe({
-      next: () => {
-        this.refresh$.next();
-        this.isProcessing$.next(false);
-      },
-      error: (err) => {
-        console.error('Failed to load transactions:', err);
-        this.isProcessing$.next(false);
-      }
+  constructor() {
+    // Effect to reload data when filters change
+    effect(() => {
+      const params = this.filterParams();
+      this.loadTransactions(params);
     });
   }
 
-  /**
-   * Handle page change event from MatPaginator.
-   */
-  protected onPageChange(event: PageEvent): void {
-    this.loadTransactions(event.pageIndex, event.pageSize);
-  }
-
-  /**
-   * Refresh transactions (reload current page).
-   */
-  protected refreshTransactions(): void {
-    this.loadTransactions(this.transactionService.currentPage(), 20);
-  }
-
-  ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
-
-    // Inicializa sort y filtro para MatTableDataSource
-    this.changeSortFromColumn(this.sort$.value.field);
-    const term = this.search$.value.trim().toLowerCase();
-    this.dataSource.filter = term;
-
-    this.renderedSub = this.dataSource.connect().subscribe((data) => {
-      this.renderedPage = data;
+  ngOnInit(): void {
+    // Setup debounced search
+    this.searchInput$.pipe(
+      debounceTime(400),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(value => {
+      this.searchText.set(value);
+      this.currentPage.set(0); // Reset to first page on search
     });
   }
 
   ngOnDestroy(): void {
-    this.renderedSub?.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  protected isAllSelected(): boolean {
-    const pageData = this.renderedPage;
-    return pageData.length > 0 && pageData.every((row) => this.selection.isSelected(row));
+  // ========== Filter Actions ==========
+
+  selectDateRange(rangeId: string): void {
+    if (rangeId === 'CUSTOM') {
+      this.showDatePicker.set(true);
+      this.selectedDateRange.set(rangeId);
+      // Don't reset page yet - wait for dates to be selected
+      return;
+    }
+    this.showDatePicker.set(false);
+    this.customDateFrom.set(null);
+    this.customDateTo.set(null);
+    this.selectedDateRange.set(rangeId);
+    this.currentPage.set(0);
   }
 
-  protected toggleAll(checked: boolean): void {
-    const pageData = this.renderedPage;
-    if (checked) {
-      pageData.forEach((row) => this.selection.select(row));
+  onCustomDateRangeChange(): void {
+    const from = this.customDateFrom();
+    const to = this.customDateTo();
+    if (from && to) {
+      // Only close picker and reset page when both dates are selected
+      this.showDatePicker.set(false);
+      this.currentPage.set(0);
+    }
+  }
+
+  setCustomDateFrom(date: Date | null): void {
+    this.customDateFrom.set(date);
+    this.onCustomDateRangeChange();
+  }
+
+  setCustomDateTo(date: Date | null): void {
+    this.customDateTo.set(date);
+    this.onCustomDateRangeChange();
+  }
+
+  cancelCustomDateRange(): void {
+    this.showDatePicker.set(false);
+    // Don't change the current selection
+  }
+
+  clearCustomDates(): void {
+    this.customDateFrom.set(null);
+    this.customDateTo.set(null);
+    this.selectedDateRange.set('ALL');
+    this.showDatePicker.set(false);
+    this.currentPage.set(0);
+  }
+
+  selectOrigin(originId: TransactionOrigin | 'ALL'): void {
+    this.selectedOrigin.set(originId);
+    this.currentPage.set(0);
+  }
+
+  onSearchInput(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.searchInput$.next(value);
+  }
+
+  clearSearch(): void {
+    this.searchText.set('');
+    this.searchInput$.next('');
+  }
+
+  // ========== Pagination & Sort ==========
+
+  onPageChange(event: PageEvent): void {
+    this.currentPage.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
+  }
+
+  onSortChange(sort: Sort): void {
+    if (sort.active && sort.direction) {
+      this.sortBy.set(sort.active);
+      this.sortDir.set(sort.direction);
+      this.currentPage.set(0);
+    }
+  }
+
+  // ========== Data Loading ==========
+
+  private loadTransactions(filters: TransactionFilterParams): void {
+    this.isLoading.set(true);
+    this.transactionService.getTransactions(filters).subscribe({
+      next: (response) => {
+        this.dataSource.data = response.content;
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to load transactions:', err);
+        this.snackBar.open('Error al cargar transacciones', 'Cerrar', { duration: 5000 });
+        this.isLoading.set(false);
+      }
+    });
+  }
+
+  // ========== Selection ==========
+
+  isAllSelected(): boolean {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numRows > 0 && numSelected === numRows;
+  }
+
+  toggleAllSelection(): void {
+    if (this.isAllSelected()) {
+      this.selection.clear();
     } else {
-      pageData.forEach((row) => this.selection.deselect(row));
+      this.dataSource.data.forEach(row => this.selection.select(row));
     }
   }
 
-  protected clearSelection(): void {
-    this.selection.clear();
-  }
+  // ========== CRUD Dialogs ==========
 
-  protected clearSearch(): void {
-    this.setSearch('');
-  }
-
-  private buildGradient(distribution: readonly PlatformDistribution[]): string {
-    const total = distribution.reduce((acc, item) => acc + item.amount, 0);
-    if (!total) {
-      return '#e2e8f0';
-    }
-
-    let current = 0;
-    const segments = distribution.map((item) => {
-      const start = (current / total) * 360;
-      current += item.amount;
-      const end = (current / total) * 360;
-      return `${item.color} ${start.toFixed(2)}deg ${end.toFixed(2)}deg`;
+  openDetailDialog(transaction: DetailedTransaction): void {
+    const dialogRef = this.dialog.open(TransactionDetailDialogComponent, {
+      data: transaction,
+      width: '500px'
     });
 
-    return `conic-gradient(${segments.join(', ')})`;
+    dialogRef.afterClosed().subscribe(result => {
+      if (result?.action === 'edit') {
+        this.openEditDialog(result.transaction);
+      }
+    });
+  }
+
+  openCreateDialog(): void {
+    const data: TransactionFormDialogData = { mode: 'create' };
+    const dialogRef = this.dialog.open(TransactionFormDialogComponent, {
+      data,
+      width: '550px',
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe((result: TransactionFormDialogResult) => {
+      if (result?.action === 'save' && result.data) {
+        this.transactionService.createTransaction(result.data).subscribe({
+          next: () => {
+            this.snackBar.open('Transacción creada correctamente', 'Cerrar', { duration: 3000 });
+            // Reload to get fresh data
+            this.loadTransactions(this.filterParams());
+          },
+          error: (err) => {
+            console.error('Failed to create transaction:', err);
+            this.snackBar.open('Error al crear la transacción', 'Cerrar', { duration: 5000 });
+          }
+        });
+      }
+    });
+  }
+
+  openEditDialog(transaction: DetailedTransaction): void {
+    // Determine if this is a partial edit (auto-imported transaction)
+    const isManual = transaction.manual || transaction.origin === 'MANUAL';
+    const isPartialEdit = !isManual;
+
+    const data: TransactionFormDialogData = { 
+      mode: 'edit', 
+      transaction,
+      partialEdit: isPartialEdit
+    };
+    const dialogRef = this.dialog.open(TransactionFormDialogComponent, {
+      data,
+      width: '550px',
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe((result: TransactionFormDialogResult) => {
+      if (result?.action === 'save' && result.data && result.id) {
+        this.transactionService.updateTransaction(result.id, result.data).subscribe({
+          next: () => {
+            this.snackBar.open('Transacción actualizada correctamente', 'Cerrar', { duration: 3000 });
+            this.loadTransactions(this.filterParams());
+          },
+          error: (err) => {
+            console.error('Failed to update transaction:', err);
+            this.snackBar.open('Error al actualizar la transacción', 'Cerrar', { duration: 5000 });
+          }
+        });
+      }
+    });
+  }
+
+  openDeleteDialog(transaction: DetailedTransaction): void {
+    const dialogRef = this.dialog.open(DeleteConfirmDialogComponent, {
+      data: { transaction },
+      width: '450px'
+    });
+
+    dialogRef.afterClosed().subscribe((result: DeleteConfirmDialogResult) => {
+      if (result?.confirmed && result.transactionId) {
+        this.transactionService.deleteTransaction(result.transactionId).subscribe({
+          next: () => {
+            this.snackBar.open('Transacción eliminada correctamente', 'Cerrar', { duration: 3000 });
+            this.selection.deselect(transaction);
+            this.loadTransactions(this.filterParams());
+          },
+          error: (err) => {
+            console.error('Failed to delete transaction:', err);
+            this.snackBar.open('Error al eliminar la transacción', 'Cerrar', { duration: 5000 });
+          }
+        });
+      }
+    });
+  }
+
+  // ========== Helpers ==========
+
+  /** Returns true if full edit is allowed (MANUAL transactions) */
+  canFullEdit(transaction: DetailedTransaction): boolean {
+    return transaction.manual || transaction.origin === 'MANUAL';
+  }
+
+  /** All transactions can be edited (full for MANUAL, partial for others) */
+  canEdit(transaction: DetailedTransaction): boolean {
+    return true; // All transactions can now be edited
+  }
+
+  getTypeLabel(type: string): string {
+    switch (type) {
+      case 'INCOME': return 'Ingreso';
+      case 'EXPENSE': return 'Gasto';
+      case 'TRANSFER': return 'Transferencia';
+      default: return type;
+    }
   }
 }

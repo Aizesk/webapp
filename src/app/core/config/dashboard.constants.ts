@@ -14,22 +14,42 @@
  * Available time ranges for dashboard filtering.
  * Maps to backend query parameter values.
  */
-export type TimeRange = '7D' | '30D' | '3M' | '6M' | '1Y';
+export type TimeRange = '1D' | '7D' | '30D' | '3M' | '6M' | '1Y' | 'CUSTOM' | 'THIS_MONTH' | 'LAST_MONTH';
 
 export interface TimeRangeConfig {
   readonly label: string;
   readonly shortLabel: string;
   readonly months: number;
+  readonly days: number;
   readonly queryParam: string;
 }
 
 export const TIME_RANGE_CONFIG: Readonly<Record<TimeRange, TimeRangeConfig>> = {
-  '7D': { label: 'Última semana', shortLabel: '7D', months: 1, queryParam: '7d' },
-  '30D': { label: 'Último mes', shortLabel: '30D', months: 1, queryParam: '30d' },
-  '3M': { label: 'Últimos 3 meses', shortLabel: '3M', months: 3, queryParam: '3m' },
-  '6M': { label: 'Últimos 6 meses', shortLabel: '6M', months: 6, queryParam: '6m' },
-  '1Y': { label: 'Último año', shortLabel: '1Y', months: 12, queryParam: '1y' }
+  '1D': { label: 'Hoy', shortLabel: '1D', months: 1, days: 1, queryParam: '1d' },
+  '7D': { label: 'Última semana', shortLabel: '7D', months: 1, days: 7, queryParam: '7d' },
+  '30D': { label: 'Último mes', shortLabel: '30D', months: 1, days: 30, queryParam: '30d' },
+  '3M': { label: 'Últimos 3 meses', shortLabel: '3M', months: 3, days: 90, queryParam: '3m' },
+  '6M': { label: 'Últimos 6 meses', shortLabel: '6M', months: 6, days: 180, queryParam: '6m' },
+  '1Y': { label: 'Último año', shortLabel: '1Y', months: 12, days: 365, queryParam: '1y' },
+  'CUSTOM': { label: 'Personalizado', shortLabel: 'Custom', months: 0, days: 0, queryParam: 'custom' },
+  'THIS_MONTH': { label: 'Este Mes', shortLabel: 'Este Mes', months: 1, days: 30, queryParam: 'this_month' },
+  'LAST_MONTH': { label: 'Mes Anterior', shortLabel: 'Mes Ant.', months: 1, days: 30, queryParam: 'last_month' }
 } as const;
+
+/**
+ * Custom date range interface for CUSTOM filter.
+ */
+export interface CustomDateRange {
+  readonly startDate: Date;
+  readonly endDate: Date;
+}
+
+/**
+ * Get days count for a time range.
+ */
+export function getDaysForRange(range: TimeRange): number {
+  return TIME_RANGE_CONFIG[range].days;
+}
 
 export const DEFAULT_TIME_RANGE: TimeRange = '30D';
 

@@ -24,6 +24,7 @@ export interface TransactionDto {
   readonly description: string;
   readonly category: string;
   readonly transactionDate: string;
+  readonly origin?: string;
 }
 
 /**
@@ -38,6 +39,24 @@ export interface MonthlyStatsDto {
   readonly expense: number;
   readonly balance: number;
   readonly transactionCount: number;
+}
+
+/**
+ * Trend Data from backend - dynamic granularity (daily/monthly).
+ * Maps to Java: com.aizesk.reporting.infrastructure.web.DashboardApiController.TrendDataDto
+ *
+ * Used for time-series charts with gap filling:
+ * - For ranges <= 90 days: returns DAILY data points (e.g., "02 Feb")
+ * - For ranges > 90 days: returns MONTHLY data points (e.g., "Feb 2025")
+ */
+export interface TrendDataDto {
+  readonly label: string;
+  readonly date: string;
+  readonly income: number;
+  readonly expense: number;
+  readonly balance: number;
+  readonly transactionCount: number;
+  readonly granularity: 'DAILY' | 'MONTHLY';
 }
 
 /**
