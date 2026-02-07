@@ -363,17 +363,19 @@
               <h2 class="panel__title">Top por Categoría</h2>
             </div>
             <div class="category-toggle">
-              <button 
-                class="toggle-btn" 
+              <button
+                class="toggle-btn"
                 [class.active]="categoryViewMode() === 'expenses'"
-                (click)="setCategoryViewMode('expenses')">
+                (click)="setCategoryViewMode('expenses')"
+              >
                 <span class="material-symbols-rounded">trending_down</span>
                 Gastos
               </button>
-              <button 
-                class="toggle-btn" 
+              <button
+                class="toggle-btn"
                 [class.active]="categoryViewMode() === 'incomes'"
-                (click)="setCategoryViewMode('incomes')">
+                (click)="setCategoryViewMode('incomes')"
+              >
                 <span class="material-symbols-rounded">trending_up</span>
                 Ingresos
               </button>
@@ -383,7 +385,11 @@
           <!-- Expenses View -->
           <ng-container *ngIf="categoryViewMode() === 'expenses'">
             <div class="top-expenses-list" *ngIf="vm.topExpenses.length > 0; else noExpenses">
-              <article *ngFor="let expense of vm.topExpenses" class="expense-item" [style.--category-color]="expense.color">
+              <article
+                *ngFor="let expense of vm.topExpenses"
+                class="expense-item"
+                [style.--category-color]="expense.color"
+              >
                 <div class="expense-item__header">
                   <div class="expense-item__icon">
                     <span class="material-symbols-rounded">{{ expense.icon }}</span>
@@ -426,7 +432,11 @@
           <!-- Incomes View -->
           <ng-container *ngIf="categoryViewMode() === 'incomes'">
             <div class="top-expenses-list" *ngIf="vm.topIncomes.length > 0; else noIncomes">
-              <article *ngFor="let income of vm.topIncomes" class="expense-item" [style.--category-color]="income.color">
+              <article
+                *ngFor="let income of vm.topIncomes"
+                class="expense-item"
+                [style.--category-color]="income.color"
+              >
                 <div class="expense-item__header">
                   <div class="expense-item__icon">
                     <span class="material-symbols-rounded">{{ income.icon }}</span>
