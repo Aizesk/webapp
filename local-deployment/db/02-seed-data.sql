@@ -18,7 +18,7 @@ SET CHARACTER SET utf8mb4;
 INSERT IGNORE INTO users (
     id, email, password_hash, full_name, last_name, phone, 
     street, city, postal_code, country, 
-    role, subscription_id, avatar_url,
+    role, avatar_url,
     pref_billing_alerts, pref_weekly_digest, pref_security_events, pref_product_research,
     created_at, updated_at, last_login_at
 ) VALUES (
@@ -33,7 +33,6 @@ INSERT IGNORE INTO users (
     '28013',
     'España',
     'ROLE_USER',
-    'sub-0001-0000-0000-000000000001', -- Referencia a suscripción FREE
     NULL,
     1, 1, 1, 0,
     NOW() - INTERVAL 30 DAY,
@@ -45,7 +44,7 @@ INSERT IGNORE INTO users (
 INSERT IGNORE INTO users (
     id, email, password_hash, full_name, last_name, phone, 
     street, city, postal_code, country, 
-    role, subscription_id, avatar_url,
+    role, avatar_url,
     pref_billing_alerts, pref_weekly_digest, pref_security_events, pref_product_research,
     created_at, updated_at, last_login_at
 ) VALUES (
@@ -60,7 +59,6 @@ INSERT IGNORE INTO users (
     '08029',
     'España',
     'ROLE_ADMIN',
-    'sub-0002-0000-0000-000000000002', -- Referencia a suscripción ENTERPRISE
     NULL,
     1, 1, 1, 1,
     NOW() - INTERVAL 60 DAY,
@@ -72,7 +70,7 @@ INSERT IGNORE INTO users (
 INSERT IGNORE INTO users (
     id, email, password_hash, full_name, last_name, phone, 
     street, city, postal_code, country, 
-    role, subscription_id, avatar_url,
+    role, avatar_url,
     pref_billing_alerts, pref_weekly_digest, pref_security_events, pref_product_research,
     created_at, updated_at, last_login_at
 ) VALUES (
@@ -87,7 +85,6 @@ INSERT IGNORE INTO users (
     '28006',
     'España',
     'ROLE_USER',
-    'sub-0003-0000-0000-000000000003', -- Referencia a suscripción PRO (ahora PROFESSIONAL)
     NULL,
     1, 0, 1, 0,
     NOW() - INTERVAL 15 DAY,
@@ -99,7 +96,7 @@ INSERT IGNORE INTO users (
 INSERT IGNORE INTO users (
     id, email, password_hash, full_name, last_name, phone, 
     street, city, postal_code, country, 
-    role, subscription_id, avatar_url,
+    role, avatar_url,
     pref_billing_alerts, pref_weekly_digest, pref_security_events, pref_product_research,
     created_at, updated_at, last_login_at
 ) VALUES (
@@ -114,7 +111,6 @@ INSERT IGNORE INTO users (
     '46002',
     'España',
     'ROLE_USER',
-    'sub-0004-0000-0000-000000000004', -- Referencia a suscripción FREE
     NULL,
     1, 1, 1, 0,
     NOW() - INTERVAL 5 DAY,
@@ -126,7 +122,7 @@ INSERT IGNORE INTO users (
 INSERT IGNORE INTO users (
     id, email, password_hash, full_name, last_name, phone, 
     street, city, postal_code, country, 
-    role, subscription_id, avatar_url,
+    role, avatar_url,
     pref_billing_alerts, pref_weekly_digest, pref_security_events, pref_product_research,
     created_at, updated_at, last_login_at
 ) VALUES (
@@ -141,7 +137,6 @@ INSERT IGNORE INTO users (
     '10001',
     'USA',
     'ROLE_USER',
-    'sub-0005-0000-0000-000000000005', -- Referencia a suscripción PROFESSIONAL
     NULL,
     1, 1, 1, 1,
     NOW() - INTERVAL 45 DAY,

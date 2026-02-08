@@ -28,7 +28,6 @@ CREATE TABLE IF NOT EXISTS users (
     
     -- User info
     role VARCHAR(50) DEFAULT 'ROLE_USER' COMMENT 'Rol del usuario (ROLE_USER, ROLE_ADMIN)',
-    subscription_id VARCHAR(36) COMMENT 'ID de la suscripción en subscription-service',
     avatar_url VARCHAR(500) COMMENT 'URL del avatar',
     
     -- Preferences (embedded)
@@ -45,7 +44,6 @@ CREATE TABLE IF NOT EXISTS users (
     -- Indexes
     INDEX idx_users_email (email),
     INDEX idx_users_role (role),
-    INDEX idx_users_subscription_id (subscription_id),
     INDEX idx_users_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
