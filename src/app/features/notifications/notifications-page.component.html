@@ -1,0 +1,124 @@
+<section class="notifications-page">
+  <app-top-navbar [navItems]="navItems" brandTagline="Tu control financiero"></app-top-navbar>
+
+  <div class="notifications-page__content">
+    <div class="page-header">
+      <div class="header-content">
+        <h1 class="page-title">
+          <span class="material-symbols-rounded page-icon">notifications</span>
+          {{ LABELS.PAGE_TITLE }}
+        </h1>
+        <p class="page-subtitle">{{ LABELS.PAGE_SUBTITLE }}</p>
+      </div>
+      <button *ngIf="unreadCount() > 0" class="mark-all-button" (click)="markAllAsRead()">
+        <span class="material-symbols-rounded">done_all</span>
+        {{ LABELS.MARK_ALL_READ }}
+      </button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-container">
+      <button class="tab" [class.tab--active]="activeTab() === FILTERS.TAB.ALL" (click)="setActiveTab(FILTERS.TAB.ALL)">
+        {{ LABELS.TAB_ALL }}
+      </button>
+      <button class="tab" [class.tab--active]="activeTab() === FILTERS.TAB.UNREAD"
+        (click)="setActiveTab(FILTERS.TAB.UNREAD)">
+        {{ LABELS.TAB_UNREAD }}
+      </button>
+      <button class="tab" [class.tab--active]="activeTab() === FILTERS.TAB.READ"
+        (click)="setActiveTab(FILTERS.TAB.READ)">
+        {{ LABELS.TAB_READ }}
+      </button>
+    </div>
+
+    <!-- Filters and Search -->
+    <div class="filters-section">
+      <div class="filters-row">
+        <div class="filter-group">
+          <label class="filter-label">{{ LABELS.FILTER_TYPE_LABEL }}</label>
+          <select class="filter-select" [value]="selectedType()" (change)="setTypeFilter($any($event.target).value)">
+            <option *ngFor="let option of TYPE_OPTIONS" [value]="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">{{ LABELS.FILTER_PRIORITY_LABEL }}</label>
+          <select class="filter-select" [value]="selectedPriority()"
+            (change)="setPriorityFilter($any($event.target).value)">
+            <option *ngFor="let option of PRIORITY_OPTIONS" [value]="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
+
+        <div class="search-group">
+          <span class="material-symbols-rounded search-icon">search</span>
+          <input type="text" class="search-input" [placeholder]="LABELS.SEARCH_PLACEHOLDER" [value]="searchQuery()"
+            (input)="onSearchChange($event)" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Notifications List -->
+    <div class="notifications-container">
+      <div *ngIf="isLoading()" class="loading-state">
+        <span class="material-symbols-rounded spinner">progress_activity</span>
+        <p>{{ LABELS.LOADING }}</p>
+      </div>
+
+      <div *ngIf="!isLoading() && filteredNotifications().length === 0" class="empty-state">
+        <span class="material-symbols-rounded empty-icon">notifications_off</span>
+        <h3>{{ LABELS.EMPTY_TITLE }}</h3>
+        <p>{{ LABELS.EMPTY_MESSAGE }}</p>
+      </div>
+
+      <div class="notifications-list" *ngIf="!isLoading() && filteredNotifications().length > 0">
+        <div *ngFor="let notification of filteredNotifications()" class="notification-card"
+          [class.notification-card--unread]="notification.status === STATUS.UNREAD"
+          [class.notification-card--urgent]="notification.priority === PRIORITY.URGENT"
+          (click)="markAsRead(notification)">
+          <div class="notification-icon" [ngClass]="'notification-icon--' + notification.type.toLowerCase()">
+            <span class="material-symbols-rounded">
+              {{ getNotificationIcon(notification.type) }}
+            </span>
+          </div>
+
+          <div class="notification-content">
+            <div class="notification-header">
+              <h3 class="notification-title">{{ notification.title }}</h3>
+              <div class="notification-badges">
+                <span *ngIf="isHighPriority(notification)" class="priority-badge"
+                  [class.priority-badge--urgent]="notification.priority === PRIORITY.URGENT"
+                  [class.priority-badge--high]="notification.priority === PRIORITY.HIGH">
+                  {{ getPriorityLabel(notification.priority) }}
+                </span>
+                <span *ngIf="isUnread(notification)" class="unread-dot"></span>
+              </div>
+            </div>
+
+            <p class="notification-message">{{ notification.message }}</p>
+
+            <div class="notification-footer">
+              <span class="notification-time">
+                <span class="material-symbols-rounded time-icon">schedule</span>
+                {{ getRelativeTime(notification.createdAt) }}
+              </span>
+
+              <a *ngIf="notification.link" [href]="notification.link" class="notification-link"
+                (click)="$event.stopPropagation()">
+                <span class="material-symbols-rounded">open_in_new</span>
+                {{ LABELS.VIEW_DETAILS }}
+              </a>
+            </div>
+          </div>
+
+          <button class="delete-button" (click)="deleteNotification(notification, $event)" [title]="LABELS.DELETE">
+            <span class="material-symbols-rounded">delete</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

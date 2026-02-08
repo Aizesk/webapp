@@ -13,6 +13,7 @@ import { PlatformConnectionsPageComponent } from './features/platform-connection
 import { ReportsPageComponent } from './features/reports/reports-page.component';
 import { SubscriptionsPageComponent } from './features/subscriptions/subscriptions-page.component';
 import { ProfilePageComponent } from './features/profile/profile-page.component';
+import { NotificationsPageComponent } from './features/notifications/notifications-page.component';
 import { authGuard, publicOnlyGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -93,6 +94,12 @@ export const routes: Routes = [
     component: SubscriptionsPageComponent,
     canActivate: [authGuard],
     title: 'Aizesk | Suscripciones',
+  },
+  {
+    path: 'notifications',
+    component: NotificationsPageComponent,
+    canActivate: [authGuard],
+    title: 'Aizesk | Notificaciones',
   },
   {
     path: 'profile',
