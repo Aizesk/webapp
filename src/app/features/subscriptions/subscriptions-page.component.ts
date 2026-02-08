@@ -1,130 +1,166 @@
-import { Component } from '@angular/core';
-import { NgFor, NgIf, CurrencyPipe } from '@angular/common';
+import { Component, OnInit, inject, computed, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { TopNavbarComponent } from '../../shared/components/top-navbar/top-navbar.component';
-import { AppNavItem } from '../../shared/models/navigation.model';
-
-interface SubscriptionPlan {
-  id: string;
-  name: string;
-  price: number;
-  billing: 'monthly' | 'yearly';
-  description: string;
-  features: string[];
-  recommended?: boolean;
-  color: string;
-}
+import { MAIN_NAV_ITEMS } from '../../shared/models/navigation.model';
+import { SubscriptionService } from '../../core/services/subscription.service';
+import { SubscriptionPlan } from '../../shared/models/subscription.model';
+import {
+  PLAN_TYPE,
+  BILLING_PERIOD,
+  SUBSCRIPTION_LABELS,
+  PLAN_COLORS,
+  calculateYearlyPrice,
+  BillingPeriodValue
+} from '../constants/subscriptions.constants';
 
 @Component({
   selector: 'app-subscriptions-page',
   standalone: true,
-  imports: [NgFor, NgIf, CurrencyPipe, TopNavbarComponent],
+  imports: [CommonModule, TopNavbarComponent],
   templateUrl: './subscriptions-page.component.html',
   styleUrls: ['./subscriptions-page.component.css'],
 })
-export class SubscriptionsPageComponent {
-  navItems: ReadonlyArray<AppNavItem> = [
-    { label: 'Inicio', path: '/main-dashboard', exact: false },
-    { label: 'Dashboard', path: '/main-dashboard', exact: true },
-    { label: 'Transacciones', path: '/transactions', exact: false },
-    { label: 'Conexiones', path: '/platform-connections', exact: false },
-    { label: 'Informes', path: '/reports', exact: false },
-  ];
+export class SubscriptionsPageComponent implements OnInit {
+  private readonly subscriptionService = inject(SubscriptionService);
 
-  selectedBilling: 'monthly' | 'yearly' = 'monthly';
-  selectedPlanId: string | null = null;
+  // Navigation
+  protected readonly navItems = MAIN_NAV_ITEMS;
 
-  plans: SubscriptionPlan[] = [
-    {
-      id: 'free',
-      name: 'Gratuito',
-      price: 0,
-      billing: 'monthly',
-      description: 'Perfecto para empezar y probar la plataforma',
-      color: '#64748b',
-      features: [
-        'Hasta 50 transacciones/mes',
-        '1 conexión de plataforma',
-        'Reportes básicos',
-        'Soporte por email',
-        'Retención de datos 30 días',
-      ],
-    },
-    {
-      id: 'starter',
-      name: 'Starter',
-      price: 19,
-      billing: 'monthly',
-      description: 'Ideal para vendedores individuales',
-      color: '#0ea5e9',
-      features: [
-        'Hasta 500 transacciones/mes',
-        '3 conexiones de plataforma',
-        'Reportes avanzados',
-        'Exportación de datos',
-        'Soporte prioritario',
-        'Retención de datos 90 días',
-        'Conciliación automática',
-      ],
-    },
-    {
-      id: 'professional',
-      name: 'Professional',
-      price: 49,
-      billing: 'monthly',
-      description: 'Para profesionales que necesitan más control',
-      color: '#6366f1',
-      recommended: true,
-      features: [
-        'Transacciones ilimitadas',
-        '10 conexiones de plataforma',
-        'Reportes personalizados',
-        'API de integración',
-        'Soporte 24/7',
-        'Retención de datos ilimitada',
-        'Conciliación automática avanzada',
-        'Alertas personalizadas',
-        'Multi-usuario (hasta 3)',
-      ],
-    },
-    {
-      id: 'enterprise',
-      name: 'Enterprise',
-      price: 149,
-      billing: 'monthly',
-      description: 'Solución completa para equipos y empresas',
-      color: '#8b5cf6',
-      features: [
-        'Todo en Professional',
-        'Conexiones ilimitadas',
-        'Gestor de cuenta dedicado',
-        'Capacitación personalizada',
-        'SLA garantizado',
-        'Multi-usuario ilimitado',
-        'Integraciones personalizadas',
-        'Auditoría y compliance',
-        'Soporte técnico dedicado',
-      ],
-    },
-  ];
+  // Expose constants for template
+  protected readonly PLAN = PLAN_TYPE;
+  protected readonly BILLING = BILLING_PERIOD;
+  protected readonly LABELS = SUBSCRIPTION_LABELS;
+  protected readonly COLORS = PLAN_COLORS;
 
-  get displayedPlans(): SubscriptionPlan[] {
-    return this.plans.map((plan) => ({
+  // State
+  readonly selectedBilling = signal<BillingPeriodValue>(BILLING_PERIOD.MONTHLY);
+  readonly selectedPlanId = signal<string | null>(null);
+  readonly isProcessing = signal<boolean>(false);
+
+  // From service
+  readonly plans = this.subscriptionService.plans;
+  readonly currentSubscription = this.subscriptionService.currentSubscription;
+  readonly isLoading = this.subscriptionService.isLoading;
+
+  // Computed: plans with adjusted prices based on billing period
+  readonly displayedPlans = computed(() => {
+    const plans = this.plans();
+    const billing = this.selectedBilling();
+
+    return plans.map(plan => ({
       ...plan,
-      price: this.selectedBilling === 'yearly' ? Math.floor(plan.price * 10) : plan.price,
+      displayPrice: billing === BILLING_PERIOD.YEARLY
+        ? calculateYearlyPrice(plan.monthlyPrice)
+        : plan.monthlyPrice,
+      color: PLAN_COLORS[plan.id as keyof typeof PLAN_COLORS] || '#6366f1'
     }));
+  });
+
+  // Computed: current plan ID
+  readonly currentPlanId = computed(() => {
+    return this.currentSubscription()?.plan?.id || null;
+  });
+
+  // Computed: current plan details
+  readonly currentPlan = computed(() => {
+    const planId = this.currentPlanId();
+    if (!planId) return null;
+    return this.plans().find(p => p.id === planId) || null;
+  });
+
+  ngOnInit(): void {
+    // Load plans and current subscription from the service
+    this.subscriptionService.loadPlans().subscribe();
+    this.subscriptionService.loadCurrentSubscription().subscribe();
   }
 
-  toggleBilling(billing: 'monthly' | 'yearly'): void {
-    this.selectedBilling = billing;
+  reactivateSubscription(): void {
+    this.isProcessing.set(true);
+    this.subscriptionService.reactivateSubscription().subscribe({
+      next: () => {
+        this.isProcessing.set(false);
+      },
+      error: (err) => {
+        console.error('Error reactivating subscription:', err);
+        this.isProcessing.set(false);
+      }
+    });
+  }
+
+  toggleBilling(billing: BillingPeriodValue): void {
+    this.selectedBilling.set(billing);
   }
 
   selectPlan(planId: string): void {
-    this.selectedPlanId = planId;
-    console.log('Plan seleccionado:', planId, 'Facturación:', this.selectedBilling);
-    // Aquí puedes agregar la lógica para procesar la suscripción
+    // If it's the current plan, don't do anything
+    if (this.isCurrentPlan(planId)) {
+      return;
+    }
+
+    this.selectedPlanId.set(planId);
+
+    // If selecting free plan, can subscribe directly
+    if (planId === PLAN_TYPE.FREE) {
+      this.subscribeToPlan(planId);
+    } else {
+      // For paid plans, would navigate to checkout
+      console.log('Selected plan:', planId, 'Billing:', this.selectedBilling());
+      // TODO: Navigate to checkout flow
+    }
+  }
+
+  subscribeToPlan(planId: string): void {
+    this.isProcessing.set(true);
+
+    const currentSub = this.currentSubscription();
+
+    if (currentSub) {
+      // Change existing plan
+      this.subscriptionService.changePlan({ newPlanType: planId as any }).subscribe({
+        next: () => {
+          this.isProcessing.set(false);
+        },
+        error: (err) => {
+          console.error('Error changing plan:', err);
+          this.isProcessing.set(false);
+        }
+      });
+    } else {
+      // Create new subscription
+      this.subscriptionService.subscribe({ planType: planId as any }).subscribe({
+        next: () => {
+          this.isProcessing.set(false);
+        },
+        error: (err) => {
+          console.error('Error subscribing:', err);
+          this.isProcessing.set(false);
+        }
+      });
+    }
+  }
+
+  isCurrentPlan(planId: string): boolean {
+    return this.currentPlanId() === planId;
   }
 
   isPlanSelected(planId: string): boolean {
-    return this.selectedPlanId === planId;
+    return this.selectedPlanId() === planId;
+  }
+
+  getButtonText(plan: SubscriptionPlan): string {
+    if (this.isCurrentPlan(plan.id)) {
+      return SUBSCRIPTION_LABELS.CURRENT_PLAN;
+    }
+    if (this.isPlanSelected(plan.id)) {
+      return SUBSCRIPTION_LABELS.SELECT_PLAN;
+    }
+    if (plan.monthlyPrice === 0) {
+      return SUBSCRIPTION_LABELS.START_FREE;
+    }
+    return SUBSCRIPTION_LABELS.SELECT_PLAN;
+  }
+
+  getPlanColor(planId: string): string {
+    return PLAN_COLORS[planId as keyof typeof PLAN_COLORS] || '#6366f1';
   }
 }

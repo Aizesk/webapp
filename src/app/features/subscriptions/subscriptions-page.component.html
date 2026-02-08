@@ -1,45 +1,74 @@
 <section class="subscriptions">
-  <app-top-navbar [navItems]="navItems" brandTagline="Gestiona tu suscripción"> </app-top-navbar>
+  <app-top-navbar [navItems]="navItems" [brandTagline]="LABELS.PAGE_SUBTITLE"></app-top-navbar>
+
+  <!-- Current Subscription Summary -->
+  @if (currentSubscription()) {
+  <div class="current-subscription-banner">
+    <div class="current-subscription-banner__content">
+      <div class="current-subscription-banner__info">
+        <span class="material-symbols-rounded" aria-hidden="true">verified</span>
+        <div>
+          <h3>Tu suscripción actual</h3>
+          <p>
+            <strong>{{ currentPlan()?.name }}</strong> ·
+            {{ currentSubscription()?.transactionsUsed | number }} / {{ currentPlan()?.transactionLimit === -1 ? '∞' :
+            (currentPlan()?.transactionLimit | number) }} {{ LABELS.TRANSACTIONS }}
+          </p>
+        </div>
+      </div>
+      <div class="current-subscription-banner__actions">
+        @if (currentSubscription()?.status === 'ACTIVE') {
+        <span class="status-badge status-badge--active">{{ LABELS.STATUS_ACTIVE }}</span>
+        } @else if (currentSubscription()?.status === 'CANCELLED') {
+        <span class="status-badge status-badge--cancelled">{{ LABELS.STATUS_CANCELLED }}</span>
+        <button type="button" class="btn btn--secondary" (click)="reactivateSubscription()">
+          {{ LABELS.REACTIVATE }}
+        </button>
+        }
+      </div>
+    </div>
+  </div>
+  }
 
   <div class="hero">
     <div class="hero__content">
-      <p class="eyebrow">PLANES Y PRECIOS</p>
-      <h1>Elige el plan perfecto para ti</h1>
-      <p class="subtitle">
-        Gestiona tus ingresos de múltiples plataformas con las herramientas que necesitas. Cancela
-        en cualquier momento.
-      </p>
+      <p class="eyebrow">{{ LABELS.PAGE_TITLE | uppercase }}</p>
+      <h1>{{ LABELS.PAGE_CTA }}</h1>
+      <p class="subtitle">{{ LABELS.PAGE_DESCRIPTION }}</p>
     </div>
 
     <div class="billing-toggle">
-      <button
-        type="button"
-        class="billing-toggle__option"
-        [class.billing-toggle__option--active]="selectedBilling === 'monthly'"
-        (click)="toggleBilling('monthly')"
-      >
-        Mensual
+      <button type="button" class="billing-toggle__option"
+        [class.billing-toggle__option--active]="selectedBilling() === BILLING.MONTHLY"
+        (click)="toggleBilling(BILLING.MONTHLY)">
+        {{ LABELS.BILLING_MONTHLY }}
       </button>
-      <button
-        type="button"
-        class="billing-toggle__option"
-        [class.billing-toggle__option--active]="selectedBilling === 'yearly'"
-        (click)="toggleBilling('yearly')"
-      >
-        Anual
-        <span class="billing-toggle__badge">Ahorra 20%</span>
+      <button type="button" class="billing-toggle__option"
+        [class.billing-toggle__option--active]="selectedBilling() === BILLING.YEARLY"
+        (click)="toggleBilling(BILLING.YEARLY)">
+        {{ LABELS.BILLING_YEARLY }}
+        <span class="billing-toggle__badge">{{ LABELS.BILLING_SAVE }}</span>
       </button>
     </div>
   </div>
 
+  <!-- Loading State -->
+  @if (isLoading()) {
+  <div class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Cargando planes...</p>
+  </div>
+  } @else {
   <div class="plans-grid">
-    <article
-      class="plan-card"
-      *ngFor="let plan of displayedPlans"
-      [class.plan-card--recommended]="plan.recommended"
-      [style.--plan-color]="plan.color"
-    >
-      <span class="plan-card__badge" *ngIf="plan.recommended">Recomendado</span>
+    @for (plan of displayedPlans(); track plan.id) {
+    <article class="plan-card" [class.plan-card--recommended]="plan.isPopular"
+      [class.plan-card--current]="isCurrentPlan(plan.id)" [style.--plan-color]="plan.color">
+      @if (plan.isPopular) {
+      <span class="plan-card__badge">{{ LABELS.RECOMMENDED }}</span>
+      }
+      @if (isCurrentPlan(plan.id)) {
+      <span class="plan-card__badge plan-card__badge--current">{{ LABELS.CURRENT_PLAN }}</span>
+      }
 
       <div class="plan-card__header">
         <h2 class="plan-card__name">{{ plan.name }}</h2>
@@ -48,44 +77,47 @@
 
       <div class="plan-card__pricing">
         <div class="price">
-          <span class="price__currency">$</span>
-          <span class="price__amount">{{ plan.price }}</span>
-          <span class="price__period">/{{ selectedBilling === 'monthly' ? 'mes' : 'año' }}</span>
+          <span class="price__currency">€</span>
+          <span class="price__amount">{{ plan.displayPrice }}</span>
+          <span class="price__period">{{ selectedBilling() === BILLING.MONTHLY ? LABELS.PER_MONTH : LABELS.PER_YEAR
+            }}</span>
         </div>
-        <p class="price__note" *ngIf="selectedBilling === 'yearly' && plan.price > 0">
-          {{ plan.price / 12 | currency: 'USD' : 'symbol' : '1.2-2' }}/mes facturado anualmente
+        @if (selectedBilling() === BILLING.YEARLY && plan.monthlyPrice > 0) {
+        <p class="price__note">
+          €{{ plan.monthlyPrice | number:'1.2-2' }}{{ LABELS.PER_MONTH }} {{ LABELS.BILLED_ANNUALLY }}
         </p>
+        }
       </div>
 
       <ul class="plan-card__features">
-        <li *ngFor="let feature of plan.features">
+        @for (feature of plan.features; track feature) {
+        <li>
           <span class="material-symbols-rounded feature-icon" aria-hidden="true">check_circle</span>
           {{ feature }}
         </li>
+        }
       </ul>
 
-      <button
-        type="button"
-        class="plan-card__button"
-        [class.plan-card__button--selected]="isPlanSelected(plan.id)"
-        (click)="selectPlan(plan.id)"
-      >
-        {{
-          isPlanSelected(plan.id)
-            ? 'Plan Seleccionado'
-            : plan.price === 0
-              ? 'Comenzar Gratis'
-              : 'Seleccionar Plan'
-        }}
+      <button type="button" class="plan-card__button" [class.plan-card__button--selected]="isPlanSelected(plan.id)"
+        [class.plan-card__button--current]="isCurrentPlan(plan.id)"
+        [disabled]="isCurrentPlan(plan.id) || isProcessing()" (click)="selectPlan(plan.id)">
+        @if (isProcessing() && isPlanSelected(plan.id)) {
+        <span class="loading-spinner-small"></span>
+        Procesando...
+        } @else {
+        {{ getButtonText(plan) }}
+        }
       </button>
     </article>
+    }
   </div>
+  }
 
   <div class="faq-section">
-    <h2>¿Tienes preguntas?</h2>
+    <h2>{{ LABELS.FAQ_TITLE }}</h2>
     <p class="faq-intro">
-      Estamos aquí para ayudarte. Contáctanos en
-      <a href="mailto:soporte@aizesk.com">soporte@aizesk.com</a>
+      {{ LABELS.FAQ_CONTACT }}
+      <a href="mailto:soporte@aizesk.com">soporte&#64;aizesk.com</a>
     </p>
   </div>
 </section>
