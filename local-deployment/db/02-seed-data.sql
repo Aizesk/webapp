@@ -18,7 +18,7 @@ SET CHARACTER SET utf8mb4;
 INSERT IGNORE INTO users (
     id, email, password_hash, full_name, last_name, phone, 
     street, city, postal_code, country, 
-    role, plan, avatar_url,
+    role, avatar_url,
     pref_billing_alerts, pref_weekly_digest, pref_security_events, pref_product_research,
     created_at, updated_at, last_login_at
 ) VALUES (
@@ -33,7 +33,6 @@ INSERT IGNORE INTO users (
     '28013',
     'España',
     'ROLE_USER',
-    'FREE',
     NULL,
     1, 1, 1, 0,
     NOW() - INTERVAL 30 DAY,
@@ -45,7 +44,7 @@ INSERT IGNORE INTO users (
 INSERT IGNORE INTO users (
     id, email, password_hash, full_name, last_name, phone, 
     street, city, postal_code, country, 
-    role, plan, avatar_url,
+    role, avatar_url,
     pref_billing_alerts, pref_weekly_digest, pref_security_events, pref_product_research,
     created_at, updated_at, last_login_at
 ) VALUES (
@@ -60,7 +59,6 @@ INSERT IGNORE INTO users (
     '08029',
     'España',
     'ROLE_ADMIN',
-    'ENTERPRISE',
     NULL,
     1, 1, 1, 1,
     NOW() - INTERVAL 60 DAY,
@@ -72,7 +70,7 @@ INSERT IGNORE INTO users (
 INSERT IGNORE INTO users (
     id, email, password_hash, full_name, last_name, phone, 
     street, city, postal_code, country, 
-    role, plan, avatar_url,
+    role, avatar_url,
     pref_billing_alerts, pref_weekly_digest, pref_security_events, pref_product_research,
     created_at, updated_at, last_login_at
 ) VALUES (
@@ -87,7 +85,6 @@ INSERT IGNORE INTO users (
     '28006',
     'España',
     'ROLE_USER',
-    'PRO',
     NULL,
     1, 0, 1, 0,
     NOW() - INTERVAL 15 DAY,
@@ -99,7 +96,7 @@ INSERT IGNORE INTO users (
 INSERT IGNORE INTO users (
     id, email, password_hash, full_name, last_name, phone, 
     street, city, postal_code, country, 
-    role, plan, avatar_url,
+    role, avatar_url,
     pref_billing_alerts, pref_weekly_digest, pref_security_events, pref_product_research,
     created_at, updated_at, last_login_at
 ) VALUES (
@@ -114,7 +111,6 @@ INSERT IGNORE INTO users (
     '46002',
     'España',
     'ROLE_USER',
-    'FREE',
     NULL,
     1, 1, 1, 0,
     NOW() - INTERVAL 5 DAY,
@@ -126,7 +122,7 @@ INSERT IGNORE INTO users (
 INSERT IGNORE INTO users (
     id, email, password_hash, full_name, last_name, phone, 
     street, city, postal_code, country, 
-    role, plan, avatar_url,
+    role, avatar_url,
     pref_billing_alerts, pref_weekly_digest, pref_security_events, pref_product_research,
     created_at, updated_at, last_login_at
 ) VALUES (
@@ -141,7 +137,6 @@ INSERT IGNORE INTO users (
     '10001',
     'USA',
     'ROLE_USER',
-    'PRO',
     NULL,
     1, 1, 1, 1,
     NOW() - INTERVAL 45 DAY,
@@ -179,12 +174,18 @@ INSERT IGNORE INTO active_sessions (
 );
 
 -- =====================================================
--- SUBSCRIPTION-SERVICE: SUSCRIPCIONES
+-- SUBSCRIPTION-SERVICE: PLANES Y SUSCRIPCIONES
 -- =====================================================
+
+-- Insertar Planes
+INSERT IGNORE INTO subscription_plans (id, name, description, monthly_price, annual_price, transaction_limit, platform_limit, features) VALUES
+('FREE', 'Gratuito', 'Ideal para empezar a controlar tus finanzas personales', 0.00, 0.00, 100, 1, '["Reportes básicos", "Soporte por email", "1 conexión de plataforma"]'),
+('PROFESSIONAL', 'Profesional', 'Para vendedores activos que buscan optimizar su negocio', 29.99, 299.90, 10000, 5, '["Analytics avanzados", "API access", "Soporte prioritario", "Hasta 5 plataformas"]'),
+('ENTERPRISE', 'Enterprise', 'Solución completa para grandes volúmenes y equipos', 99.99, 999.90, -1, -1, '["Manager dedicado", "SLA garantizado", "Integraciones personalizadas", "Sin límites"]');
 
 -- Suscripción FREE para demo user
 INSERT IGNORE INTO subscriptions (
-    id, user_id, plan_type, status,
+    id, user_id, plan_id, status,
     stripe_customer_id, stripe_subscription_id,
     start_date, end_date, next_billing_date,
     auto_renew, transactions_used, platforms_connected,
@@ -207,7 +208,7 @@ INSERT IGNORE INTO subscriptions (
 
 -- Suscripción ENTERPRISE para admin
 INSERT IGNORE INTO subscriptions (
-    id, user_id, plan_type, status,
+    id, user_id, plan_id, status,
     stripe_customer_id, stripe_subscription_id,
     start_date, end_date, next_billing_date,
     auto_renew, transactions_used, platforms_connected,
@@ -228,9 +229,9 @@ INSERT IGNORE INTO subscriptions (
     NOW() - INTERVAL 60 DAY
 );
 
--- Suscripción PRO para Carlos
+-- Suscripción PROFESSIONAL para Carlos
 INSERT IGNORE INTO subscriptions (
-    id, user_id, plan_type, status,
+    id, user_id, plan_id, status,
     stripe_customer_id, stripe_subscription_id,
     start_date, end_date, next_billing_date,
     auto_renew, transactions_used, platforms_connected,
@@ -238,7 +239,7 @@ INSERT IGNORE INTO subscriptions (
 ) VALUES (
     'sub-0003-0000-0000-000000000003',
     'c3d4e5f6-a7b8-9012-cdef-123456789012',
-    'PRO',
+    'PROFESSIONAL',
     'ACTIVE',
     'cus_mock_carlos_789',
     'sub_mock_carlos_012',
@@ -249,6 +250,52 @@ INSERT IGNORE INTO subscriptions (
     45,
     2,
     NOW() - INTERVAL 15 DAY
+);
+
+-- Suscripción FREE para María
+INSERT IGNORE INTO subscriptions (
+    id, user_id, plan_id, status,
+    stripe_customer_id, stripe_subscription_id,
+    start_date, end_date, next_billing_date,
+    auto_renew, transactions_used, platforms_connected,
+    created_at
+) VALUES (
+    'sub-0004-0000-0000-000000000004',
+    'd4e5f6a7-b8c9-0123-def0-234567890123',
+    'FREE',
+    'ACTIVE',
+    NULL,
+    NULL,
+    NOW() - INTERVAL 5 DAY,
+    NULL,
+    NULL,
+    0,
+    3,
+    0,
+    NOW() - INTERVAL 5 DAY
+);
+
+-- Suscripción PROFESSIONAL para John
+INSERT IGNORE INTO subscriptions (
+    id, user_id, plan_id, status,
+    stripe_customer_id, stripe_subscription_id,
+    start_date, end_date, next_billing_date,
+    auto_renew, transactions_used, platforms_connected,
+    created_at
+) VALUES (
+    'sub-0005-0000-0000-000000000005',
+    'e5f6a7b8-c9d0-1234-ef01-345678901234',
+    'PROFESSIONAL',
+    'ACTIVE',
+    'cus_mock_john_456',
+    'sub_mock_john_789',
+    NOW() - INTERVAL 45 DAY,
+    NOW() + INTERVAL 320 DAY,
+    NOW() + INTERVAL 30 DAY,
+    1,
+    120,
+    3,
+    NOW() - INTERVAL 45 DAY
 );
 
 -- =====================================================

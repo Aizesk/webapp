@@ -28,7 +28,6 @@ CREATE TABLE IF NOT EXISTS users (
     
     -- User info
     role VARCHAR(50) DEFAULT 'ROLE_USER' COMMENT 'Rol del usuario (ROLE_USER, ROLE_ADMIN)',
-    plan VARCHAR(50) DEFAULT 'FREE' COMMENT 'Plan de suscripción (FREE, PRO, ENTERPRISE)',
     avatar_url VARCHAR(500) COMMENT 'URL del avatar',
     
     -- Preferences (embedded)
@@ -45,7 +44,6 @@ CREATE TABLE IF NOT EXISTS users (
     -- Indexes
     INDEX idx_users_email (email),
     INDEX idx_users_role (role),
-    INDEX idx_users_plan (plan),
     INDEX idx_users_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -109,11 +107,26 @@ CREATE TABLE IF NOT EXISTS audit_log (
 -- SUBSCRIPTION-SERVICE TABLES
 -- =====================================================
 
--- TABLE: subscriptions
+-- TABLE: subscription_plans (Definición estática de planes)
+CREATE TABLE IF NOT EXISTS subscription_plans (
+    id VARCHAR(50) PRIMARY KEY COMMENT 'ID único del plan (FREE, PROFESSIONAL, ENTERPRISE)',
+    name VARCHAR(100) NOT NULL COMMENT 'Nombre del plan',
+    description VARCHAR(500) COMMENT 'Descripción de lo que incluye',
+    monthly_price DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    annual_price DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    transaction_limit INT DEFAULT -1 COMMENT '-1 para ilimitado',
+    platform_limit INT DEFAULT -1 COMMENT '-1 para ilimitado',
+    features JSON COMMENT 'Lista de funcionalidades en formato JSON',
+    active TINYINT(1) DEFAULT 1,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- TABLE: subscriptions (Instancia de suscripción de un usuario)
 CREATE TABLE IF NOT EXISTS subscriptions (
     id VARCHAR(36) PRIMARY KEY,
-    user_id VARCHAR(36) NOT NULL UNIQUE COMMENT 'Un usuario solo tiene una suscripción',
-    plan_type VARCHAR(50) NOT NULL COMMENT 'FREE, PRO, ENTERPRISE',
+    user_id VARCHAR(36) NOT NULL UNIQUE COMMENT 'Un usuario solo tiene una suscripción activa',
+    plan_id VARCHAR(50) NOT NULL COMMENT 'FK a subscription_plans',
     status VARCHAR(50) NOT NULL COMMENT 'ACTIVE, TRIALING, CANCELLED, PAST_DUE, EXPIRED',
     stripe_customer_id VARCHAR(255) COMMENT 'ID del cliente en Stripe',
     stripe_subscription_id VARCHAR(255) COMMENT 'ID de la suscripción en Stripe',
@@ -128,8 +141,9 @@ CREATE TABLE IF NOT EXISTS subscriptions (
     
     INDEX idx_subscriptions_user_id (user_id),
     INDEX idx_subscriptions_status (status),
-    INDEX idx_subscriptions_plan_type (plan_type),
-    INDEX idx_subscriptions_stripe_customer (stripe_customer_id)
+    INDEX idx_subscriptions_plan_id (plan_id),
+    INDEX idx_subscriptions_stripe_customer (stripe_customer_id),
+    CONSTRAINT fk_subscriptions_plan FOREIGN KEY (plan_id) REFERENCES subscription_plans(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- TABLE: invoices
