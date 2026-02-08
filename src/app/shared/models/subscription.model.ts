@@ -98,6 +98,18 @@ export interface ChangePlanRequest {
   readonly newPlanType: PlanType;
 }
 
+export interface CheckoutSessionRequest {
+  readonly planType: string;
+  readonly successUrl: string;
+  readonly cancelUrl: string;
+}
+
+export interface CheckoutSessionResponse {
+  readonly checkoutUrl: string;
+  readonly sessionId: string;
+  readonly isMock: boolean;
+}
+
 export interface AddPaymentMethodRequest {
   readonly cardNumber: string;
   readonly expiryMonth: number;

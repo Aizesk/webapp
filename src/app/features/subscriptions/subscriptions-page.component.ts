@@ -10,8 +10,11 @@ import {
   SUBSCRIPTION_LABELS,
   PLAN_COLORS,
   calculateYearlyPrice,
-  BillingPeriodValue
+  BillingPeriodValue,
+  getPlanDisplayName,
 } from '../constants/subscriptions.constants';
+
+type ModalType = 'change-plan' | 'cancel' | null;
 
 @Component({
   selector: 'app-subscriptions-page',
@@ -37,6 +40,10 @@ export class SubscriptionsPageComponent implements OnInit {
   readonly selectedPlanId = signal<string | null>(null);
   readonly isProcessing = signal<boolean>(false);
 
+  // Modal State
+  readonly showModal = signal<ModalType>(null);
+  readonly pendingPlanChange = signal<SubscriptionPlan | null>(null);
+
   // From service
   readonly plans = this.subscriptionService.plans;
   readonly currentSubscription = this.subscriptionService.currentSubscription;
@@ -47,12 +54,13 @@ export class SubscriptionsPageComponent implements OnInit {
     const plans = this.plans();
     const billing = this.selectedBilling();
 
-    return plans.map(plan => ({
+    return plans.map((plan) => ({
       ...plan,
-      displayPrice: billing === BILLING_PERIOD.YEARLY
-        ? calculateYearlyPrice(plan.monthlyPrice)
-        : plan.monthlyPrice,
-      color: PLAN_COLORS[plan.id as keyof typeof PLAN_COLORS] || '#6366f1'
+      displayPrice:
+        billing === BILLING_PERIOD.YEARLY
+          ? calculateYearlyPrice(plan.monthlyPrice)
+          : plan.monthlyPrice,
+      color: PLAN_COLORS[plan.id as keyof typeof PLAN_COLORS] || '#6366f1',
     }));
   });
 
@@ -65,7 +73,50 @@ export class SubscriptionsPageComponent implements OnInit {
   readonly currentPlan = computed(() => {
     const planId = this.currentPlanId();
     if (!planId) return null;
-    return this.plans().find(p => p.id === planId) || null;
+    return this.plans().find((p) => p.id === planId) || null;
+  });
+
+  // Computed: check if pending change is an upgrade
+  readonly isUpgrade = computed(() => {
+    const pending = this.pendingPlanChange();
+    const current = this.currentPlan();
+    if (!pending || !current) return false;
+    return pending.monthlyPrice > current.monthlyPrice;
+  });
+
+  // Computed: get pending plan display name
+  readonly pendingPlanName = computed(() => {
+    const pending = this.pendingPlanChange();
+    return pending ? getPlanDisplayName(pending.id) : '';
+  });
+
+  // Computed: get pending plan price
+  readonly pendingPlanPrice = computed(() => {
+    const pending = this.pendingPlanChange();
+    if (!pending) return 0;
+    return this.selectedBilling() === BILLING_PERIOD.YEARLY
+      ? calculateYearlyPrice(pending.monthlyPrice)
+      : pending.monthlyPrice;
+  });
+
+  // Computed: check if current plan is FREE
+  readonly isFreePlan = computed(() => {
+    const planId = this.currentPlanId();
+    return planId === PLAN_TYPE.FREE;
+  });
+
+  // Computed: check if pending plan requires payment
+  readonly requiresPayment = computed(() => {
+    const pending = this.pendingPlanChange();
+    return pending !== null && pending.monthlyPrice > 0;
+  });
+
+  // Computed: check if this is a downgrade from paid to FREE
+  readonly isDowngradeToFree = computed(() => {
+    const pending = this.pendingPlanChange();
+    const current = this.currentPlan();
+    if (!pending || !current) return false;
+    return pending.id === PLAN_TYPE.FREE && current.monthlyPrice > 0;
   });
 
   ngOnInit(): void {
@@ -83,7 +134,7 @@ export class SubscriptionsPageComponent implements OnInit {
       error: (err) => {
         console.error('Error reactivating subscription:', err);
         this.isProcessing.set(false);
-      }
+      },
     });
   }
 
@@ -97,16 +148,96 @@ export class SubscriptionsPageComponent implements OnInit {
       return;
     }
 
-    this.selectedPlanId.set(planId);
+    const selectedPlan = this.plans().find((p) => p.id === planId);
+    if (!selectedPlan) return;
 
-    // If selecting free plan, can subscribe directly
-    if (planId === PLAN_TYPE.FREE) {
-      this.subscribeToPlan(planId);
-    } else {
-      // For paid plans, would navigate to checkout
-      console.log('Selected plan:', planId, 'Billing:', this.selectedBilling());
-      // TODO: Navigate to checkout flow
+    this.selectedPlanId.set(planId);
+    this.pendingPlanChange.set(selectedPlan);
+    this.showModal.set('change-plan');
+  }
+
+  // Modal Actions
+  openCancelModal(): void {
+    this.showModal.set('cancel');
+  }
+
+  closeModal(): void {
+    this.showModal.set(null);
+    this.pendingPlanChange.set(null);
+  }
+
+  confirmPlanChange(): void {
+    const pending = this.pendingPlanChange();
+    if (!pending) return;
+
+    this.isProcessing.set(true);
+    this.closeModal();
+
+    // If the new plan requires payment (upgrade to paid plan), redirect to Stripe Checkout
+    if (pending.monthlyPrice > 0) {
+      this.subscriptionService
+        .createCheckoutSession({
+          planType: pending.id,
+          successUrl: window.location.origin + '/subscriptions?checkout=success',
+          cancelUrl: window.location.origin + '/subscriptions?checkout=cancelled',
+        })
+        .subscribe({
+          next: (response) => {
+            this.isProcessing.set(false);
+            // Redirect to Stripe Checkout
+            window.location.href = response.checkoutUrl;
+          },
+          error: (err) => {
+            console.error('Error creating checkout session:', err);
+            this.isProcessing.set(false);
+          },
+        });
+      return;
     }
+
+    // For downgrade to FREE plan, change directly
+    const currentSub = this.currentSubscription();
+
+    if (currentSub) {
+      // Change existing plan to FREE
+      this.subscriptionService.changePlan({ newPlanType: pending.id as any }).subscribe({
+        next: () => {
+          this.isProcessing.set(false);
+          this.selectedPlanId.set(null);
+        },
+        error: (err) => {
+          console.error('Error changing plan:', err);
+          this.isProcessing.set(false);
+        },
+      });
+    } else {
+      // Create new FREE subscription
+      this.subscriptionService.subscribe({ planType: pending.id as any }).subscribe({
+        next: () => {
+          this.isProcessing.set(false);
+          this.selectedPlanId.set(null);
+        },
+        error: (err) => {
+          console.error('Error subscribing:', err);
+          this.isProcessing.set(false);
+        },
+      });
+    }
+  }
+
+  confirmCancelSubscription(): void {
+    this.isProcessing.set(true);
+    this.closeModal();
+
+    this.subscriptionService.cancelSubscription().subscribe({
+      next: () => {
+        this.isProcessing.set(false);
+      },
+      error: (err) => {
+        console.error('Error cancelling subscription:', err);
+        this.isProcessing.set(false);
+      },
+    });
   }
 
   subscribeToPlan(planId: string): void {
@@ -123,7 +254,7 @@ export class SubscriptionsPageComponent implements OnInit {
         error: (err) => {
           console.error('Error changing plan:', err);
           this.isProcessing.set(false);
-        }
+        },
       });
     } else {
       // Create new subscription
@@ -134,7 +265,7 @@ export class SubscriptionsPageComponent implements OnInit {
         error: (err) => {
           console.error('Error subscribing:', err);
           this.isProcessing.set(false);
-        }
+        },
       });
     }
   }

@@ -24,9 +24,29 @@
         <div class="current-subscription-banner__actions">
           @if (currentSubscription()?.status === 'ACTIVE') {
             <span class="status-badge status-badge--active">{{ LABELS.STATUS_ACTIVE }}</span>
+            @if (!isFreePlan()) {
+              <button
+                type="button"
+                class="btn btn--danger-outline"
+                (click)="openCancelModal()"
+                [disabled]="isProcessing()"
+              >
+                {{ LABELS.CANCEL }}
+              </button>
+            }
           } @else if (currentSubscription()?.status === 'CANCELLED') {
             <span class="status-badge status-badge--cancelled">{{ LABELS.STATUS_CANCELLED }}</span>
-            <button type="button" class="btn btn--secondary" (click)="reactivateSubscription()">
+            @if (currentSubscription()?.endDate) {
+              <span class="access-until-info">
+                Acceso hasta {{ currentSubscription()?.endDate | date: 'dd/MM/yyyy' }}
+              </span>
+            }
+            <button
+              type="button"
+              class="btn btn--secondary"
+              (click)="reactivateSubscription()"
+              [disabled]="isProcessing()"
+            >
               {{ LABELS.REACTIVATE }}
             </button>
           }
@@ -146,4 +166,148 @@
       <a href="mailto:soporte@aizesk.com">soporte&#64;aizesk.com</a>
     </p>
   </div>
+
+  <!-- Modal: Change Plan Confirmation -->
+  @if (showModal() === 'change-plan') {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div
+        class="modal"
+        [class.modal--warning]="isDowngradeToFree()"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="modal__header">
+          <span
+            class="material-symbols-rounded modal__icon"
+            [class.modal__icon--upgrade]="isUpgrade()"
+            [class.modal__icon--downgrade]="!isUpgrade() && !isDowngradeToFree()"
+            [class.modal__icon--warning]="isDowngradeToFree()"
+          >
+            {{ isUpgrade() ? 'upgrade' : isDowngradeToFree() ? 'info' : 'swap_vert' }}
+          </span>
+          <h2>
+            {{
+              isDowngradeToFree()
+                ? LABELS.MODAL_DOWNGRADE_FREE_TITLE
+                : LABELS.MODAL_CHANGE_PLAN_TITLE
+            }}
+          </h2>
+        </div>
+
+        <div class="modal__body">
+          @if (isDowngradeToFree()) {
+            <!-- Downgrade to FREE: special messaging -->
+            <p class="modal__description">{{ LABELS.MODAL_DOWNGRADE_FREE_DESCRIPTION }}</p>
+            <p class="modal__warning modal__warning--info">
+              {{ LABELS.MODAL_DOWNGRADE_FREE_WARNING }}
+            </p>
+            @if (currentSubscription()?.endDate) {
+              <p class="modal__info">
+                <span class="material-symbols-rounded">event</span>
+                Tu acceso premium finaliza el
+                <strong>{{ currentSubscription()?.endDate | date: 'dd/MM/yyyy' }}</strong>
+              </p>
+            }
+            <p class="modal__note">{{ LABELS.MODAL_DOWNGRADE_FREE_INFO }}</p>
+          } @else {
+            <!-- Regular upgrade/downgrade -->
+            <p class="modal__description">
+              {{
+                isUpgrade() ? LABELS.MODAL_UPGRADE_DESCRIPTION : LABELS.MODAL_DOWNGRADE_DESCRIPTION
+              }}
+              <strong>{{ pendingPlanName() }}</strong>
+            </p>
+
+            @if (pendingPlanChange()?.monthlyPrice === 0) {
+              <p class="modal__price-info">{{ LABELS.PRICE_FREE }}</p>
+            } @else {
+              <p class="modal__price-info">
+                {{ isUpgrade() ? LABELS.PRICE_INCREASE : LABELS.PRICE_DECREASE }}
+                <strong
+                  >€{{ pendingPlanPrice() | number: '1.2-2'
+                  }}{{
+                    selectedBilling() === BILLING.MONTHLY ? LABELS.PER_MONTH : LABELS.PER_YEAR
+                  }}</strong
+                >
+              </p>
+              <p class="modal__note modal__note--payment">
+                <span class="material-symbols-rounded">lock</span>
+                {{ LABELS.MODAL_PAYMENT_REDIRECT }}
+              </p>
+            }
+
+            @if (pendingPlanChange()?.monthlyPrice === 0) {
+              <p class="modal__note">{{ LABELS.MODAL_CHANGE_BENEFITS }}</p>
+            }
+          }
+        </div>
+
+        <div class="modal__actions">
+          <button type="button" class="btn btn--outline" (click)="closeModal()">
+            {{ LABELS.MODAL_CANCEL }}
+          </button>
+          <button
+            type="button"
+            class="btn btn--primary"
+            [class.btn--upgrade]="isUpgrade()"
+            [class.btn--warning]="isDowngradeToFree()"
+            (click)="confirmPlanChange()"
+            [disabled]="isProcessing()"
+          >
+            @if (isProcessing()) {
+              <span class="loading-spinner-small"></span>
+            }
+            {{
+              isDowngradeToFree()
+                ? LABELS.MODAL_DOWNGRADE_FREE_CONFIRM
+                : requiresPayment()
+                  ? LABELS.MODAL_CONFIRM_PAYMENT
+                  : LABELS.MODAL_CONFIRM
+            }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Modal: Cancel Subscription Confirmation -->
+  @if (showModal() === 'cancel') {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal modal--danger" (click)="$event.stopPropagation()">
+        <div class="modal__header">
+          <span class="material-symbols-rounded modal__icon modal__icon--danger">warning</span>
+          <h2>{{ LABELS.MODAL_CANCEL_TITLE }}</h2>
+        </div>
+
+        <div class="modal__body">
+          <p class="modal__description">{{ LABELS.MODAL_CANCEL_DESCRIPTION }}</p>
+          <p class="modal__warning">{{ LABELS.MODAL_CANCEL_WARNING }}</p>
+          @if (currentSubscription()?.endDate) {
+            <p class="modal__info">
+              <span class="material-symbols-rounded">event</span>
+              Tu acceso premium finaliza el
+              <strong>{{ currentSubscription()?.endDate | date: 'dd/MM/yyyy' }}</strong>
+            </p>
+          }
+          <p class="modal__note">{{ LABELS.MODAL_CANCEL_INFO }}</p>
+        </div>
+
+        <div class="modal__actions">
+          <button type="button" class="btn btn--secondary" (click)="closeModal()">
+            {{ LABELS.MODAL_CANCEL_KEEP }}
+          </button>
+          <button
+            type="button"
+            class="btn btn--danger"
+            (click)="confirmCancelSubscription()"
+            [disabled]="isProcessing()"
+          >
+            @if (isProcessing()) {
+              <span class="loading-spinner-small"></span>
+            }
+            {{ LABELS.MODAL_CANCEL_CONFIRM }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
 </section>

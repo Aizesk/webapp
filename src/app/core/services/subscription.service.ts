@@ -10,6 +10,8 @@ import {
   CreateSubscriptionRequest,
   ChangePlanRequest,
   AddPaymentMethodRequest,
+  CheckoutSessionRequest,
+  CheckoutSessionResponse,
   MessageResponse,
   PlanType,
 } from '../../shared/models/subscription.model';
@@ -126,6 +128,12 @@ export class SubscriptionService {
         this._currentSubscription.set(subscription);
       }),
     );
+  }
+
+  // ==================== Checkout (Stripe) ====================
+
+  createCheckoutSession(request: CheckoutSessionRequest): Observable<CheckoutSessionResponse> {
+    return this.http.post<CheckoutSessionResponse>(`${this.apiUrl}/checkout`, request);
   }
 
   changePlan(request: ChangePlanRequest): Observable<Subscription> {
