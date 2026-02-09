@@ -180,6 +180,19 @@ export class AuthService {
   }
 
   /**
+   * Change password for authenticated user.
+   */
+  changePassword(currentPassword: string, newPassword: string, confirmPassword: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/change-password`, {
+      currentPassword,
+      newPassword,
+      confirmPassword
+    }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  /**
    * Get the stored access token.
    */
   getAccessToken(): string | null {

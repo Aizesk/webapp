@@ -30,7 +30,8 @@ export const authRefreshInterceptor: HttpInterceptorFn = (
             }
 
             // Skip refresh for auth endpoints (avoid infinite loop)
-            const skipUrls = ['/auth/login', '/auth/register', '/auth/refresh', '/auth/recovery-password'];
+            // and password change endpoint (business logic errors, not auth issues)
+            const skipUrls = ['/auth/login', '/auth/register', '/auth/refresh', '/auth/recovery-password', '/auth/change-password'];
             const shouldSkip = skipUrls.some(url => req.url.includes(url));
 
             if (shouldSkip) {
