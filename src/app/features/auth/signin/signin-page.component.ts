@@ -38,8 +38,8 @@ export class SigninPageComponent {
   protected onFormSubmitted(payload: SignUpRequest): void {
     this.authService.register(payload).subscribe({
       next: () => {
-        this.snackBar.open('Registro exitoso! Por favor inicia sesión.', 'Cerrar', { duration: 5000, panelClass: ['success-snackbar'] });
-        this.router.navigate(['/login']);
+        this.snackBar.open('¡Registro exitoso! Bienvenido a Aizesk.', 'Cerrar', { duration: 5000, panelClass: ['success-snackbar'] });
+        this.router.navigate(['/inicio']);
       },
       error: (err) => {
         console.error('Registration failed', err);

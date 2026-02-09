@@ -4,6 +4,7 @@ import { HomePageComponent } from './features/home/home-page.component';
 import { LoginPageComponent } from './features/auth/login/login-page.component';
 import { SigninPageComponent } from './features/auth/signin/signin-page.component';
 import { RecoveryPasswordPageComponent } from './features/auth/recoverypassword/recovery-password-page.component';
+import { ResetPasswordPageComponent } from './features/auth/resetpassword/reset-password-page.component';
 import { MainDashboardPageComponent } from './features/main-dashboard/main-dashboard-page.component';
 import { TransactionsPageComponent } from './features/transactions/transactions-page.component';
 import { EditTransactionPageComponent } from './features/transactions/edit-transaction/edit-transaction-page.component';
@@ -39,6 +40,11 @@ export const routes: Routes = [
     path: 'recovery-password',
     component: RecoveryPasswordPageComponent,
     title: 'Aizesk | Recuperar contraseña',
+  },
+  {
+    path: 'reset-password',
+    component: ResetPasswordPageComponent,
+    title: 'Aizesk | Restablecer contraseña',
   },
   // Protected routes (require authentication)
   {
