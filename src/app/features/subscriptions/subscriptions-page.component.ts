@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { TopNavbarComponent } from '../../shared/components/top-navbar/top-navbar.component';
 import { MAIN_NAV_ITEMS } from '../../shared/models/navigation.model';
 import { SubscriptionService } from '../../core/services/subscription.service';
@@ -25,6 +26,7 @@ type ModalType = 'change-plan' | 'cancel' | null;
 })
 export class SubscriptionsPageComponent implements OnInit {
   private readonly subscriptionService = inject(SubscriptionService);
+  private readonly route = inject(ActivatedRoute);
 
   // Navigation
   protected readonly navItems = MAIN_NAV_ITEMS;
@@ -39,6 +41,10 @@ export class SubscriptionsPageComponent implements OnInit {
   readonly selectedBilling = signal<BillingPeriodValue>(BILLING_PERIOD.MONTHLY);
   readonly selectedPlanId = signal<string | null>(null);
   readonly isProcessing = signal<boolean>(false);
+  readonly checkoutMessage = signal<{
+    type: 'success' | 'error' | 'cancelled';
+    text: string;
+  } | null>(null);
 
   // Modal State
   readonly showModal = signal<ModalType>(null);
@@ -123,6 +129,26 @@ export class SubscriptionsPageComponent implements OnInit {
     // Load plans and current subscription from the service
     this.subscriptionService.loadPlans().subscribe();
     this.subscriptionService.loadCurrentSubscription().subscribe();
+
+    // Handle checkout return from Stripe
+    this.route.queryParams.subscribe((params) => {
+      if (params['checkout'] === 'success') {
+        this.checkoutMessage.set({
+          type: 'success',
+          text: '¡Pago completado! Tu suscripción ha sido activada.',
+        });
+        // Reload subscription to get updated status
+        this.subscriptionService.loadCurrentSubscription().subscribe();
+        // Clear the query params after showing message
+        setTimeout(() => this.checkoutMessage.set(null), 5000);
+      } else if (params['checkout'] === 'cancelled') {
+        this.checkoutMessage.set({
+          type: 'cancelled',
+          text: 'El pago fue cancelado. Puedes intentarlo de nuevo cuando quieras.',
+        });
+        setTimeout(() => this.checkoutMessage.set(null), 5000);
+      }
+    });
   }
 
   reactivateSubscription(): void {
