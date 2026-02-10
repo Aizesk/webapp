@@ -77,7 +77,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
       code: 'RD',
       title: 'Reportes para Vendedores',
       description:
-        'Genera informes fiscales, métricas por producto y análisis de rendimiento. Exporta para tu gestor, prepara reuniones y demuestra tu valor con datos reales.',
+        'Genera reportes fiscales, métricas por producto y análisis de rendimiento. Exporta para tu gestor, prepara reuniones y demuestra tu valor con datos reales.',
     },
     {
       code: 'SG',

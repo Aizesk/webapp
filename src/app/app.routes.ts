@@ -86,7 +86,7 @@ export const routes: Routes = [
     path: 'reports',
     component: ReportsPageComponent,
     canActivate: [authGuard],
-    title: 'Aizesk | Informes',
+    title: 'Aizesk | Reportes',
   },
   {
     path: 'subscriptions',
