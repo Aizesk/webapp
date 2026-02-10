@@ -1,45 +1,39 @@
 <section class="profile">
-  <app-top-navbar
-    [navItems]="navItems"
-    brandTagline="Cuida tu identidad digital"
-    [userInitials]="userSummary.avatarInitials"
-  ></app-top-navbar>
+  <app-top-navbar [navItems]="navItems" brandTagline="Cuida tu identidad digital"
+    [userInitials]="userSummary().avatarInitials"></app-top-navbar>
 
   <div class="profile__layout">
     <aside class="profile-sidebar">
       <article class="profile-card">
-        <div class="profile-card__avatar">{{ userSummary.avatarInitials }}</div>
-        <p class="profile-card__role">{{ userSummary.role }}</p>
-        <h1 class="profile-card__name">{{ userSummary.name }}</h1>
-        <p class="profile-card__email">{{ userSummary.email }}</p>
+        <div class="profile-card__avatar">{{ userSummary().avatarInitials }}</div>
+        <p class="profile-card__role">{{ userSummary().role }}</p>
+        <h1 class="profile-card__name">{{ userSummary().name }}</h1>
+        <p class="profile-card__email">{{ userSummary().email }}</p>
 
         <dl class="profile-card__meta">
           <div>
             <dt>Plan actual</dt>
-            <dd>{{ userSummary.plan }}</dd>
+            <dd>{{ userSummary().plan }}</dd>
           </div>
           <div>
             <dt>Ubicación</dt>
-            <dd>{{ userSummary.location }}</dd>
+            <dd>{{ userSummary().location }}</dd>
           </div>
           <div>
             <dt>Actividad</dt>
-            <dd>{{ userSummary.joinedAt }}</dd>
+            <dd>{{ userSummary().joinedAt }}</dd>
           </div>
         </dl>
 
         <button type="button" class="ghost-button">Actualizar foto</button>
         <button type="button" class="text-button">Gestionar sesiones activas</button>
-        <p class="profile-card__hint">{{ userSummary.lastUpdate }}</p>
+        <p class="profile-card__hint">{{ userSummary().lastUpdate }}</p>
       </article>
 
       <article class="profile-health">
         <h2>Estado de la cuenta</h2>
         <ul>
-          <li>
-            <span class="status-dot status-dot--success"></span>
-            Autenticación en dos pasos activa
-          </li>
+          <!-- Removed 2FA status -->
           <li>
             <span class="status-dot status-dot--success"></span>
             Dispositivo confiable verificado ayer
@@ -68,32 +62,16 @@
         <form class="form-grid" [formGroup]="accountForm" (ngSubmit)="handleAccountSubmit()">
           <div class="form-field">
             <label for="fullName">Nombre completo</label>
-            <input
-              id="fullName"
-              type="text"
-              formControlName="fullName"
-              placeholder="Nombre y apellidos"
-            />
-            <p
-              class="form-error"
-              *ngIf="accountForm.get('fullName')?.invalid && accountForm.get('fullName')?.touched"
-            >
+            <input id="fullName" type="text" formControlName="fullName" placeholder="Nombre y apellidos" />
+            <p class="form-error" *ngIf="accountForm.get('fullName')?.invalid && accountForm.get('fullName')?.touched">
               Introduce un nombre válido.
             </p>
           </div>
 
           <div class="form-field">
             <label for="email">Correo electrónico</label>
-            <input
-              id="email"
-              type="email"
-              formControlName="email"
-              placeholder="nombre@empresa.com"
-            />
-            <p
-              class="form-error"
-              *ngIf="accountForm.get('email')?.invalid && accountForm.get('email')?.touched"
-            >
+            <input id="email" type="email" formControlName="email" placeholder="nombre@empresa.com" />
+            <p class="form-error" *ngIf="accountForm.get('email')?.invalid && accountForm.get('email')?.touched">
               Introduce un correo válido.
             </p>
           </div>
@@ -101,26 +79,15 @@
           <div class="form-field">
             <label for="phone">Teléfono</label>
             <input id="phone" type="tel" formControlName="phone" placeholder="+34 600 000 000" />
-            <p
-              class="form-error"
-              *ngIf="accountForm.get('phone')?.invalid && accountForm.get('phone')?.touched"
-            >
+            <p class="form-error" *ngIf="accountForm.get('phone')?.invalid && accountForm.get('phone')?.touched">
               Añade un teléfono de contacto.
             </p>
           </div>
 
           <div class="form-field">
             <label for="address">Dirección</label>
-            <input
-              id="address"
-              type="text"
-              formControlName="address"
-              placeholder="Calle, número y piso"
-            />
-            <p
-              class="form-error"
-              *ngIf="accountForm.get('address')?.invalid && accountForm.get('address')?.touched"
-            >
+            <input id="address" type="text" formControlName="address" placeholder="Calle, número y piso" />
+            <p class="form-error" *ngIf="accountForm.get('address')?.invalid && accountForm.get('address')?.touched">
               La dirección es obligatoria.
             </p>
           </div>
@@ -132,12 +99,7 @@
 
           <div class="form-field">
             <label for="postalCode">Código postal</label>
-            <input
-              id="postalCode"
-              type="text"
-              formControlName="postalCode"
-              placeholder="Código postal"
-            />
+            <input id="postalCode" type="text" formControlName="postalCode" placeholder="Código postal" />
           </div>
 
           <div class="form-field">
@@ -165,14 +127,14 @@
           </div>
         </header>
 
-        <form
-          class="form-grid form-grid--security"
-          [formGroup]="securityForm"
-          (ngSubmit)="handleSecuritySubmit()"
-        >
+        <form class="form-grid form-grid--security" [formGroup]="securityForm" (ngSubmit)="handleSecuritySubmit()">
+          <!-- Hidden username field to help browser password managers identify the account being updated -->
+          <input type="text" [value]="userSummary().email" autocomplete="username" style="display:none"
+            aria-hidden="true">
+
           <div class="form-field">
             <label for="currentPassword">Contraseña actual</label>
-            <input id="currentPassword" type="password" formControlName="currentPassword" />
+            <input id="currentPassword" type="password" formControlName="currentPassword" autocomplete="new-password" />
           </div>
 
           <div class="form-field">
@@ -189,7 +151,6 @@
 
           <div class="form-actions">
             <button type="submit" class="primary-button">Actualizar contraseña</button>
-            <button type="button" class="ghost-button">Configurar 2FA</button>
           </div>
         </form>
       </section>
@@ -203,32 +164,15 @@
           </div>
         </header>
 
-        <form
-          class="preferences"
-          [formGroup]="preferencesForm"
-          (ngSubmit)="handlePreferencesSubmit()"
-        >
-          <label
-            class="preference-toggle"
-            *ngFor="let preference of contactPreferences"
-            [attr.for]="preference.key"
-          >
+        <form class="preferences" [formGroup]="preferencesForm" (ngSubmit)="handlePreferencesSubmit()">
+          <label class="preference-toggle" *ngFor="let preference of contactPreferences" [attr.for]="preference.key">
             <div class="preference-toggle__info">
               <span class="preference-toggle__label">{{ preference.label }}</span>
               <span class="preference-toggle__description">{{ preference.description }}</span>
             </div>
             <div class="preference-toggle__control">
-              <input
-                class="sr-only"
-                type="checkbox"
-                [id]="preference.key"
-                [formControlName]="preference.key"
-              />
-              <span
-                class="toggle"
-                [class.toggle--on]="preferencesForm.get(preference.key)?.value"
-                aria-hidden="true"
-              >
+              <input class="sr-only" type="checkbox" [id]="preference.key" [formControlName]="preference.key" />
+              <span class="toggle" [class.toggle--on]="preferencesForm.get(preference.key)?.value" aria-hidden="true">
                 <span class="toggle__dot"></span>
               </span>
             </div>

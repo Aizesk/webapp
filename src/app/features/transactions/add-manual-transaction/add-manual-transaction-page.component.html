@@ -1,207 +1,142 @@
-<section class="add-transaction">
-  <header class="page-header">
-    <button type="button" class="back-button" (click)="handleCancel()" [disabled]="submitting()">
-      ←
-    </button>
-    <div>
-      <p class="eyebrow">Transacciones</p>
-      <h1>Registrar transacción manual</h1>
-      <p class="subtitle">
-        Completa los datos de la operación para mantener el historial sincronizado.
-      </p>
+<section class="add-transaction-page">
+  <app-top-navbar [navItems]="navItems" brandTagline="Nueva Transacción"></app-top-navbar>
+
+  <div class="page-content">
+    <!-- Page Header -->
+    <header class="page-header">
+      <div class="page-header__info">
+        <h1 class="page-header__title">Nueva transacción manual</h1>
+        <p class="page-header__subtitle">Registra un ingreso o gasto manualmente</p>
+      </div>
+      <div class="page-header__actions">
+        <button
+          type="button"
+          class="btn btn--ghost"
+          (click)="handleCancel()"
+          [disabled]="submitting()"
+        >
+          <span class="material-symbols-rounded">close</span>
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn btn--primary"
+          [class.btn--income]="selectedType() === 'INCOME'"
+          [class.btn--expense]="selectedType() === 'EXPENSE'"
+          (click)="handleSubmit()"
+          [disabled]="submitting() || form.invalid"
+        >
+          <span class="material-symbols-rounded">{{
+            submitting() ? 'hourglass_empty' : 'save'
+          }}</span>
+          {{ submitting() ? 'Guardando...' : 'Guardar transacción' }}
+        </button>
+      </div>
+    </header>
+
+    <!-- Error Banner -->
+    <div *ngIf="errorMessage()" class="error-banner">
+      <span class="material-symbols-rounded">error</span>
+      <span>{{ errorMessage() }}</span>
     </div>
-    <div class="header-actions">
-      <button type="button" class="ghost-button" (click)="handleCancel()" [disabled]="submitting()">
-        Cancelar
-      </button>
-      <button
-        type="submit"
-        class="primary-button"
-        (click)="handleSubmit()"
-        [disabled]="submitting()"
-      >
-        {{ submitting() ? 'Guardando...' : 'Guardar transacción' }}
-      </button>
-    </div>
-  </header>
 
-  <div *ngIf="errorMessage()" class="error-banner">
-    {{ errorMessage() }}
-  </div>
-
-  <form class="page-content" [formGroup]="form" (ngSubmit)="handleSubmit()">
-    <div class="form-columns">
-      <article class="form-card">
-        <div class="section-header">
-          <div>
-            <p class="eyebrow">Información general</p>
-            <h2>Datos principales</h2>
-          </div>
-          <span class="badge">Manual</span>
-        </div>
-
-        <div class="form-grid">
-          <label class="form-field">
-            <span>Concepto</span>
-            <input
-              type="text"
-              formControlName="concept"
-              placeholder="Ej. Pedido #52005 (Servicio A)"
-            />
-            <small *ngIf="form.get('concept')?.invalid && form.get('concept')?.touched">
-              Ingresa un concepto válido.
-            </small>
-          </label>
-
-          <label class="form-field">
-            <span>Categoría</span>
-            <select formControlName="category">
-              <option *ngFor="let option of categoryOptions" [value]="option">{{ option }}</option>
-            </select>
-          </label>
-
-          <label class="form-field">
-            <span>Plataforma</span>
-            <select formControlName="platform">
-              <option *ngFor="let option of platformOptions" [value]="option">{{ option }}</option>
-            </select>
-          </label>
-
-          <label class="form-field">
-            <span>Estado</span>
-            <select formControlName="status">
-              <option *ngFor="let option of statusOptions" [value]="option">{{ option }}</option>
-            </select>
-          </label>
-
-          <label class="form-field">
-            <span>Monto</span>
-            <div class="currency-input">
-              <span>$</span>
-              <input type="number" formControlName="amount" step="0.01" min="0.01" />
-            </div>
-          </label>
-
-          <label class="form-field">
-            <span>Comisión</span>
-            <div class="currency-input">
-              <span>$</span>
-              <input type="number" formControlName="fee" step="0.01" min="0" />
-            </div>
-          </label>
-        </div>
-      </article>
-
-      <article class="form-card">
-        <div class="section-header">
-          <div>
-            <p class="eyebrow">Pago y referencia</p>
-            <h2>Detalles financieros</h2>
+    <!-- Form -->
+    <form class="transaction-form" [formGroup]="form" (ngSubmit)="handleSubmit()">
+      <div class="form-card">
+        <!-- Type Toggle -->
+        <div class="form-section">
+          <label class="form-label">Tipo de transacción</label>
+          <div class="type-toggle">
+            <button
+              type="button"
+              class="type-btn type-btn--income"
+              [class.type-btn--active]="selectedType() === 'INCOME'"
+              (click)="setType('INCOME')"
+            >
+              <span class="material-symbols-rounded">trending_up</span>
+              Ingreso
+            </button>
+            <button
+              type="button"
+              class="type-btn type-btn--expense"
+              [class.type-btn--active]="selectedType() === 'EXPENSE'"
+              (click)="setType('EXPENSE')"
+            >
+              <span class="material-symbols-rounded">trending_down</span>
+              Gasto
+            </button>
           </div>
         </div>
 
-        <div class="form-grid">
-          <label class="form-field">
-            <span>Método de pago</span>
-            <select formControlName="paymentMethod">
-              <option *ngFor="let method of paymentMethodOptions" [value]="method">
-                {{ method }}
+        <!-- Amount + Currency Row -->
+        <div class="form-row form-row--amount">
+          <div class="form-section form-section--amount">
+            <label class="form-label" for="amount">Monto *</label>
+            <div class="amount-input-wrapper">
+              <input
+                id="amount"
+                type="number"
+                class="amount-input"
+                [class.amount-input--income]="selectedType() === 'INCOME'"
+                [class.amount-input--expense]="selectedType() === 'EXPENSE'"
+                formControlName="amount"
+                step="0.01"
+                min="0.01"
+                placeholder="0.00"
+              />
+            </div>
+          </div>
+          <div class="form-section form-section--currency">
+            <label class="form-label" for="currency">Moneda</label>
+            <select id="currency" class="form-select" formControlName="currency">
+              <option *ngFor="let curr of currencies" [value]="curr.code">
+                {{ curr.symbol }} {{ curr.code }}
               </option>
             </select>
-          </label>
-
-          <label class="form-field">
-            <span>Referencia</span>
-            <input type="text" formControlName="reference" placeholder="Ej. REF-2024-06-01-001" />
-          </label>
-
-          <label class="form-field">
-            <span>Fecha</span>
-            <input type="date" formControlName="date" />
-          </label>
-
-          <label class="form-field">
-            <span>Hora</span>
-            <input type="time" formControlName="time" />
-            <small>{{ timezone }}</small>
-          </label>
-        </div>
-      </article>
-
-      <article class="form-card">
-        <div class="section-header">
-          <div>
-            <p class="eyebrow">Cliente</p>
-            <h2>Información del cliente</h2>
           </div>
         </div>
 
-        <div class="form-grid">
-          <label class="form-field">
-            <span>Nombre</span>
-            <input type="text" formControlName="customerName" />
-          </label>
-
-          <label class="form-field">
-            <span>Email</span>
-            <input type="email" formControlName="customerEmail" />
-          </label>
-
-          <label class="form-field">
-            <span>ID de Cliente</span>
-            <input type="text" formControlName="customerId" />
-          </label>
-        </div>
-      </article>
-
-      <article class="form-card">
-        <div class="section-header">
-          <div>
-            <p class="eyebrow">Notas internas</p>
-            <h2>Contexto adicional</h2>
+        <!-- Date + Time Row -->
+        <div class="form-row">
+          <div class="form-section">
+            <label class="form-label" for="date">Fecha *</label>
+            <input id="date" type="date" class="form-input" formControlName="date" />
+          </div>
+          <div class="form-section">
+            <label class="form-label" for="time">Hora *</label>
+            <input id="time" type="time" class="form-input" formControlName="time" />
           </div>
         </div>
 
-        <label class="form-field">
-          <textarea
-            rows="4"
-            formControlName="notes"
-            placeholder="Agrega indicaciones para tu equipo"
-          ></textarea>
-        </label>
-      </article>
-    </div>
+        <!-- Concept -->
+        <div class="form-section">
+          <label class="form-label" for="concept">Concepto *</label>
+          <input
+            id="concept"
+            type="text"
+            class="form-input"
+            formControlName="concept"
+            placeholder="Ej. Venta de producto, Pago de publicidad..."
+            maxlength="255"
+          />
+          <small
+            *ngIf="form.get('concept')?.invalid && form.get('concept')?.touched"
+            class="form-error"
+          >
+            El concepto es obligatorio (máx. 255 caracteres)
+          </small>
+        </div>
 
-    <aside class="summary-panel">
-      <div class="summary-card">
-        <p class="eyebrow">Resumen</p>
-        <h3>Montos estimados</h3>
-        <ul>
-          <li>
-            <span>Cantidad Total</span>
-            <strong>{{
-              form.get('amount')?.value || 0 | currency: 'USD' : 'symbol' : '1.2-2'
-            }}</strong>
-          </li>
-          <li>
-            <span>Comisión</span>
-            <strong
-              >-{{ form.get('fee')?.value || 0 | currency: 'USD' : 'symbol' : '1.2-2' }}</strong
-            >
-          </li>
-          <li>
-            <span>Cantidad Neta</span>
-            <strong class="success">{{ netAmount | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
-          </li>
-        </ul>
+        <!-- Category -->
+        <div class="form-section">
+          <label class="form-label" for="category">Categoría *</label>
+          <select id="category" class="form-select" formControlName="category">
+            <option *ngFor="let cat of categories()" [value]="cat.value">
+              {{ cat.value }}
+            </option>
+          </select>
+        </div>
       </div>
-
-      <div class="summary-card quick-actions">
-        <h3>Acciones rápidas</h3>
-        <p>Podrás generar recibos o enviar confirmaciones una vez guardes la transacción.</p>
-        <button type="submit" class="primary-button">Guardar ahora</button>
-        <button type="button" class="ghost-button" (click)="handleCancel()">Descartar</button>
-      </div>
-    </aside>
-  </form>
+    </form>
+  </div>
 </section>
