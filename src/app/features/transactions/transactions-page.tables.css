@@ -114,21 +114,6 @@
   font-size: 1.125rem;
 }
 
-.filter-chip--dropdown {
-  gap: 0.25rem;
-}
-
-.filter-chip__arrow {
-  font-size: 1.25rem !important;
-  margin-left: -0.25rem;
-  margin-right: -0.25rem;
-  transition: transform 0.2s ease;
-}
-
-.filter-chip--dropdown[aria-expanded="true"] .filter-chip__arrow {
-  transform: rotate(180deg);
-}
-
 .filter-chip__label {
   display: none;
 }

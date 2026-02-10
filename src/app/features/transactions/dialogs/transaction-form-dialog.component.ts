@@ -8,7 +8,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { MatIconModule } from '@angular/material/icon';
 import { DetailedTransaction } from '../../../shared/models/transactions.model';
 import { TransactionApiRequest, TransactionType } from '../../../shared/models/transaction-api.model';
 
@@ -25,35 +24,23 @@ export interface TransactionFormDialogResult {
   id?: string;
 }
 
-const EXPENSE_CATEGORIES = [
-  { value: 'Publicidad', icon: 'campaign' },
-  { value: 'Envíos', icon: 'local_shipping' },
-  { value: 'Inventario', icon: 'inventory_2' },
-  { value: 'Comisiones', icon: 'percent' },
-  { value: 'Software y Herramientas', icon: 'terminal' },
-  { value: 'Servicios Profesionales', icon: 'work' },
-  { value: 'Impuestos', icon: 'receipt_long' },
-  { value: 'Devoluciones', icon: 'keyboard_return' },
-  { value: 'Otros Gastos', icon: 'more_horiz' }
-];
-
-const INCOME_CATEGORIES = [
-  { value: 'Ventas Online', icon: 'shopping_cart' },
-  { value: 'Servicios', icon: 'handshake' },
-  { value: 'Comisiones Recibidas', icon: 'trending_up' },
-  { value: 'Reembolsos', icon: 'undo' },
-  { value: 'Otros Ingresos', icon: 'more_horiz' }
-];
-
-const CURRENCIES = [
-  { code: 'EUR', symbol: '€', name: 'Euro' },
-  { code: 'USD', symbol: '$', name: 'Dólar' },
-  { code: 'GBP', symbol: '£', name: 'Libra' }
+const CATEGORIES = [
+  'Ventas Online',
+  'Comisiones',
+  'Devoluciones',
+  'Publicidad',
+  'Envíos',
+  'Inventario',
+  'Software y Herramientas',
+  'Servicios Profesionales',
+  'Impuestos',
+  'Otros'
 ];
 
 /**
- * Redesigned dialog for creating or editing transactions.
- * Matches the Transaction model fields exactly.
+ * Dialog for creating or editing transactions.
+ * - Create mode: new manual transaction
+ * - Edit mode: only for MANUAL origin transactions
  */
 @Component({
   selector: 'app-transaction-form-dialog',
@@ -67,15 +54,17 @@ const CURRENCIES = [
     MatInputModule,
     MatSelectModule,
     MatDatepickerModule,
-    MatNativeDateModule,
-    MatIconModule
+    MatNativeDateModule
   ],
   template: `
     <div class="transaction-form-dialog">
       <header class="dialog-header">
-        <h2 class="dialog-title">{{ isEditMode ? 'Editar Transacción' : 'Nueva Transacción' }}</h2>
-        <p class="dialog-subtitle">
-          {{ isEditMode ? 'Modifica los datos de tu transacción' : 'Registra una nueva transacción manual' }}
+        <h2 class="dialog-title">{{ isEditMode ? 'Editar Transacción' : 'Nueva Transacción Manual' }}</h2>
+        <p class="dialog-subtitle" *ngIf="!isEditMode">
+          Las transacciones manuales se marcan automáticamente como origen "MANUAL"
+        </p>
+        <p class="dialog-subtitle" *ngIf="isEditMode && !isPartialEdit">
+          Edición completa disponible para transacciones manuales
         </p>
       </header>
 
@@ -84,155 +73,125 @@ const CURRENCIES = [
         <span class="material-symbols-rounded">info</span>
         <div class="partial-edit-warning__content">
           <strong>Transacción automática ({{ data.transaction?.origin }})</strong>
-          <p>Solo puedes modificar el concepto y la categoría.</p>
+          <p>Solo puedes modificar el concepto y la categoría. El importe y la fecha están bloqueados.</p>
         </div>
       </div>
 
       <mat-dialog-content>
         <form [formGroup]="form" class="transaction-form">
-          
-          <!-- Type Selector - Visual Toggle -->
-          <div class="form-section form-section--full">
-            <label class="form-label">Tipo de transacción</label>
-            <div class="type-toggle" [class.type-toggle--disabled]="isPartialEdit">
-              <button 
-                type="button"
-                class="type-toggle__btn type-toggle__btn--income"
-                [class.type-toggle__btn--active]="form.get('type')?.value === 'INCOME'"
-                (click)="setType('INCOME')"
-                [disabled]="isPartialEdit"
-              >
-                <span class="material-symbols-rounded">trending_up</span>
-                <span>Ingreso</span>
-              </button>
-              <button 
-                type="button"
-                class="type-toggle__btn type-toggle__btn--expense"
-                [class.type-toggle__btn--active]="form.get('type')?.value === 'EXPENSE'"
-                (click)="setType('EXPENSE')"
-                [disabled]="isPartialEdit"
-              >
-                <span class="material-symbols-rounded">trending_down</span>
-                <span>Gasto</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Amount & Currency Row -->
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field form-field--amount" [class.form-field--disabled]="isPartialEdit">
-              <mat-label>Importe</mat-label>
-              <input 
-                matInput 
-                type="number" 
-                formControlName="amount"
-                placeholder="0.00"
-                min="0.01"
-                step="0.01"
-              />
-              <mat-error *ngIf="form.get('amount')?.hasError('required')">
-                Obligatorio
-              </mat-error>
-              <mat-error *ngIf="form.get('amount')?.hasError('min')">
-                Debe ser mayor a 0
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="form-field form-field--currency" [class.form-field--disabled]="isPartialEdit">
-              <mat-label>Moneda</mat-label>
-              <mat-select formControlName="currency">
-                <mat-option *ngFor="let c of currencies" [value]="c.code">
-                  {{ c.symbol }} {{ c.code }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-
-          <!-- Date & Time Row -->
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field" [class.form-field--disabled]="isPartialEdit">
-              <mat-label>Fecha</mat-label>
-              <input 
-                matInput 
-                [matDatepicker]="picker" 
-                formControlName="transactionDate"
-              />
-              <mat-datepicker-toggle matIconSuffix [for]="picker" [disabled]="isPartialEdit"></mat-datepicker-toggle>
-              <mat-datepicker #picker [disabled]="isPartialEdit"></mat-datepicker>
-              <mat-error *ngIf="form.get('transactionDate')?.hasError('required')">
-                Obligatoria
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="form-field" *ngIf="!isPartialEdit">
-              <mat-label>Hora</mat-label>
-              <input 
-                matInput 
-                type="time" 
-                formControlName="transactionTime"
-              />
-            </mat-form-field>
-          </div>
-
-          <!-- Concept (Description) -->
-          <mat-form-field appearance="outline" class="form-field form-field--full">
-            <mat-label>Concepto / Descripción</mat-label>
-            <input 
-              matInput 
-              formControlName="concept"
-              placeholder="Ej: Venta producto X, Envío cliente Y..."
-              maxlength="255"
-            />
-            <mat-hint align="end">{{ form.get('concept')?.value?.length || 0 }}/255</mat-hint>
-            <mat-error *ngIf="form.get('concept')?.hasError('required')">
-              El concepto es obligatorio
+          <!-- Type -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Tipo</mat-label>
+            <mat-select formControlName="type" required>
+              <mat-option value="INCOME">
+                <span class="option-badge option-badge--income">Ingreso</span>
+              </mat-option>
+              <mat-option value="EXPENSE">
+                <span class="option-badge option-badge--expense">Gasto</span>
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="form.get('type')?.hasError('required')">
+              El tipo es obligatorio
             </mat-error>
           </mat-form-field>
 
-          <!-- Category -->
+          <!-- Amount (disabled for partial edit) -->
+          <mat-form-field appearance="outline" class="form-field" [class.form-field--disabled]="isPartialEdit">
+            <mat-label>Importe</mat-label>
+            <input 
+              matInput 
+              type="number" 
+              formControlName="amount"
+              placeholder="0.00"
+              min="0.01"
+              step="0.01"
+            />
+            <span matTextPrefix>€&nbsp;</span>
+            <mat-hint *ngIf="isPartialEdit">Campo bloqueado</mat-hint>
+            <mat-error *ngIf="form.get('amount')?.hasError('required')">
+              El importe es obligatorio
+            </mat-error>
+            <mat-error *ngIf="form.get('amount')?.hasError('min')">
+              El importe debe ser mayor a 0
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Transaction Date (disabled for partial edit) -->
+          <mat-form-field appearance="outline" class="form-field" [class.form-field--disabled]="isPartialEdit">
+            <mat-label>Fecha de Transacción</mat-label>
+            <input 
+              matInput 
+              [matDatepicker]="picker" 
+              formControlName="transactionDate"
+            />
+            <mat-datepicker-toggle matIconSuffix [for]="picker" [disabled]="isPartialEdit"></mat-datepicker-toggle>
+            <mat-datepicker #picker [disabled]="isPartialEdit"></mat-datepicker>
+            <mat-hint *ngIf="isPartialEdit">Campo bloqueado</mat-hint>
+            <mat-error *ngIf="form.get('transactionDate')?.hasError('required')">
+              La fecha es obligatoria
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Time (hidden for partial edit) -->
+          <mat-form-field appearance="outline" class="form-field" *ngIf="!isPartialEdit">
+            <mat-label>Hora</mat-label>
+            <input 
+              matInput 
+              type="time" 
+              formControlName="transactionTime"
+            />
+          </mat-form-field>
+
+          <!-- Placeholder for grid alignment when time is hidden -->
+          <div class="form-field" *ngIf="isPartialEdit"></div>
+
+          <!-- Concept (always editable) -->
+          <mat-form-field appearance="outline" class="form-field form-field--full">
+            <mat-label>Concepto</mat-label>
+            <input 
+              matInput 
+              formControlName="concept"
+              placeholder="Descripción de la transacción"
+              maxlength="255"
+            />
+            <mat-hint align="end">{{ form.get('concept')?.value?.length || 0 }}/255</mat-hint>
+          </mat-form-field>
+
+          <!-- Category (always editable) -->
           <mat-form-field appearance="outline" class="form-field form-field--full">
             <mat-label>Categoría</mat-label>
             <mat-select formControlName="category">
-              <mat-option value="">Sin categoría</mat-option>
-              <mat-option *ngFor="let cat of currentCategories" [value]="cat.value">
-                <div class="category-option">
-                  <span class="material-symbols-rounded category-option__icon">{{ cat.icon }}</span>
-                  <span>{{ cat.value }}</span>
-                </div>
+              <mat-option *ngFor="let cat of categories" [value]="cat">
+                {{ cat }}
               </mat-option>
             </mat-select>
           </mat-form-field>
-
         </form>
       </mat-dialog-content>
 
       <mat-dialog-actions align="end">
-        <button mat-button (click)="cancel()" class="btn-cancel">Cancelar</button>
+        <button mat-button (click)="cancel()">Cancelar</button>
         <button 
           mat-flat-button 
-          class="btn-save"
-          [class.btn-save--income]="form.get('type')?.value === 'INCOME'"
-          [class.btn-save--expense]="form.get('type')?.value === 'EXPENSE'"
+          color="primary"
           [disabled]="form.invalid || isSaving"
           (click)="save()"
         >
-          <span class="material-symbols-rounded btn-save__icon" *ngIf="!isSaving">
-            {{ isEditMode ? 'save' : 'add' }}
-          </span>
-          {{ isSaving ? 'Guardando...' : (isEditMode ? 'Guardar' : 'Crear') }}
+          {{ isSaving ? 'Guardando...' : (isEditMode ? 'Guardar cambios' : 'Crear transacción') }}
         </button>
       </mat-dialog-actions>
     </div>
   `,
   styles: [`
     .transaction-form-dialog {
-      min-width: 480px;
-      max-width: 560px;
+      min-width: 450px;
+      max-width: 550px;
     }
 
     .dialog-header {
-      padding: 1.25rem 1.5rem;
+      padding: 1rem 1.5rem;
       border-bottom: 1px solid var(--border-subtle, #e5e7eb);
+      margin-bottom: 0.5rem;
     }
 
     .dialog-title {
@@ -252,7 +211,7 @@ const CURRENCIES = [
       display: flex;
       gap: 0.75rem;
       padding: 0.875rem 1.25rem;
-      margin: 1rem 1.5rem 0;
+      margin: 0 1.5rem;
       background: rgba(245, 158, 11, 0.1);
       border: 1px solid rgba(245, 158, 11, 0.3);
       border-radius: 10px;
@@ -262,6 +221,10 @@ const CURRENCIES = [
     .partial-edit-warning .material-symbols-rounded {
       font-size: 1.5rem;
       flex-shrink: 0;
+    }
+
+    .partial-edit-warning__content {
+      flex: 1;
     }
 
     .partial-edit-warning__content strong {
@@ -276,35 +239,7 @@ const CURRENCIES = [
       opacity: 0.9;
     }
 
-    mat-dialog-content {
-      padding: 1rem 1.5rem 0.5rem;
-      max-height: 65vh;
-      overflow-y: auto;
-    }
-
     .transaction-form {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .form-section {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .form-section--full {
-      width: 100%;
-    }
-
-    .form-label {
-      font-size: 0.8125rem;
-      font-weight: 500;
-      color: var(--text-secondary, #4b5563);
-    }
-
-    .form-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1rem;
@@ -318,114 +253,39 @@ const CURRENCIES = [
       grid-column: 1 / -1;
     }
 
-    .form-field--amount {
-      flex: 2;
-    }
-
-    .form-field--currency {
-      flex: 1;
-    }
-
     .form-field--disabled {
       opacity: 0.6;
-      pointer-events: none;
     }
 
-    /* Type Toggle */
-    .type-toggle {
-      display: flex;
-      gap: 0.75rem;
-    }
-
-    .type-toggle--disabled {
-      opacity: 0.6;
-      pointer-events: none;
-    }
-
-    .type-toggle__btn {
-      flex: 1;
-      display: flex;
+    .option-badge {
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.875rem 1rem;
-      border: 2px solid var(--border-subtle, #e5e7eb);
-      border-radius: 12px;
-      background: var(--bg-primary, #fff);
-      cursor: pointer;
-      font-size: 0.9375rem;
-      font-weight: 500;
-      color: var(--text-secondary, #6b7280);
-      transition: all 0.2s ease;
+      padding: 0.125rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
     }
 
-    .type-toggle__btn:hover:not(:disabled) {
-      border-color: var(--border-medium, #d1d5db);
-      background: var(--bg-secondary, #f9fafb);
-    }
-
-    .type-toggle__btn .material-symbols-rounded {
-      font-size: 1.25rem;
-    }
-
-    .type-toggle__btn--income.type-toggle__btn--active {
-      border-color: #10b981;
-      background: rgba(16, 185, 129, 0.1);
+    .option-badge--income {
+      background: rgba(16, 185, 129, 0.15);
       color: #10b981;
     }
 
-    .type-toggle__btn--expense.type-toggle__btn--active {
-      border-color: #ef4444;
-      background: rgba(239, 68, 68, 0.1);
+    .option-badge--expense {
+      background: rgba(239, 68, 68, 0.15);
       color: #ef4444;
     }
 
-    /* Category Option */
-    .category-option {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+    mat-dialog-content {
+      padding: 0.5rem 1.5rem;
+      max-height: 60vh;
+      overflow-y: auto;
     }
 
-    .category-option__icon {
-      font-size: 1.125rem;
-      color: var(--text-muted, #6b7280);
-    }
-
-    /* Dialog Actions */
     mat-dialog-actions {
       padding: 1rem 1.5rem;
       border-top: 1px solid var(--border-subtle, #e5e7eb);
-      gap: 0.75rem;
-    }
-
-    .btn-cancel {
-      color: var(--text-secondary, #6b7280);
-    }
-
-    .btn-save {
-      display: flex;
-      align-items: center;
-      gap: 0.375rem;
-      min-width: 100px;
-      background: var(--primary-600, #2563eb) !important;
-      color: white !important;
-    }
-
-    .btn-save--income {
-      background: #10b981 !important;
-    }
-
-    .btn-save--expense {
-      background: #ef4444 !important;
-    }
-
-    .btn-save__icon {
-      font-size: 1.125rem;
-    }
-
-    .btn-save:disabled {
-      opacity: 0.5;
+      margin-top: 0.5rem;
     }
 
     /* Override Material form field styling */
@@ -437,10 +297,7 @@ const CURRENCIES = [
 export class TransactionFormDialogComponent implements OnInit {
   form!: FormGroup;
   isSaving = false;
-  currencies = CURRENCIES;
-  
-  expenseCategories = EXPENSE_CATEGORIES;
-  incomeCategories = INCOME_CATEGORIES;
+  categories = CATEGORIES;
 
   get isEditMode(): boolean {
     return this.data.mode === 'edit';
@@ -448,12 +305,6 @@ export class TransactionFormDialogComponent implements OnInit {
 
   get isPartialEdit(): boolean {
     return this.data.partialEdit === true;
-  }
-
-  get currentCategories() {
-    return this.form?.get('type')?.value === 'INCOME' 
-      ? this.incomeCategories 
-      : this.expenseCategories;
   }
 
   constructor(
@@ -473,13 +324,12 @@ export class TransactionFormDialogComponent implements OnInit {
     this.form = this.fb.group({
       type: [tx?.type || 'EXPENSE', Validators.required],
       amount: [tx?.amount || null, [Validators.required, Validators.min(0.01)]],
-      currency: [tx?.currency || 'EUR', Validators.required],
       transactionDate: [txDate, Validators.required],
       transactionTime: [
         txDate.toTimeString().substring(0, 5), // HH:MM format
         Validators.required
       ],
-      concept: [tx?.concept || '', [Validators.required, Validators.maxLength(255)]],
+      concept: [tx?.concept || '', Validators.maxLength(255)],
       category: [tx?.category || '']
     });
 
@@ -487,17 +337,8 @@ export class TransactionFormDialogComponent implements OnInit {
     if (this.isPartialEdit) {
       this.form.get('type')?.disable();
       this.form.get('amount')?.disable();
-      this.form.get('currency')?.disable();
       this.form.get('transactionDate')?.disable();
       this.form.get('transactionTime')?.disable();
-    }
-  }
-
-  setType(type: 'INCOME' | 'EXPENSE'): void {
-    if (!this.isPartialEdit) {
-      this.form.get('type')?.setValue(type);
-      // Reset category when type changes (categories differ by type)
-      this.form.get('category')?.setValue('');
     }
   }
 
@@ -519,15 +360,15 @@ export class TransactionFormDialogComponent implements OnInit {
       date.setHours(hours, minutes, 0, 0);
     }
 
-    // For partial edit, preserve original values for locked fields
+    // For partial edit, only update concept and category, preserve other fields
     const tx = this.data.transaction;
     const request: TransactionApiRequest = {
       type: this.isPartialEdit && tx ? tx.type as TransactionType : formValue.type as TransactionType,
       amount: this.isPartialEdit && tx ? tx.amount : formValue.amount,
-      currency: this.isPartialEdit && tx ? tx.currency : formValue.currency,
-      concept: formValue.concept,
+      currency: tx?.currency || 'EUR',
+      concept: formValue.concept || undefined,
       category: formValue.category || undefined,
-      origin: 'MANUAL', // Manual transactions are always MANUAL origin
+      origin: tx?.origin || 'MANUAL',
       transactionDate: this.isPartialEdit && tx ? tx.date : date.toISOString()
     };
 

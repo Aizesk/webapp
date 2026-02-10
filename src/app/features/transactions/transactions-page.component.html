@@ -89,7 +89,6 @@
       <div class="filter-group">
         <span class="filter-label">Origen</span>
         <div class="origin-buttons">
-          <!-- Global and Manual buttons -->
           <button
             *ngFor="let origin of originOptions"
             type="button"
@@ -101,29 +100,6 @@
             <span class="material-symbols-rounded">{{ origin.icon }}</span>
             <span class="filter-chip__label">{{ origin.label }}</span>
           </button>
-
-          <!-- Platforms dropdown -->
-          <button
-            type="button"
-            class="filter-chip filter-chip--origin filter-chip--dropdown"
-            [class.filter-chip--active]="isPlatformSelected()"
-            [matMenuTriggerFor]="platformsMenu"
-            matTooltip="Plataformas conectadas"
-          >
-            <span class="material-symbols-rounded">storefront</span>
-            <span class="filter-chip__label">{{ selectedPlatformLabel() || 'Plataformas' }}</span>
-            <span class="material-symbols-rounded filter-chip__arrow">arrow_drop_down</span>
-          </button>
-          <mat-menu #platformsMenu="matMenu">
-            <button
-              mat-menu-item
-              *ngFor="let platform of platformOptions"
-              (click)="selectOrigin(platform.id)"
-            >
-              <span class="material-symbols-rounded">{{ platform.icon }}</span>
-              <span>{{ platform.label }}</span>
-            </button>
-          </mat-menu>
         </div>
       </div>
 

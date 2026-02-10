@@ -56,6 +56,7 @@ export interface KpiSummaryResponse {
 
 /**
  * Filter parameters for GET /api/v1/transactions
+ * Supports complex filtering with pagination for large datasets.
  */
 export interface TransactionFilterParams {
   readonly page?: number;
@@ -67,4 +68,5 @@ export interface TransactionFilterParams {
   readonly origin?: TransactionOrigin;
   readonly dateFrom?: string; // ISO 8601 date
   readonly dateTo?: string; // ISO 8601 date
+  readonly search?: string; // Text search in concept and category
 }

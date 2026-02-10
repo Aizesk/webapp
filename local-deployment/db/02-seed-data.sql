@@ -18,7 +18,7 @@ SET CHARACTER SET utf8mb4;
 INSERT IGNORE INTO users (
     id, email, password_hash, full_name, last_name, phone, 
     street, city, postal_code, country, 
-    role, plan, avatar_url,
+    role, avatar_url,
     pref_billing_alerts, pref_weekly_digest, pref_security_events, pref_product_research,
     created_at, updated_at, last_login_at
 ) VALUES (
@@ -33,7 +33,6 @@ INSERT IGNORE INTO users (
     '28013',
     'España',
     'ROLE_USER',
-    'FREE',
     NULL,
     1, 1, 1, 0,
     NOW() - INTERVAL 30 DAY,
@@ -45,7 +44,7 @@ INSERT IGNORE INTO users (
 INSERT IGNORE INTO users (
     id, email, password_hash, full_name, last_name, phone, 
     street, city, postal_code, country, 
-    role, plan, avatar_url,
+    role, avatar_url,
     pref_billing_alerts, pref_weekly_digest, pref_security_events, pref_product_research,
     created_at, updated_at, last_login_at
 ) VALUES (
@@ -60,7 +59,6 @@ INSERT IGNORE INTO users (
     '08029',
     'España',
     'ROLE_ADMIN',
-    'ENTERPRISE',
     NULL,
     1, 1, 1, 1,
     NOW() - INTERVAL 60 DAY,
@@ -72,7 +70,7 @@ INSERT IGNORE INTO users (
 INSERT IGNORE INTO users (
     id, email, password_hash, full_name, last_name, phone, 
     street, city, postal_code, country, 
-    role, plan, avatar_url,
+    role, avatar_url,
     pref_billing_alerts, pref_weekly_digest, pref_security_events, pref_product_research,
     created_at, updated_at, last_login_at
 ) VALUES (
@@ -87,7 +85,6 @@ INSERT IGNORE INTO users (
     '28006',
     'España',
     'ROLE_USER',
-    'PRO',
     NULL,
     1, 0, 1, 0,
     NOW() - INTERVAL 15 DAY,
@@ -99,7 +96,7 @@ INSERT IGNORE INTO users (
 INSERT IGNORE INTO users (
     id, email, password_hash, full_name, last_name, phone, 
     street, city, postal_code, country, 
-    role, plan, avatar_url,
+    role, avatar_url,
     pref_billing_alerts, pref_weekly_digest, pref_security_events, pref_product_research,
     created_at, updated_at, last_login_at
 ) VALUES (
@@ -114,7 +111,6 @@ INSERT IGNORE INTO users (
     '46002',
     'España',
     'ROLE_USER',
-    'FREE',
     NULL,
     1, 1, 1, 0,
     NOW() - INTERVAL 5 DAY,
@@ -126,7 +122,7 @@ INSERT IGNORE INTO users (
 INSERT IGNORE INTO users (
     id, email, password_hash, full_name, last_name, phone, 
     street, city, postal_code, country, 
-    role, plan, avatar_url,
+    role, avatar_url,
     pref_billing_alerts, pref_weekly_digest, pref_security_events, pref_product_research,
     created_at, updated_at, last_login_at
 ) VALUES (
@@ -141,7 +137,6 @@ INSERT IGNORE INTO users (
     '10001',
     'USA',
     'ROLE_USER',
-    'PRO',
     NULL,
     1, 1, 1, 1,
     NOW() - INTERVAL 45 DAY,
@@ -179,12 +174,18 @@ INSERT IGNORE INTO active_sessions (
 );
 
 -- =====================================================
--- SUBSCRIPTION-SERVICE: SUSCRIPCIONES
+-- SUBSCRIPTION-SERVICE: PLANES Y SUSCRIPCIONES
 -- =====================================================
+
+-- Insertar Planes
+INSERT IGNORE INTO subscription_plans (id, name, description, monthly_price, annual_price, transaction_limit, platform_limit, features) VALUES
+('FREE', 'Gratuito', 'Ideal para empezar a controlar tus finanzas personales', 0.00, 0.00, 100, 1, '["Reportes básicos", "Soporte por email", "1 conexión de plataforma"]'),
+('PROFESSIONAL', 'Profesional', 'Para vendedores activos que buscan optimizar su negocio', 29.99, 299.90, 10000, 5, '["Analytics avanzados", "API access", "Soporte prioritario", "Hasta 5 plataformas"]'),
+('ENTERPRISE', 'Enterprise', 'Solución completa para grandes volúmenes y equipos', 99.99, 999.90, -1, -1, '["Manager dedicado", "SLA garantizado", "Integraciones personalizadas", "Sin límites"]');
 
 -- Suscripción FREE para demo user
 INSERT IGNORE INTO subscriptions (
-    id, user_id, plan_type, status,
+    id, user_id, plan_id, status,
     stripe_customer_id, stripe_subscription_id,
     start_date, end_date, next_billing_date,
     auto_renew, transactions_used, platforms_connected,
@@ -207,7 +208,7 @@ INSERT IGNORE INTO subscriptions (
 
 -- Suscripción ENTERPRISE para admin
 INSERT IGNORE INTO subscriptions (
-    id, user_id, plan_type, status,
+    id, user_id, plan_id, status,
     stripe_customer_id, stripe_subscription_id,
     start_date, end_date, next_billing_date,
     auto_renew, transactions_used, platforms_connected,
@@ -228,9 +229,9 @@ INSERT IGNORE INTO subscriptions (
     NOW() - INTERVAL 60 DAY
 );
 
--- Suscripción PRO para Carlos
+-- Suscripción PROFESSIONAL para Carlos
 INSERT IGNORE INTO subscriptions (
-    id, user_id, plan_type, status,
+    id, user_id, plan_id, status,
     stripe_customer_id, stripe_subscription_id,
     start_date, end_date, next_billing_date,
     auto_renew, transactions_used, platforms_connected,
@@ -238,7 +239,7 @@ INSERT IGNORE INTO subscriptions (
 ) VALUES (
     'sub-0003-0000-0000-000000000003',
     'c3d4e5f6-a7b8-9012-cdef-123456789012',
-    'PRO',
+    'PROFESSIONAL',
     'ACTIVE',
     'cus_mock_carlos_789',
     'sub_mock_carlos_012',
@@ -249,6 +250,52 @@ INSERT IGNORE INTO subscriptions (
     45,
     2,
     NOW() - INTERVAL 15 DAY
+);
+
+-- Suscripción FREE para María
+INSERT IGNORE INTO subscriptions (
+    id, user_id, plan_id, status,
+    stripe_customer_id, stripe_subscription_id,
+    start_date, end_date, next_billing_date,
+    auto_renew, transactions_used, platforms_connected,
+    created_at
+) VALUES (
+    'sub-0004-0000-0000-000000000004',
+    'd4e5f6a7-b8c9-0123-def0-234567890123',
+    'FREE',
+    'ACTIVE',
+    NULL,
+    NULL,
+    NOW() - INTERVAL 5 DAY,
+    NULL,
+    NULL,
+    0,
+    3,
+    0,
+    NOW() - INTERVAL 5 DAY
+);
+
+-- Suscripción PROFESSIONAL para John
+INSERT IGNORE INTO subscriptions (
+    id, user_id, plan_id, status,
+    stripe_customer_id, stripe_subscription_id,
+    start_date, end_date, next_billing_date,
+    auto_renew, transactions_used, platforms_connected,
+    created_at
+) VALUES (
+    'sub-0005-0000-0000-000000000005',
+    'e5f6a7b8-c9d0-1234-ef01-345678901234',
+    'PROFESSIONAL',
+    'ACTIVE',
+    'cus_mock_john_456',
+    'sub_mock_john_789',
+    NOW() - INTERVAL 45 DAY,
+    NOW() + INTERVAL 320 DAY,
+    NOW() + INTERVAL 30 DAY,
+    1,
+    120,
+    3,
+    NOW() - INTERVAL 45 DAY
 );
 
 -- =====================================================
@@ -592,8 +639,8 @@ INSERT INTO audit_log (user_id, action, resource, ip_address, details, success) 
 -- =====================================================
 -- TRANSACTION-SERVICE: TRANSACCIONES DE EJEMPLO DEMO USER
 -- (Synchronized with Transaction.java entity)
--- ~125 transacciones realistas (25/mes × 5 meses)
--- Período: Septiembre 2025 - Enero 2026
+-- ~300 transacciones realistas (25/mes × 12 meses)
+-- Período: Febrero 2025 - Febrero 2026
 -- Campos: user_id, type, amount, currency, concept, category, origin, transaction_date
 -- =====================================================
 
@@ -601,6 +648,209 @@ INSERT INTO audit_log (user_id, action, resource, ip_address, details, success) 
 DELETE FROM transactions WHERE user_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
 
 INSERT INTO transactions (user_id, type, amount, currency, concept, category, origin, transaction_date) VALUES
+
+-- =====================================================
+-- FEBRERO 2025 (25 transacciones)
+-- =====================================================
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 3200.0000, 'EUR', 'Salario mensual febrero', 'Salario', 'MANUAL', '2025-02-01 09:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 750.0000, 'EUR', 'Alquiler apartamento', 'Vivienda', 'MANUAL', '2025-02-02 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 78.0000, 'EUR', 'Factura luz Endesa', 'Suministros', 'MANUAL', '2025-02-03 12:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 38.5000, 'EUR', 'Factura agua', 'Suministros', 'MANUAL', '2025-02-03 12:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 39.9900, 'EUR', 'Factura móvil Vodafone', 'Comunicaciones', 'MANUAL', '2025-02-04 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 125.0000, 'EUR', 'Compra Mercadona semanal', 'Alimentación', 'MANUAL', '2025-02-06 18:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 320.0000, 'EUR', 'Venta consola PS4 usada', 'Ventas Online', 'AMAZON', '2025-02-08 14:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 12.9900, 'EUR', 'Spotify Premium', 'Entretenimiento', 'MANUAL', '2025-02-10 00:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 17.9900, 'EUR', 'Netflix', 'Entretenimiento', 'MANUAL', '2025-02-10 00:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 52.0000, 'EUR', 'Gasolina BP', 'Transporte', 'MANUAL', '2025-02-11 09:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 115.0000, 'EUR', 'Compra Carrefour', 'Alimentación', 'MANUAL', '2025-02-13 17:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 180.0000, 'EUR', 'Venta libros universitarios', 'Ventas Online', 'SHOPIFY', '2025-02-14 11:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 75.0000, 'EUR', 'Cena San Valentín', 'Restaurantes', 'MANUAL', '2025-02-14 21:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 75.0000, 'EUR', 'Gimnasio mensual', 'Salud', 'MANUAL', '2025-02-16 08:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 45.0000, 'EUR', 'Regalo San Valentín', 'Regalos', 'MANUAL', '2025-02-14 12:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 118.0000, 'EUR', 'Compra supermercado', 'Alimentación', 'MANUAL', '2025-02-18 16:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 420.0000, 'EUR', 'Venta monitor Dell 27"', 'Ventas Online', 'AMAZON', '2025-02-20 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 21.0000, 'EUR', 'Comisión Amazon ventas', 'Comisiones', 'AMAZON', '2025-02-20 10:05:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 89.0000, 'EUR', 'Seguro coche (mensual)', 'Seguros', 'MANUAL', '2025-02-23 09:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 32.0000, 'EUR', 'Farmacia medicamentos', 'Salud', 'MANUAL', '2025-02-24 11:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 55.0000, 'EUR', 'Gasolina Repsol', 'Transporte', 'MANUAL', '2025-02-25 08:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 150.0000, 'EUR', 'Venta auriculares Bluetooth', 'Ventas Online', 'SHOPIFY', '2025-02-26 14:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 7.5000, 'EUR', 'Comisión Shopify ventas', 'Comisiones', 'SHOPIFY', '2025-02-26 14:05:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 122.0000, 'EUR', 'Compra fin de mes Mercadona', 'Alimentación', 'MANUAL', '2025-02-27 18:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 38.0000, 'EUR', 'Cena viernes con amigos', 'Restaurantes', 'MANUAL', '2025-02-28 21:00:00'),
+
+-- =====================================================
+-- MARZO 2025 (25 transacciones)
+-- =====================================================
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 3200.0000, 'EUR', 'Salario mensual marzo', 'Salario', 'MANUAL', '2025-03-01 09:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 750.0000, 'EUR', 'Alquiler apartamento', 'Vivienda', 'MANUAL', '2025-03-02 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 72.5000, 'EUR', 'Factura luz Endesa', 'Suministros', 'MANUAL', '2025-03-03 12:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 40.0000, 'EUR', 'Factura agua', 'Suministros', 'MANUAL', '2025-03-03 12:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 39.9900, 'EUR', 'Factura móvil Vodafone', 'Comunicaciones', 'MANUAL', '2025-03-04 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 130.0000, 'EUR', 'Compra Mercadona semanal', 'Alimentación', 'MANUAL', '2025-03-06 18:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 550.0000, 'EUR', 'Venta iPad Air 4', 'Ventas Online', 'AMAZON', '2025-03-08 14:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 27.5000, 'EUR', 'Comisión Amazon ventas', 'Comisiones', 'AMAZON', '2025-03-08 14:35:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 12.9900, 'EUR', 'Spotify Premium', 'Entretenimiento', 'MANUAL', '2025-03-10 00:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 17.9900, 'EUR', 'Netflix', 'Entretenimiento', 'MANUAL', '2025-03-10 00:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 58.0000, 'EUR', 'Gasolina Shell', 'Transporte', 'MANUAL', '2025-03-11 09:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 125.0000, 'EUR', 'Compra Carrefour', 'Alimentación', 'MANUAL', '2025-03-13 17:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 280.0000, 'EUR', 'Venta teclado mecánico Logitech', 'Ventas Online', 'SHOPIFY', '2025-03-15 11:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 42.0000, 'EUR', 'Cena restaurante mexicano', 'Restaurantes', 'MANUAL', '2025-03-16 21:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 75.0000, 'EUR', 'Gimnasio mensual', 'Salud', 'MANUAL', '2025-03-18 08:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 85.0000, 'EUR', 'Ropa primavera Zara', 'Ropa', 'MANUAL', '2025-03-19 12:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 120.0000, 'EUR', 'Compra supermercado', 'Alimentación', 'MANUAL', '2025-03-20 16:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 190.0000, 'EUR', 'Venta ratón gaming Razer', 'Ventas Online', 'AMAZON', '2025-03-22 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 89.0000, 'EUR', 'Seguro coche (mensual)', 'Seguros', 'MANUAL', '2025-03-23 09:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 25.0000, 'EUR', 'Cine y palomitas', 'Entretenimiento', 'MANUAL', '2025-03-25 20:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 55.0000, 'EUR', 'Gasolina Cepsa', 'Transporte', 'MANUAL', '2025-03-26 08:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 350.0000, 'EUR', 'Venta webcam Logitech 4K', 'Ventas Online', 'SHOPIFY', '2025-03-28 14:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 17.5000, 'EUR', 'Comisión Shopify ventas', 'Comisiones', 'SHOPIFY', '2025-03-28 14:05:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 128.0000, 'EUR', 'Compra fin de mes Lidl', 'Alimentación', 'MANUAL', '2025-03-30 18:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 45.0000, 'EUR', 'Cena cumpleaños amigo', 'Restaurantes', 'MANUAL', '2025-03-31 21:00:00'),
+
+-- =====================================================
+-- ABRIL 2025 (25 transacciones)
+-- =====================================================
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 3200.0000, 'EUR', 'Salario mensual abril', 'Salario', 'MANUAL', '2025-04-01 09:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 750.0000, 'EUR', 'Alquiler apartamento', 'Vivienda', 'MANUAL', '2025-04-02 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 68.0000, 'EUR', 'Factura luz Endesa', 'Suministros', 'MANUAL', '2025-04-03 12:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 42.5000, 'EUR', 'Factura agua', 'Suministros', 'MANUAL', '2025-04-03 12:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 39.9900, 'EUR', 'Factura móvil Vodafone', 'Comunicaciones', 'MANUAL', '2025-04-04 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 138.0000, 'EUR', 'Compra Mercadona semanal', 'Alimentación', 'MANUAL', '2025-04-06 18:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 480.0000, 'EUR', 'Venta Nintendo Switch Lite', 'Ventas Online', 'AMAZON', '2025-04-08 14:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 24.0000, 'EUR', 'Comisión Amazon ventas', 'Comisiones', 'AMAZON', '2025-04-08 14:35:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 12.9900, 'EUR', 'Spotify Premium', 'Entretenimiento', 'MANUAL', '2025-04-10 00:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 17.9900, 'EUR', 'Netflix', 'Entretenimiento', 'MANUAL', '2025-04-10 00:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 60.0000, 'EUR', 'Gasolina Repsol', 'Transporte', 'MANUAL', '2025-04-11 09:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 115.0000, 'EUR', 'Compra Carrefour', 'Alimentación', 'MANUAL', '2025-04-13 17:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 220.0000, 'EUR', 'Venta altavoz Bose Portable', 'Ventas Online', 'SHOPIFY', '2025-04-15 11:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 35.0000, 'EUR', 'Cena restaurante indio', 'Restaurantes', 'MANUAL', '2025-04-16 21:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 75.0000, 'EUR', 'Gimnasio mensual', 'Salud', 'MANUAL', '2025-04-18 08:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 250.0000, 'EUR', 'Viaje Semana Santa tren', 'Viajes', 'MANUAL', '2025-04-17 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 180.0000, 'EUR', 'Hotel Semana Santa', 'Viajes', 'MANUAL', '2025-04-18 14:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 122.0000, 'EUR', 'Compra supermercado', 'Alimentación', 'MANUAL', '2025-04-21 16:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 310.0000, 'EUR', 'Venta cámara GoPro Hero 9', 'Ventas Online', 'AMAZON', '2025-04-23 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 89.0000, 'EUR', 'Seguro coche (mensual)', 'Seguros', 'MANUAL', '2025-04-24 09:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 28.0000, 'EUR', 'Libros Amazon', 'Educación', 'AMAZON', '2025-04-25 11:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 54.0000, 'EUR', 'Gasolina BP', 'Transporte', 'MANUAL', '2025-04-26 08:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 175.0000, 'EUR', 'Venta funda laptop premium', 'Ventas Online', 'SHOPIFY', '2025-04-28 14:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 130.0000, 'EUR', 'Compra fin de mes Mercadona', 'Alimentación', 'MANUAL', '2025-04-29 18:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 48.0000, 'EUR', 'Cena tapas fin de mes', 'Restaurantes', 'MANUAL', '2025-04-30 21:00:00'),
+
+-- =====================================================
+-- MAYO 2025 (25 transacciones)
+-- =====================================================
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 3200.0000, 'EUR', 'Salario mensual mayo', 'Salario', 'MANUAL', '2025-05-01 09:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 750.0000, 'EUR', 'Alquiler apartamento', 'Vivienda', 'MANUAL', '2025-05-02 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 62.0000, 'EUR', 'Factura luz Endesa', 'Suministros', 'MANUAL', '2025-05-03 12:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 41.0000, 'EUR', 'Factura agua', 'Suministros', 'MANUAL', '2025-05-03 12:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 39.9900, 'EUR', 'Factura móvil Vodafone', 'Comunicaciones', 'MANUAL', '2025-05-04 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 135.0000, 'EUR', 'Compra Mercadona semanal', 'Alimentación', 'MANUAL', '2025-05-06 18:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 680.0000, 'EUR', 'Venta iPhone 13 Mini', 'Ventas Online', 'AMAZON', '2025-05-08 14:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 34.0000, 'EUR', 'Comisión Amazon ventas', 'Comisiones', 'AMAZON', '2025-05-08 14:35:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 12.9900, 'EUR', 'Spotify Premium', 'Entretenimiento', 'MANUAL', '2025-05-10 00:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 17.9900, 'EUR', 'Netflix', 'Entretenimiento', 'MANUAL', '2025-05-10 00:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 65.0000, 'EUR', 'Regalo Día de la Madre', 'Regalos', 'MANUAL', '2025-05-04 11:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 58.0000, 'EUR', 'Gasolina Shell', 'Transporte', 'MANUAL', '2025-05-11 09:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 118.0000, 'EUR', 'Compra Carrefour', 'Alimentación', 'MANUAL', '2025-05-13 17:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 260.0000, 'EUR', 'Venta drone DJI Mini', 'Ventas Online', 'SHOPIFY', '2025-05-15 11:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 13.0000, 'EUR', 'Comisión Shopify ventas', 'Comisiones', 'SHOPIFY', '2025-05-15 11:05:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 40.0000, 'EUR', 'Cena restaurante tailandés', 'Restaurantes', 'MANUAL', '2025-05-16 21:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 75.0000, 'EUR', 'Gimnasio mensual', 'Salud', 'MANUAL', '2025-05-18 08:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 125.0000, 'EUR', 'Compra supermercado', 'Alimentación', 'MANUAL', '2025-05-20 16:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 195.0000, 'EUR', 'Venta smartwatch Fitbit', 'Ventas Online', 'AMAZON', '2025-05-22 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 89.0000, 'EUR', 'Seguro coche (mensual)', 'Seguros', 'MANUAL', '2025-05-23 09:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 55.0000, 'EUR', 'Gasolina Repsol', 'Transporte', 'MANUAL', '2025-05-25 08:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 22.0000, 'EUR', 'Entradas concierto', 'Entretenimiento', 'MANUAL', '2025-05-26 20:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 380.0000, 'EUR', 'Venta tablet Samsung Tab S6', 'Ventas Online', 'SHOPIFY', '2025-05-28 14:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 132.0000, 'EUR', 'Compra fin de mes Lidl', 'Alimentación', 'MANUAL', '2025-05-30 18:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 52.0000, 'EUR', 'Cena sábado con amigos', 'Restaurantes', 'MANUAL', '2025-05-31 21:00:00'),
+
+-- =====================================================
+-- JUNIO 2025 (25 transacciones)
+-- =====================================================
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 3200.0000, 'EUR', 'Salario mensual junio', 'Salario', 'MANUAL', '2025-06-01 09:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 1600.0000, 'EUR', 'Paga extra verano', 'Salario', 'MANUAL', '2025-06-01 09:05:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 750.0000, 'EUR', 'Alquiler apartamento', 'Vivienda', 'MANUAL', '2025-06-02 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 58.0000, 'EUR', 'Factura luz Endesa', 'Suministros', 'MANUAL', '2025-06-03 12:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 39.9900, 'EUR', 'Factura móvil Vodafone', 'Comunicaciones', 'MANUAL', '2025-06-04 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 140.0000, 'EUR', 'Compra Mercadona semanal', 'Alimentación', 'MANUAL', '2025-06-06 18:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 720.0000, 'EUR', 'Venta MacBook Pro 2018', 'Ventas Online', 'AMAZON', '2025-06-08 14:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 36.0000, 'EUR', 'Comisión Amazon ventas', 'Comisiones', 'AMAZON', '2025-06-08 14:35:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 12.9900, 'EUR', 'Spotify Premium', 'Entretenimiento', 'MANUAL', '2025-06-10 00:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 17.9900, 'EUR', 'Netflix', 'Entretenimiento', 'MANUAL', '2025-06-10 00:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 62.0000, 'EUR', 'Gasolina BP', 'Transporte', 'MANUAL', '2025-06-11 09:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 125.0000, 'EUR', 'Compra Carrefour', 'Alimentación', 'MANUAL', '2025-06-13 17:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 340.0000, 'EUR', 'Venta cámara Canon EOS M50', 'Ventas Online', 'SHOPIFY', '2025-06-15 11:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 45.0000, 'EUR', 'Cena restaurante asiático', 'Restaurantes', 'MANUAL', '2025-06-16 21:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 75.0000, 'EUR', 'Gimnasio mensual', 'Salud', 'MANUAL', '2025-06-18 08:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 95.0000, 'EUR', 'Bañador y ropa verano', 'Ropa', 'MANUAL', '2025-06-19 12:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 128.0000, 'EUR', 'Compra supermercado', 'Alimentación', 'MANUAL', '2025-06-20 16:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 240.0000, 'EUR', 'Venta router Asus gaming', 'Ventas Online', 'AMAZON', '2025-06-22 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 89.0000, 'EUR', 'Seguro coche (mensual)', 'Seguros', 'MANUAL', '2025-06-23 09:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 350.0000, 'EUR', 'Vuelo vacaciones verano', 'Viajes', 'MANUAL', '2025-06-24 11:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 58.0000, 'EUR', 'Gasolina Cepsa', 'Transporte', 'MANUAL', '2025-06-25 08:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 165.0000, 'EUR', 'Venta auriculares Sony', 'Ventas Online', 'SHOPIFY', '2025-06-27 14:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 8.2500, 'EUR', 'Comisión Shopify ventas', 'Comisiones', 'SHOPIFY', '2025-06-27 14:05:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 135.0000, 'EUR', 'Compra fin de mes Mercadona', 'Alimentación', 'MANUAL', '2025-06-29 18:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 55.0000, 'EUR', 'Cena terraza verano', 'Restaurantes', 'MANUAL', '2025-06-30 21:00:00'),
+
+-- =====================================================
+-- JULIO 2025 (25 transacciones)
+-- =====================================================
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 3200.0000, 'EUR', 'Salario mensual julio', 'Salario', 'MANUAL', '2025-07-01 09:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 750.0000, 'EUR', 'Alquiler apartamento', 'Vivienda', 'MANUAL', '2025-07-02 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 65.0000, 'EUR', 'Factura luz Endesa', 'Suministros', 'MANUAL', '2025-07-03 12:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 45.0000, 'EUR', 'Factura agua', 'Suministros', 'MANUAL', '2025-07-03 12:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 39.9900, 'EUR', 'Factura móvil Vodafone', 'Comunicaciones', 'MANUAL', '2025-07-04 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 145.0000, 'EUR', 'Compra Mercadona semanal', 'Alimentación', 'MANUAL', '2025-07-06 18:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 480.0000, 'EUR', 'Hotel vacaciones playa', 'Viajes', 'MANUAL', '2025-07-07 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 450.0000, 'EUR', 'Venta bicicleta eléctrica', 'Ventas Online', 'AMAZON', '2025-07-08 14:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 22.5000, 'EUR', 'Comisión Amazon ventas', 'Comisiones', 'AMAZON', '2025-07-08 14:35:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 12.9900, 'EUR', 'Spotify Premium', 'Entretenimiento', 'MANUAL', '2025-07-10 00:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 17.9900, 'EUR', 'Netflix', 'Entretenimiento', 'MANUAL', '2025-07-10 00:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 70.0000, 'EUR', 'Gasolina viaje playa', 'Transporte', 'MANUAL', '2025-07-11 09:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 85.0000, 'EUR', 'Restaurante vacaciones', 'Restaurantes', 'MANUAL', '2025-07-13 21:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 290.0000, 'EUR', 'Venta monitor gaming LG', 'Ventas Online', 'SHOPIFY', '2025-07-15 11:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 14.5000, 'EUR', 'Comisión Shopify ventas', 'Comisiones', 'SHOPIFY', '2025-07-15 11:05:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 120.0000, 'EUR', 'Compra supermercado vacaciones', 'Alimentación', 'MANUAL', '2025-07-16 17:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 75.0000, 'EUR', 'Gimnasio mensual', 'Salud', 'MANUAL', '2025-07-18 08:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 65.0000, 'EUR', 'Actividades playa', 'Entretenimiento', 'MANUAL', '2025-07-20 12:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 180.0000, 'EUR', 'Venta dock Nintendo Switch', 'Ventas Online', 'AMAZON', '2025-07-22 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 89.0000, 'EUR', 'Seguro coche (mensual)', 'Seguros', 'MANUAL', '2025-07-23 09:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 55.0000, 'EUR', 'Gasolina vuelta vacaciones', 'Transporte', 'MANUAL', '2025-07-25 08:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 42.0000, 'EUR', 'Souvenirs vacaciones', 'Regalos', 'MANUAL', '2025-07-26 15:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 320.0000, 'EUR', 'Venta impresora HP LaserJet', 'Ventas Online', 'SHOPIFY', '2025-07-28 14:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 138.0000, 'EUR', 'Compra fin de mes Carrefour', 'Alimentación', 'MANUAL', '2025-07-30 18:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 48.0000, 'EUR', 'Cena fin de mes', 'Restaurantes', 'MANUAL', '2025-07-31 21:00:00'),
+
+-- =====================================================
+-- AGOSTO 2025 (25 transacciones)
+-- =====================================================
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 3200.0000, 'EUR', 'Salario mensual agosto', 'Salario', 'MANUAL', '2025-08-01 09:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 750.0000, 'EUR', 'Alquiler apartamento', 'Vivienda', 'MANUAL', '2025-08-02 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 75.0000, 'EUR', 'Factura luz Endesa (aire acondicionado)', 'Suministros', 'MANUAL', '2025-08-03 12:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 48.0000, 'EUR', 'Factura agua', 'Suministros', 'MANUAL', '2025-08-03 12:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 39.9900, 'EUR', 'Factura móvil Vodafone', 'Comunicaciones', 'MANUAL', '2025-08-04 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 142.0000, 'EUR', 'Compra Mercadona semanal', 'Alimentación', 'MANUAL', '2025-08-06 18:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 580.0000, 'EUR', 'Venta PlayStation 5 controller', 'Ventas Online', 'AMAZON', '2025-08-08 14:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 29.0000, 'EUR', 'Comisión Amazon ventas', 'Comisiones', 'AMAZON', '2025-08-08 14:35:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 12.9900, 'EUR', 'Spotify Premium', 'Entretenimiento', 'MANUAL', '2025-08-10 00:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 17.9900, 'EUR', 'Netflix', 'Entretenimiento', 'MANUAL', '2025-08-10 00:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 60.0000, 'EUR', 'Gasolina Shell', 'Transporte', 'MANUAL', '2025-08-11 09:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 130.0000, 'EUR', 'Compra Carrefour', 'Alimentación', 'MANUAL', '2025-08-13 17:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 210.0000, 'EUR', 'Venta teclado Apple Magic', 'Ventas Online', 'SHOPIFY', '2025-08-15 11:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 10.5000, 'EUR', 'Comisión Shopify ventas', 'Comisiones', 'SHOPIFY', '2025-08-15 11:05:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 38.0000, 'EUR', 'Cena restaurante griego', 'Restaurantes', 'MANUAL', '2025-08-16 21:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 75.0000, 'EUR', 'Gimnasio mensual', 'Salud', 'MANUAL', '2025-08-18 08:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 125.0000, 'EUR', 'Compra supermercado', 'Alimentación', 'MANUAL', '2025-08-20 16:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 395.0000, 'EUR', 'Venta monitor curvo Samsung', 'Ventas Online', 'AMAZON', '2025-08-22 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 89.0000, 'EUR', 'Seguro coche (mensual)', 'Seguros', 'MANUAL', '2025-08-23 09:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 180.0000, 'EUR', 'Material escolar vuelta al cole', 'Educación', 'MANUAL', '2025-08-25 11:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 58.0000, 'EUR', 'Gasolina Repsol', 'Transporte', 'MANUAL', '2025-08-26 08:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 275.0000, 'EUR', 'Venta silla gaming', 'Ventas Online', 'SHOPIFY', '2025-08-28 14:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 13.7500, 'EUR', 'Comisión Shopify ventas', 'Comisiones', 'SHOPIFY', '2025-08-28 14:05:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 135.0000, 'EUR', 'Compra fin de mes Mercadona', 'Alimentación', 'MANUAL', '2025-08-30 18:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 45.0000, 'EUR', 'Cena despedida verano', 'Restaurantes', 'MANUAL', '2025-08-31 21:00:00'),
 
 -- =====================================================
 -- SEPTIEMBRE 2025 (25 transacciones)
@@ -616,11 +866,11 @@ INSERT INTO transactions (user_id, type, amount, currency, concept, category, or
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 17.9900, 'EUR', 'Netflix', 'Entretenimiento', 'MANUAL', '2025-09-10 00:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 55.0000, 'EUR', 'Gasolina Repsol', 'Transporte', 'MANUAL', '2025-09-11 08:30:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 122.0000, 'EUR', 'Compra Carrefour', 'Alimentación', 'MANUAL', '2025-09-13 17:00:00'),
-('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 250.0000, 'EUR', 'Venta tablet Samsung Galaxy Tab', 'Ventas Online', 'EBAY', '2025-09-15 11:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 250.0000, 'EUR', 'Venta tablet Samsung Galaxy Tab', 'Ventas Online', 'SHOPIFY', '2025-09-15 11:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 45.0000, 'EUR', 'Cena restaurante italiano', 'Restaurantes', 'MANUAL', '2025-09-16 21:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 75.0000, 'EUR', 'Gimnasio mensual', 'Salud', 'MANUAL', '2025-09-18 08:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 128.0000, 'EUR', 'Compra supermercado Lidl', 'Alimentación', 'MANUAL', '2025-09-20 16:30:00'),
-('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 150.0000, 'EUR', 'Venta libros universitarios', 'Ventas Online', 'OTHER', '2025-09-22 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 150.0000, 'EUR', 'Venta libros universitarios', 'Ventas Online', 'SHOPIFY', '2025-09-22 10:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 89.0000, 'EUR', 'Seguro coche (mensual)', 'Seguros', 'MANUAL', '2025-09-23 09:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 32.5000, 'EUR', 'Farmacia medicamentos', 'Salud', 'MANUAL', '2025-09-24 11:30:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 25.0000, 'EUR', 'Cine y palomitas', 'Entretenimiento', 'MANUAL', '2025-09-25 20:00:00'),
@@ -644,17 +894,17 @@ INSERT INTO transactions (user_id, type, amount, currency, concept, category, or
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 12.9900, 'EUR', 'Spotify Premium', 'Entretenimiento', 'MANUAL', '2025-10-10 00:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 17.9900, 'EUR', 'Netflix', 'Entretenimiento', 'MANUAL', '2025-10-10 00:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 118.0000, 'EUR', 'Compra Carrefour', 'Alimentación', 'MANUAL', '2025-10-12 17:30:00'),
-('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 320.0000, 'EUR', 'Venta iPhone 12 usado', 'Ventas Online', 'EBAY', '2025-10-14 11:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 320.0000, 'EUR', 'Venta iPhone 12 usado', 'Ventas Online', 'SHOPIFY', '2025-10-14 11:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 35.0000, 'EUR', 'Cena restaurante japonés', 'Restaurantes', 'MANUAL', '2025-10-16 21:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 75.0000, 'EUR', 'Gimnasio mensual', 'Salud', 'MANUAL', '2025-10-18 08:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 130.0000, 'EUR', 'Compra supermercado', 'Alimentación', 'MANUAL', '2025-10-19 16:00:00'),
-('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 180.0000, 'EUR', 'Venta bicicleta montaña', 'Ventas Online', 'OTHER', '2025-10-22 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 180.0000, 'EUR', 'Venta bicicleta montaña', 'Ventas Online', 'AMAZON', '2025-10-22 10:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 89.0000, 'EUR', 'Seguro coche (mensual)', 'Seguros', 'MANUAL', '2025-10-23 09:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 49.9900, 'EUR', 'Amazon Prime anual (prorrateado)', 'Suscripciones', 'MANUAL', '2025-10-25 00:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 110.0000, 'EUR', 'Compra Lidl', 'Alimentación', 'MANUAL', '2025-10-26 11:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 39.9900, 'EUR', 'Factura móvil Vodafone', 'Comunicaciones', 'MANUAL', '2025-10-27 10:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 290.0000, 'EUR', 'Venta teclado mecánico Corsair', 'Ventas Online', 'SHOPIFY', '2025-10-28 16:00:00'),
-('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 28.0000, 'EUR', 'Comisión eBay ventas', 'Comisiones', 'EBAY', '2025-10-28 16:05:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 28.0000, 'EUR', 'Comisión Shopify ventas', 'Comisiones', 'SHOPIFY', '2025-10-28 16:05:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 58.0000, 'EUR', 'Gasolina Cepsa', 'Transporte', 'MANUAL', '2025-10-29 08:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 65.0000, 'EUR', 'Ropa otoño Zara', 'Ropa', 'MANUAL', '2025-10-30 12:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 22.0000, 'EUR', 'Decoración Halloween', 'Hogar', 'MANUAL', '2025-10-31 15:00:00'),
@@ -676,7 +926,7 @@ INSERT INTO transactions (user_id, type, amount, currency, concept, category, or
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 75.0000, 'EUR', 'Gimnasio mensual', 'Salud', 'MANUAL', '2025-11-16 08:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 42.0000, 'EUR', 'Cena pizzería', 'Restaurantes', 'MANUAL', '2025-11-18 20:30:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 135.0000, 'EUR', 'Compra supermercado', 'Alimentación', 'MANUAL', '2025-11-20 16:30:00'),
-('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 250.0000, 'EUR', 'Venta consola PS4', 'Ventas Online', 'EBAY', '2025-11-22 14:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 250.0000, 'EUR', 'Venta consola PS4', 'Ventas Online', 'SHOPIFY', '2025-11-22 14:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 89.0000, 'EUR', 'Seguro coche (mensual)', 'Seguros', 'MANUAL', '2025-11-23 09:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 28.0000, 'EUR', 'Libros Amazon', 'Educación', 'AMAZON', '2025-11-24 11:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 55.0000, 'EUR', 'Gasolina Shell', 'Transporte', 'MANUAL', '2025-11-26 08:30:00'),
@@ -703,13 +953,13 @@ INSERT INTO transactions (user_id, type, amount, currency, concept, category, or
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 280.0000, 'EUR', 'Regalos Navidad familia', 'Regalos', 'MANUAL', '2025-12-15 11:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 75.0000, 'EUR', 'Gimnasio mensual', 'Salud', 'MANUAL', '2025-12-16 08:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 180.0000, 'EUR', 'Regalos Navidad amigos', 'Regalos', 'MANUAL', '2025-12-18 14:00:00'),
-('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 350.0000, 'EUR', 'Venta videoconsola Nintendo Switch', 'Ventas Online', 'EBAY', '2025-12-19 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 350.0000, 'EUR', 'Venta videoconsola Nintendo Switch', 'Ventas Online', 'SHOPIFY', '2025-12-19 10:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 160.0000, 'EUR', 'Compra Navidad supermercado', 'Alimentación', 'MANUAL', '2025-12-22 17:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 89.0000, 'EUR', 'Seguro coche (mensual)', 'Seguros', 'MANUAL', '2025-12-23 09:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 120.0000, 'EUR', 'Cena Nochebuena restaurante', 'Restaurantes', 'MANUAL', '2025-12-24 21:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 100.0000, 'EUR', 'Regalo Navidad efectivo abuelos', 'Otros Ingresos', 'MANUAL', '2025-12-25 12:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 55.0000, 'EUR', 'Gasolina viaje Navidad', 'Transporte', 'MANUAL', '2025-12-27 10:00:00'),
-('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 220.0000, 'EUR', 'Venta ropa vintage', 'Ventas Online', 'OTHER', '2025-12-28 15:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 220.0000, 'EUR', 'Venta ropa vintage', 'Ventas Online', 'SHOPIFY', '2025-12-28 15:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 45.0000, 'EUR', 'Película y cena post-navidad', 'Entretenimiento', 'MANUAL', '2025-12-29 20:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 130.0000, 'EUR', 'Compra supermercado fin año', 'Alimentación', 'MANUAL', '2025-12-30 17:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 85.0000, 'EUR', 'Cena Nochevieja', 'Restaurantes', 'MANUAL', '2025-12-31 22:00:00'),
@@ -730,7 +980,7 @@ INSERT INTO transactions (user_id, type, amount, currency, concept, category, or
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 17.9900, 'EUR', 'Netflix', 'Entretenimiento', 'MANUAL', '2026-01-10 00:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 58.0000, 'EUR', 'Gasolina Cepsa', 'Transporte', 'MANUAL', '2026-01-12 08:30:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 128.0000, 'EUR', 'Compra Carrefour', 'Alimentación', 'MANUAL', '2026-01-14 17:00:00'),
-('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 380.0000, 'EUR', 'Venta cámara Canon mirrorless', 'Ventas Online', 'EBAY', '2026-01-16 11:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 380.0000, 'EUR', 'Venta cámara Canon mirrorless', 'Ventas Online', 'SHOPIFY', '2026-01-16 11:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 75.0000, 'EUR', 'Gimnasio mensual', 'Salud', 'MANUAL', '2026-01-17 08:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 48.0000, 'EUR', 'Cena cumpleaños amigo', 'Restaurantes', 'MANUAL', '2026-01-18 21:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 115.0000, 'EUR', 'Compra supermercado', 'Alimentación', 'MANUAL', '2026-01-20 16:30:00'),
@@ -742,7 +992,36 @@ INSERT INTO transactions (user_id, type, amount, currency, concept, category, or
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 125.0000, 'EUR', 'Compra Mercadona', 'Alimentación', 'MANUAL', '2026-01-27 18:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 480.0000, 'EUR', 'Venta iPad Pro 2020', 'Ventas Online', 'AMAZON', '2026-01-29 15:00:00'),
 ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 24.0000, 'EUR', 'Comisión Amazon ventas', 'Comisiones', 'AMAZON', '2026-01-29 15:05:00'),
-('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 38.0000, 'EUR', 'Cena asiática fin de mes', 'Restaurantes', 'MANUAL', '2026-01-31 21:00:00');
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 38.0000, 'EUR', 'Cena asiática fin de mes', 'Restaurantes', 'MANUAL', '2026-01-31 21:00:00'),
+
+-- =====================================================
+-- FEBRERO 2026 (25 transacciones)
+-- =====================================================
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 3200.0000, 'EUR', 'Salario mensual febrero', 'Salario', 'MANUAL', '2026-02-01 09:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 750.0000, 'EUR', 'Alquiler apartamento', 'Vivienda', 'MANUAL', '2026-02-02 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 88.5000, 'EUR', 'Factura luz Endesa', 'Suministros', 'MANUAL', '2026-02-03 12:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 44.0000, 'EUR', 'Factura agua', 'Suministros', 'MANUAL', '2026-02-03 12:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 39.9900, 'EUR', 'Factura móvil Vodafone', 'Comunicaciones', 'MANUAL', '2026-02-04 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 140.0000, 'EUR', 'Compra Mercadona semanal', 'Alimentación', 'MANUAL', '2026-02-06 18:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 620.0000, 'EUR', 'Venta smartwatch Apple Watch Series 8', 'Ventas Online', 'AMAZON', '2026-02-08 14:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 31.0000, 'EUR', 'Comisión Amazon ventas', 'Comisiones', 'AMAZON', '2026-02-08 14:35:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 12.9900, 'EUR', 'Spotify Premium', 'Entretenimiento', 'MANUAL', '2026-02-10 00:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 17.9900, 'EUR', 'Netflix', 'Entretenimiento', 'MANUAL', '2026-02-10 00:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 62.0000, 'EUR', 'Gasolina Shell', 'Transporte', 'MANUAL', '2026-02-11 09:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 118.0000, 'EUR', 'Compra Carrefour', 'Alimentación', 'MANUAL', '2026-02-13 17:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 290.0000, 'EUR', 'Venta auriculares Bose QC45', 'Ventas Online', 'SHOPIFY', '2026-02-14 11:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 85.0000, 'EUR', 'Cena San Valentín restaurante', 'Restaurantes', 'MANUAL', '2026-02-14 21:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 75.0000, 'EUR', 'Gimnasio mensual', 'Salud', 'MANUAL', '2026-02-16 08:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 45.0000, 'EUR', 'Regalo San Valentín', 'Regalos', 'MANUAL', '2026-02-14 12:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 125.0000, 'EUR', 'Compra supermercado', 'Alimentación', 'MANUAL', '2026-02-18 16:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 185.0000, 'EUR', 'Venta altavoces Bluetooth JBL', 'Ventas Online', 'AMAZON', '2026-02-20 10:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 89.0000, 'EUR', 'Seguro coche (mensual)', 'Seguros', 'MANUAL', '2026-02-23 09:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 35.0000, 'EUR', 'Libros técnicos Amazon', 'Educación', 'AMAZON', '2026-02-24 11:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 58.0000, 'EUR', 'Gasolina Repsol', 'Transporte', 'MANUAL', '2026-02-25 08:30:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'INCOME', 340.0000, 'EUR', 'Venta tablet Lenovo Tab P11', 'Ventas Online', 'SHOPIFY', '2026-02-26 14:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 17.0000, 'EUR', 'Comisión Shopify ventas', 'Comisiones', 'SHOPIFY', '2026-02-26 14:05:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 130.0000, 'EUR', 'Compra fin de mes Mercadona', 'Alimentación', 'MANUAL', '2026-02-27 18:00:00'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'EXPENSE', 42.0000, 'EUR', 'Cena viernes con amigos', 'Restaurantes', 'MANUAL', '2026-02-28 21:00:00');
 
 -- =====================================================
 -- VERIFICATION

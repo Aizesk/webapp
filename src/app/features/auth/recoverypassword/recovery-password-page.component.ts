@@ -1,7 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { NgIf } from '@angular/common';
+import { AuthService } from '../../../core/services/auth.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-recovery-password-page',
@@ -13,6 +15,8 @@ import { NgIf } from '@angular/common';
 })
 export class RecoveryPasswordPageComponent {
   private readonly fb = inject(FormBuilder);
+  private readonly authService = inject(AuthService);
+  private readonly snackBar = inject(MatSnackBar);
 
   protected readonly form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]]
@@ -24,6 +28,10 @@ export class RecoveryPasswordPageComponent {
   protected readonly fieldPlaceholder = 'Correo electrónico';
   protected readonly submitLabel = 'Recuperar contraseña';
 
+  // UI state
+  protected readonly isLoading = signal<boolean>(false);
+  protected readonly isSubmitted = signal<boolean>(false);
+
   protected onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -31,7 +39,30 @@ export class RecoveryPasswordPageComponent {
     }
 
     const { email } = this.form.getRawValue();
-    console.log('password recovery request', email);
+    this.isLoading.set(true);
+
+    this.authService.requestPasswordRecovery(email).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.isSubmitted.set(true);
+        this.snackBar.open(
+          'Si el correo está registrado, recibirás instrucciones para restablecer tu contraseña.',
+          'Cerrar',
+          { duration: 8000, panelClass: ['success-snackbar'] }
+        );
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        // Always show success message to prevent email enumeration
+        this.isSubmitted.set(true);
+        this.snackBar.open(
+          'Si el correo está registrado, recibirás instrucciones para restablecer tu contraseña.',
+          'Cerrar',
+          { duration: 8000, panelClass: ['success-snackbar'] }
+        );
+        console.error('Password recovery error:', err);
+      }
+    });
   }
 
   protected get emailHasError(): boolean {

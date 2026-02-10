@@ -96,8 +96,8 @@ export class MainDashboardPageComponent {
   private readonly dashboardService = inject(DashboardService);
   protected readonly navItems = MAIN_NAV_ITEMS;
 
-  // ========== MAIN PLATFORM OPTIONS (Global, Manual) ==========
-  protected readonly mainPlatforms: readonly PlatformOption[] = [
+  // ========== PLATFORM OPTIONS (from backend origins) ==========
+  protected readonly platforms: readonly PlatformOption[] = [
     {
       id: 'GLOBAL',
       name: 'Global',
@@ -105,17 +105,6 @@ export class MainDashboardPageComponent {
       accentColor: '#2563EB',
       accentColorLight: 'rgba(37, 99, 235, 0.1)'
     },
-    {
-      id: 'MANUAL',
-      name: 'Manual',
-      icon: 'edit_note',
-      accentColor: '#8B5CF6',
-      accentColorLight: 'rgba(139, 92, 246, 0.1)'
-    }
-  ];
-
-  // ========== CONNECTED PLATFORMS (for dropdown) ==========
-  protected readonly connectedPlatforms: readonly PlatformOption[] = [
     {
       id: 'AMAZON',
       name: 'Amazon',
@@ -129,27 +118,15 @@ export class MainDashboardPageComponent {
       icon: 'shopping_bag',
       accentColor: '#96BF48',
       accentColorLight: 'rgba(150, 191, 72, 0.1)'
+    },
+    {
+      id: 'MANUAL',
+      name: 'Manual',
+      icon: 'edit_note',
+      accentColor: '#8B5CF6',
+      accentColorLight: 'rgba(139, 92, 246, 0.1)'
     }
   ];
-
-  // Combined for backward compatibility
-  protected readonly platforms: readonly PlatformOption[] = [
-    ...this.mainPlatforms,
-    ...this.connectedPlatforms
-  ];
-
-  // Platform dropdown state
-  protected readonly showPlatformDropdown = signal<boolean>(false);
-
-  protected readonly selectedConnectedPlatform = computed(() => {
-    const selected = this.selectedPlatform();
-    return this.connectedPlatforms.find(p => p.id === selected) ?? null;
-  });
-
-  protected readonly isConnectedPlatformSelected = computed(() => {
-    const selected = this.selectedPlatform();
-    return this.connectedPlatforms.some(p => p.id === selected);
-  });
 
   // ========== DATE RANGE OPTIONS (simplified, no redundant filters) ==========
   protected readonly dateRanges: readonly DateRangeOption[] = [
@@ -306,11 +283,6 @@ export class MainDashboardPageComponent {
   // ========== EVENT HANDLERS ==========
   selectPlatform(platformId: PlatformFilter): void {
     this.selectedPlatform.set(platformId);
-    this.showPlatformDropdown.set(false);
-  }
-
-  togglePlatformDropdown(): void {
-    this.showPlatformDropdown.update(v => !v);
   }
 
   selectDateRange(rangeId: TimeRange): void {

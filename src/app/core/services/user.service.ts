@@ -14,7 +14,7 @@ export interface UserProfile {
   readonly email: string;
   readonly phone: string | null;
   readonly role: string;
-  readonly plan: string;
+  readonly plan?: string;
   readonly location: string | null;
   readonly joinedAt: string;
   readonly avatarInitials: string;
@@ -64,7 +64,7 @@ export class UserService {
   readonly profile = this._profile.asReadonly();
   readonly loading = this._loading.asReadonly();
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly http: HttpClient) { }
 
   /**
    * Fetch current user's profile from backend.

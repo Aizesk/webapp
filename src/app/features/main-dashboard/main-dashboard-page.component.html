@@ -85,9 +85,8 @@
 
       <!-- PLATFORM SELECTOR -->
       <section class="platform-selector">
-        <!-- Main platforms: Global, Manual -->
         <article
-          *ngFor="let platform of mainPlatforms; trackBy: trackByPlatform"
+          *ngFor="let platform of platforms; trackBy: trackByPlatform"
           class="platform-card"
           [class.platform-card--selected]="selectedPlatform() === platform.id"
           [style.--accent-color]="platform.accentColor"
@@ -104,54 +103,6 @@
             <span class="material-symbols-rounded">check</span>
           </div>
         </article>
-
-        <!-- Connected Platforms dropdown -->
-        <div class="platform-dropdown-wrapper">
-          <article
-            class="platform-card platform-card--dropdown"
-            [class.platform-card--selected]="isConnectedPlatformSelected()"
-            [class.platform-card--expanded]="showPlatformDropdown()"
-            [style.--accent-color]="selectedConnectedPlatform()?.accentColor || '#10B981'"
-            [style.--accent-color-light]="
-              selectedConnectedPlatform()?.accentColorLight || 'rgba(16, 185, 129, 0.1)'
-            "
-            (click)="togglePlatformDropdown()"
-            role="button"
-            tabindex="0"
-          >
-            <div class="platform-card__icon">
-              <span class="material-symbols-rounded">{{
-                selectedConnectedPlatform()?.icon || 'hub'
-              }}</span>
-            </div>
-            <span class="platform-card__name">{{
-              selectedConnectedPlatform()?.name || 'Plataformas'
-            }}</span>
-            <div class="platform-card__arrow">
-              <span class="material-symbols-rounded">{{
-                showPlatformDropdown() ? 'expand_less' : 'expand_more'
-              }}</span>
-            </div>
-            <div class="platform-card__check" *ngIf="isConnectedPlatformSelected()">
-              <span class="material-symbols-rounded">check</span>
-            </div>
-          </article>
-
-          <!-- Dropdown menu -->
-          <div class="platform-dropdown-menu" *ngIf="showPlatformDropdown()">
-            <button
-              *ngFor="let platform of connectedPlatforms"
-              type="button"
-              class="platform-dropdown-item"
-              [class.platform-dropdown-item--selected]="selectedPlatform() === platform.id"
-              [style.--accent-color]="platform.accentColor"
-              (click)="selectPlatform(platform.id); $event.stopPropagation()"
-            >
-              <span class="material-symbols-rounded">{{ platform.icon }}</span>
-              <span>{{ platform.name }}</span>
-            </button>
-          </div>
-        </div>
       </section>
 
       <!-- KPI CARDS ROW -->

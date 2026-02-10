@@ -11,7 +11,6 @@ import {
 } from '@angular/core';
 import { CommonModule, CurrencyPipe, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -25,7 +24,6 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatButtonModule } from '@angular/material/button';
 import { SelectionModel } from '@angular/cdk/collections';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 
@@ -54,16 +52,14 @@ const DATE_RANGES = [
   { id: 'ALL', label: 'Todo', days: 0 }
 ] as const;
 
-// Origin filter options (order: Global, Manual, then platforms as dropdown)
+// Origin filter options
 const ORIGIN_OPTIONS: { id: TransactionOrigin | 'ALL'; label: string; icon: string }[] = [
-  { id: 'ALL', label: 'Global', icon: 'language' },
-  { id: 'MANUAL', label: 'Manual', icon: 'edit_note' },
-];
-
-// Platform options for dropdown
-const PLATFORM_OPTIONS: { id: TransactionOrigin; label: string; icon: string }[] = [
+  { id: 'ALL', label: 'Todos', icon: 'language' },
   { id: 'AMAZON', label: 'Amazon', icon: 'shopping_cart' },
   { id: 'SHOPIFY', label: 'Shopify', icon: 'storefront' },
+  { id: 'MANUAL', label: 'Manual', icon: 'edit_note' },
+  { id: 'STRIPE', label: 'Stripe', icon: 'credit_card' },
+  { id: 'PAYPAL', label: 'PayPal', icon: 'account_balance_wallet' }
 ];
 
 type ColumnWidths = {
@@ -101,7 +97,6 @@ type ColumnWidths = {
     MatFormFieldModule,
     MatInputModule,
     MatMenuModule,
-    MatButtonModule,
     TopNavbarComponent
   ],
   templateUrl: './transactions-page.component.html',
@@ -109,7 +104,6 @@ type ColumnWidths = {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TransactionsPageComponent implements OnInit, OnDestroy {
-  private readonly router = inject(Router);
   private readonly transactionService = inject(TransactionService);
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
@@ -125,24 +119,11 @@ export class TransactionsPageComponent implements OnInit, OnDestroy {
   // Filter options
   protected readonly dateRanges = DATE_RANGES;
   protected readonly originOptions = ORIGIN_OPTIONS;
-  protected readonly platformOptions = PLATFORM_OPTIONS;
 
   // Reactive filter state
   protected readonly selectedDateRange = signal<string>('ALL');
   protected readonly selectedOrigin = signal<TransactionOrigin | 'ALL'>('ALL');
   protected readonly searchText = signal<string>('');
-
-  // Computed: check if a platform is selected
-  protected readonly selectedPlatformLabel = computed(() => {
-    const origin = this.selectedOrigin();
-    const platform = PLATFORM_OPTIONS.find(p => p.id === origin);
-    return platform?.label ?? null;
-  });
-
-  protected readonly isPlatformSelected = computed(() => {
-    const origin = this.selectedOrigin();
-    return PLATFORM_OPTIONS.some(p => p.id === origin);
-  });
 
   // Custom date range state
   protected readonly customDateFrom = signal<Date | null>(null);
@@ -175,15 +156,6 @@ export class TransactionsPageComponent implements OnInit, OnDestroy {
   // UI state
   protected readonly isLoading = signal<boolean>(false);
 
-  /**
-   * Format date to LocalDateTime format for backend (yyyy-MM-ddTHH:mm:ss)
-   * Spring's LocalDateTime doesn't accept ISO format with 'Z' timezone
-   */
-  private formatDateForBackend(date: Date): string {
-    const pad = (n: number) => n.toString().padStart(2, '0');
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
-  }
-
   // Computed filter params
   protected readonly filterParams = computed<TransactionFilterParams>(() => {
     const dateRange = this.selectedDateRange();
@@ -195,33 +167,30 @@ export class TransactionsPageComponent implements OnInit, OnDestroy {
     
     // Handle special date ranges
     if (dateRange === 'THIS_MONTH') {
-      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0);
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
       const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
-      dateFrom = this.formatDateForBackend(firstDay);
-      dateTo = this.formatDateForBackend(lastDay);
+      dateFrom = firstDay.toISOString();
+      dateTo = lastDay.toISOString();
     } else if (dateRange === 'LAST_MONTH') {
-      const firstDay = new Date(now.getFullYear(), now.getMonth() - 1, 1, 0, 0, 0);
+      const firstDay = new Date(now.getFullYear(), now.getMonth() - 1, 1);
       const lastDay = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
-      dateFrom = this.formatDateForBackend(firstDay);
-      dateTo = this.formatDateForBackend(lastDay);
+      dateFrom = firstDay.toISOString();
+      dateTo = lastDay.toISOString();
     } else if (dateRange === 'CUSTOM') {
       const from = this.customDateFrom();
       const to = this.customDateTo();
       if (from && to) {
-        const fromDate = new Date(from);
-        fromDate.setHours(0, 0, 0, 0);
-        dateFrom = this.formatDateForBackend(fromDate);
+        dateFrom = from.toISOString();
         // Set to end of day for dateTo
         const endOfDay = new Date(to);
         endOfDay.setHours(23, 59, 59, 999);
-        dateTo = this.formatDateForBackend(endOfDay);
+        dateTo = endOfDay.toISOString();
       }
     } else if (dateConfig && dateConfig.days > 0) {
       const from = new Date(now);
       from.setDate(from.getDate() - dateConfig.days);
-      from.setHours(0, 0, 0, 0);
-      dateFrom = this.formatDateForBackend(from);
-      dateTo = this.formatDateForBackend(now);
+      dateFrom = from.toISOString();
+      dateTo = now.toISOString();
     }
 
     const origin = this.selectedOrigin();
@@ -421,8 +390,28 @@ export class TransactionsPageComponent implements OnInit, OnDestroy {
   }
 
   openCreateDialog(): void {
-    // Navigate to the unified manual transaction page
-    this.router.navigate(['/transactions/manual/new']);
+    const data: TransactionFormDialogData = { mode: 'create' };
+    const dialogRef = this.dialog.open(TransactionFormDialogComponent, {
+      data,
+      width: '550px',
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe((result: TransactionFormDialogResult) => {
+      if (result?.action === 'save' && result.data) {
+        this.transactionService.createTransaction(result.data).subscribe({
+          next: () => {
+            this.snackBar.open('Transacción creada correctamente', 'Cerrar', { duration: 3000 });
+            // Reload to get fresh data
+            this.loadTransactions(this.filterParams());
+          },
+          error: (err) => {
+            console.error('Failed to create transaction:', err);
+            this.snackBar.open('Error al crear la transacción', 'Cerrar', { duration: 5000 });
+          }
+        });
+      }
+    });
   }
 
   openEditDialog(transaction: DetailedTransaction): void {
