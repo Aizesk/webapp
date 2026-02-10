@@ -55,19 +55,28 @@ export class SubscriptionsPageComponent implements OnInit {
   readonly currentSubscription = this.subscriptionService.currentSubscription;
   readonly isLoading = this.subscriptionService.isLoading;
 
+  // Desired display order: Free → Professional → Enterprise
+  private readonly PLAN_ORDER: Record<string, number> = {
+    [PLAN_TYPE.FREE]: 0,
+    [PLAN_TYPE.PROFESSIONAL]: 1,
+    [PLAN_TYPE.ENTERPRISE]: 2,
+  };
+
   // Computed: plans with adjusted prices based on billing period
   readonly displayedPlans = computed(() => {
     const plans = this.plans();
     const billing = this.selectedBilling();
 
-    return plans.map((plan) => ({
-      ...plan,
-      displayPrice:
-        billing === BILLING_PERIOD.YEARLY
-          ? calculateYearlyPrice(plan.monthlyPrice)
-          : plan.monthlyPrice,
-      color: PLAN_COLORS[plan.id as keyof typeof PLAN_COLORS] || '#6366f1',
-    }));
+    return [...plans]
+      .sort((a, b) => (this.PLAN_ORDER[a.id] ?? 99) - (this.PLAN_ORDER[b.id] ?? 99))
+      .map((plan) => ({
+        ...plan,
+        displayPrice:
+          billing === BILLING_PERIOD.YEARLY
+            ? calculateYearlyPrice(plan.monthlyPrice)
+            : plan.monthlyPrice,
+        color: PLAN_COLORS[plan.id as keyof typeof PLAN_COLORS] || '#6366f1',
+      }));
   });
 
   // Computed: current plan ID
