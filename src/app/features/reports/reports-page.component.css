@@ -50,13 +50,13 @@
 
 .report-cards-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.25rem;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 900px) {
   .report-cards-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -165,6 +165,147 @@
     transform: scale(1);
     opacity: 1;
   }
+}
+
+/* ========== PLATFORM DROPDOWN ========== */
+.report-card--dropdown {
+  position: relative;
+}
+
+.report-card__arrow {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--surface-active);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.report-card__arrow .material-symbols-rounded {
+  font-size: 20px;
+  color: var(--text-secondary);
+}
+
+.report-card--expanded .report-card__arrow {
+  background: var(--accent-color-light);
+}
+
+.report-card--expanded .report-card__arrow .material-symbols-rounded {
+  color: var(--accent-color);
+}
+
+.report-card--dropdown.report-card--selected .report-card__arrow {
+  right: 3rem;
+}
+
+.platform-dropdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--surface-elevated);
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.platform-option {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--surface);
+  border-radius: 12px;
+  border: 2px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.platform-option:hover {
+  background: var(--surface-hover);
+  border-color: var(--accent-color);
+}
+
+.platform-option--selected {
+  background: var(--accent-color-light);
+  border-color: var(--accent-color);
+}
+
+.platform-option__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--accent-color-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.platform-option__icon .material-symbols-rounded {
+  font-size: 22px;
+  color: var(--accent-color);
+}
+
+.platform-option--selected .platform-option__icon {
+  background: var(--accent-color);
+}
+
+.platform-option--selected .platform-option__icon .material-symbols-rounded {
+  color: #fff;
+}
+
+.platform-option__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.platform-option__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem 0;
+}
+
+.platform-option__description {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.platform-option__check {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent-color);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.platform-option__check .material-symbols-rounded {
+  font-size: 14px;
 }
 
 .config-panel {

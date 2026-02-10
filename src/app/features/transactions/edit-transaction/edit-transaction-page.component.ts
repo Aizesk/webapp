@@ -5,6 +5,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { map, of, shareReplay, switchMap, tap, catchError } from 'rxjs';
 import { DetailedTransaction } from '../../../shared/models/transactions.model';
 import { TransactionService } from '../../../core/services/transaction.service';
+import { TopNavbarComponent } from '../../../shared/components/top-navbar/top-navbar.component';
+import { MAIN_NAV_ITEMS } from '../../../shared/models/navigation.model';
 
 interface EditTransactionViewModel {
   readonly transactionId: string | null;
@@ -15,7 +17,7 @@ interface EditTransactionViewModel {
 @Component({
   selector: 'app-edit-transaction-page',
   standalone: true,
-  imports: [ReactiveFormsModule, NgIf, NgFor, NgClass, AsyncPipe, DatePipe, CurrencyPipe],
+  imports: [ReactiveFormsModule, NgIf, NgFor, NgClass, AsyncPipe, DatePipe, CurrencyPipe, TopNavbarComponent],
   templateUrl: './edit-transaction-page.component.html',
   styleUrls: ['./edit-transaction-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -26,6 +28,7 @@ export class EditTransactionPageComponent {
   private readonly router = inject(Router);
   private readonly transactionService = inject(TransactionService);
 
+  protected readonly navItems = MAIN_NAV_ITEMS;
   protected readonly originOptions = ['MANUAL', 'AMAZON', 'SHOPIFY', 'EBAY', 'ETSY', 'WOOCOMMERCE', 'OTHER'];
   protected readonly platformOptions = ['Amazon', 'Shopify', 'eBay', 'Etsy', 'WooCommerce', 'Other'];
   protected readonly typeOptions: DetailedTransaction['type'][] = ['INCOME', 'EXPENSE'];

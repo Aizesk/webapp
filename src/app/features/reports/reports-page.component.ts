@@ -40,7 +40,8 @@ export class ReportsPageComponent implements OnInit {
 
   protected readonly navItems = MAIN_NAV_ITEMS;
 
-  protected readonly reportTypes: readonly ReportTypeOption[] = [
+  // Main report types (non-platform)
+  protected readonly mainReportTypes: readonly ReportTypeOption[] = [
     {
       id: 'GLOBAL',
       name: 'Reporte Global Consolidado',
@@ -49,6 +50,18 @@ export class ReportsPageComponent implements OnInit {
       accentColor: '#2563EB',
       accentColorLight: 'rgba(37, 99, 235, 0.1)',
     },
+    {
+      id: 'MANUAL',
+      name: 'Libro Diario Manual',
+      description: 'Transacciones registradas manualmente.',
+      icon: 'edit_note',
+      accentColor: '#8B5CF6',
+      accentColorLight: 'rgba(139, 92, 246, 0.1)',
+    },
+  ];
+
+  // Platform report types (for dropdown)
+  protected readonly platformReportTypes: readonly ReportTypeOption[] = [
     {
       id: 'AMAZON',
       name: 'Reporte Amazon Seller',
@@ -65,15 +78,26 @@ export class ReportsPageComponent implements OnInit {
       accentColor: '#96BF48',
       accentColorLight: 'rgba(150, 191, 72, 0.1)',
     },
-    {
-      id: 'MANUAL',
-      name: 'Libro Diario Manual',
-      description: 'Transacciones registradas manualmente.',
-      icon: 'edit_note',
-      accentColor: '#8B5CF6',
-      accentColorLight: 'rgba(139, 92, 246, 0.1)',
-    },
   ];
+
+  // Combined for backward compatibility
+  protected readonly reportTypes: readonly ReportTypeOption[] = [
+    ...this.mainReportTypes,
+    ...this.platformReportTypes,
+  ];
+
+  // Platform dropdown state
+  protected readonly showPlatformDropdown = signal<boolean>(false);
+
+  protected readonly selectedPlatformReport = computed(() => {
+    const selected = this.selectedReportType();
+    return this.platformReportTypes.find(p => p.id === selected) ?? null;
+  });
+
+  protected readonly isPlatformReportSelected = computed(() => {
+    const selected = this.selectedReportType();
+    return this.platformReportTypes.some(p => p.id === selected);
+  });
 
   protected readonly dateRanges: readonly DateRangeOption[] = [
     {
@@ -160,6 +184,15 @@ export class ReportsPageComponent implements OnInit {
       this.selectedReportType.set(reportId);
       this.updateDefaultTitle(reportId);
     }
+    this.showPlatformDropdown.set(false);
+  }
+
+  protected togglePlatformDropdown(): void {
+    this.showPlatformDropdown.update(v => !v);
+  }
+
+  protected closePlatformDropdown(): void {
+    this.showPlatformDropdown.set(false);
   }
 
   protected selectDateRange(rangeId: string): void {

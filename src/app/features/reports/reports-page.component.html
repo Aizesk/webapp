@@ -1,9 +1,9 @@
 <section class="reports-center">
-  <app-top-navbar [navItems]="navItems" brandTagline="Centro de Informes"></app-top-navbar>
+  <app-top-navbar [navItems]="navItems" brandTagline="Centro de Reportes"></app-top-navbar>
 
   <header class="reports-header">
     <div class="reports-header__content">
-      <h1 class="reports-header__title">Centro de Informes</h1>
+      <h1 class="reports-header__title">Centro de Reportes</h1>
       <p class="reports-header__subtitle">
         Genera, exporta y analiza el rendimiento de tus canales digitales (Amazon, Shopify) y
         registros manuales.
@@ -15,8 +15,9 @@
     <h2 class="section-title">Selecciona el tipo de reporte</h2>
 
     <div class="report-cards-grid">
+      <!-- Main report types: Global and Manual -->
       <article
-        *ngFor="let report of reportTypes; trackBy: trackByReportType"
+        *ngFor="let report of mainReportTypes; trackBy: trackByReportType"
         class="report-card"
         [class.report-card--selected]="selectedReportType() === report.id"
         [style.--accent-color]="report.accentColor"
@@ -35,6 +36,74 @@
           <p class="report-card__description">{{ report.description }}</p>
         </div>
         <div class="report-card__check" *ngIf="selectedReportType() === report.id">
+          <span class="material-symbols-rounded">check</span>
+        </div>
+      </article>
+
+      <!-- Platforms dropdown card -->
+      <article
+        class="report-card report-card--dropdown"
+        [class.report-card--selected]="isPlatformReportSelected()"
+        [class.report-card--expanded]="showPlatformDropdown()"
+        [style.--accent-color]="selectedPlatformReport()?.accentColor || '#10B981'"
+        [style.--accent-color-light]="
+          selectedPlatformReport()?.accentColorLight || 'rgba(16, 185, 129, 0.1)'
+        "
+        (click)="togglePlatformDropdown()"
+        role="button"
+        tabindex="0"
+        (keydown.enter)="togglePlatformDropdown()"
+        (keydown.space)="togglePlatformDropdown()"
+      >
+        <div class="report-card__icon">
+          <span class="material-symbols-rounded">{{
+            selectedPlatformReport()?.icon || 'hub'
+          }}</span>
+        </div>
+        <div class="report-card__content">
+          <h3 class="report-card__title">
+            {{ selectedPlatformReport()?.name || 'Plataformas conectadas' }}
+          </h3>
+          <p class="report-card__description">
+            {{
+              selectedPlatformReport()?.description ||
+                'Reportes de Amazon, Shopify y otras plataformas.'
+            }}
+          </p>
+        </div>
+        <div class="report-card__arrow">
+          <span class="material-symbols-rounded">{{
+            showPlatformDropdown() ? 'expand_less' : 'expand_more'
+          }}</span>
+        </div>
+        <div class="report-card__check" *ngIf="isPlatformReportSelected()">
+          <span class="material-symbols-rounded">check</span>
+        </div>
+      </article>
+    </div>
+
+    <!-- Platform dropdown options -->
+    <div class="platform-dropdown" *ngIf="showPlatformDropdown()">
+      <article
+        *ngFor="let platform of platformReportTypes; trackBy: trackByReportType"
+        class="platform-option"
+        [class.platform-option--selected]="selectedReportType() === platform.id"
+        [style.--accent-color]="platform.accentColor"
+        [style.--accent-color-light]="platform.accentColorLight"
+        (click)="selectReportType(platform.id); $event.stopPropagation()"
+        role="button"
+        tabindex="0"
+        (keydown.enter)="selectReportType(platform.id)"
+        (keydown.space)="selectReportType(platform.id)"
+      >
+        <div class="platform-option__icon">
+          <span class="material-symbols-rounded">{{ platform.icon }}</span>
+        </div>
+        <div class="platform-option__content">
+          <h4 class="platform-option__title">{{ platform.name }}</h4>
+          <p class="platform-option__description">{{ platform.description }}</p>
+        </div>
+        <div class="platform-option__check" *ngIf="selectedReportType() === platform.id">
           <span class="material-symbols-rounded">check</span>
         </div>
       </article>
@@ -192,7 +261,10 @@
             </td>
             <td>
               <span class="status-badge" [class]="'status-badge--' + report.status.toLowerCase()">
-                <span class="status-badge__icon" [class.spinning]="report.status === 'PROCESSING' || report.status === 'PENDING'">
+                <span
+                  class="status-badge__icon"
+                  [class.spinning]="report.status === 'PROCESSING' || report.status === 'PENDING'"
+                >
                   <span class="material-symbols-rounded">{{ getStatusIcon(report.status) }}</span>
                 </span>
                 {{ getStatusLabel(report.status) }}
@@ -216,7 +288,11 @@
               >
                 <span class="material-symbols-rounded">refresh</span>
               </button>
-              <span *ngIf="report.status === 'FAILED'" class="error-hint" [title]="report.errorMessage">
+              <span
+                *ngIf="report.status === 'FAILED'"
+                class="error-hint"
+                [title]="report.errorMessage"
+              >
                 <span class="material-symbols-rounded">info</span>
               </span>
             </td>

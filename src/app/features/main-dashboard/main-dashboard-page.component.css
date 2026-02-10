@@ -292,6 +292,26 @@
 .platform-card__name {
   font-weight: 600;
   color: var(--text-primary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-chip:hover {
+  background: var(--surface-hover);
+  border-color: var(--accent-primary);
+}
+
+.filter-chip--active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #fff;
+}
+
+.filter-chip--custom {
+  display: inline-flex;
+  gap: 0.375rem;
 }
 
 .platform-card__check {
