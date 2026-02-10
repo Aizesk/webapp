@@ -1,6 +1,25 @@
 <section class="subscriptions">
   <app-top-navbar [navItems]="navItems" [brandTagline]="LABELS.PAGE_SUBTITLE"></app-top-navbar>
 
+  <!-- Checkout Message Banner -->
+  @if (checkoutMessage()) {
+    <div class="checkout-message checkout-message--{{ checkoutMessage()?.type }}">
+      <span class="material-symbols-rounded" aria-hidden="true">
+        @if (checkoutMessage()?.type === 'success') {
+          check_circle
+        } @else if (checkoutMessage()?.type === 'cancelled') {
+          info
+        } @else {
+          error
+        }
+      </span>
+      <span>{{ checkoutMessage()?.text }}</span>
+      <button type="button" class="checkout-message__close" (click)="checkoutMessage.set(null)">
+        <span class="material-symbols-rounded">close</span>
+      </button>
+    </div>
+  }
+
   <!-- Current Subscription Summary -->
   @if (currentSubscription()) {
     <div class="current-subscription-banner">

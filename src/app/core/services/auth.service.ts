@@ -1,4 +1,4 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject, Injector } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, throwError, of } from 'rxjs';
@@ -7,6 +7,7 @@ import { environment } from '../../../environments/environment';
 import { LoginCredentials } from '../../shared/models/login-credentials.model';
 import { SignUpRequest } from '../../shared/models/sign-up-request.model';
 import { AuthResponse } from '../../shared/models/auth-response.model';
+import { NOTIFICATION_LIFECYCLE, NotificationLifecycle } from './notification.token';
 
 const TOKEN_KEY = 'aizesk_access_token';
 const REFRESH_TOKEN_KEY = 'aizesk_refresh_token';
@@ -24,8 +25,8 @@ const DEMO_USERS: Record<string, { password: string; user: AuthResponse }> = {
       userId: 'demo-user-001',
       email: 'demo@aizesk.com',
       fullName: 'Usuario Demo',
-      roles: ['ROLE_USER']
-    }
+      roles: ['ROLE_USER'],
+    },
   },
   'admin@aizesk.com': {
     password: 'password123',
@@ -37,9 +38,9 @@ const DEMO_USERS: Record<string, { password: string; user: AuthResponse }> = {
       userId: 'admin-user-001',
       email: 'admin@aizesk.com',
       fullName: 'Admin Aizesk',
-      roles: ['ROLE_USER', 'ROLE_ADMIN']
-    }
-  }
+      roles: ['ROLE_USER', 'ROLE_ADMIN'],
+    },
+  },
 };
 
 interface StoredUser {
@@ -52,6 +53,7 @@ interface StoredUser {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly apiUrl = environment.apiUrls.auth;
+  private readonly injector = inject(Injector);
 
   // Reactive state
   private readonly _isAuthenticated = signal<boolean>(this.hasValidToken());
@@ -63,8 +65,25 @@ export class AuthService {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly router: Router
-  ) { }
+    private readonly router: Router,
+  ) {}
+
+  /**
+   * Lazily resolve NotificationService via injection token to avoid circular dependency
+   * (NotificationService injects AuthService, so we can't inject it directly).
+   */
+  private _notificationService?: NotificationLifecycle;
+
+  private getNotificationService(): NotificationLifecycle | null {
+    if (!this._notificationService) {
+      try {
+        this._notificationService = this.injector.get(NOTIFICATION_LIFECYCLE);
+      } catch {
+        return null;
+      }
+    }
+    return this._notificationService;
+  }
 
   /**
    * Login with email/password credentials.
@@ -73,15 +92,15 @@ export class AuthService {
    */
   login(credentials: LoginCredentials): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
-      tap(response => this.handleAuthSuccess(response, credentials.rememberSession)),
-      catchError(err => {
+      tap((response) => this.handleAuthSuccess(response, credentials.rememberSession)),
+      catchError((err) => {
         // If backend is unavailable in development, fall back to mock
         if (!environment.production && err.status === 0) {
           console.warn('Backend unavailable, using mock login');
           return this.mockLogin(credentials);
         }
         return this.handleError(err);
-      })
+      }),
     );
   }
 
@@ -95,7 +114,7 @@ export class AuthService {
       // Simulate network delay
       return of(demoUser.user).pipe(
         delay(500),
-        tap(response => this.handleAuthSuccess(response, credentials.rememberSession))
+        tap((response) => this.handleAuthSuccess(response, credentials.rememberSession)),
       );
     }
 
@@ -107,8 +126,8 @@ export class AuthService {
    */
   register(request: SignUpRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, request).pipe(
-      tap(response => this.handleAuthSuccess(response, false)),
-      catchError(this.handleError)
+      tap((response) => this.handleAuthSuccess(response, false)),
+      catchError(this.handleError),
     );
   }
 
@@ -122,11 +141,11 @@ export class AuthService {
     }
 
     return this.http.post<AuthResponse>(`${this.apiUrl}/refresh`, { refreshToken }).pipe(
-      tap(response => this.storeTokens(response)),
-      catchError(err => {
+      tap((response) => this.storeTokens(response)),
+      catchError((err) => {
         this.logout();
         return throwError(() => err);
-      })
+      }),
     );
   }
 
@@ -139,24 +158,26 @@ export class AuthService {
 
     // Call backend logout (fire-and-forget - don't wait for response)
     if (refreshToken) {
-      this.http.post<{ success: boolean; message: string }>(
-        `${this.apiUrl}/logout`,
-        { refreshToken }
-      ).pipe(
-        catchError(() => of({ success: false, message: 'Logout request failed' }))
-      ).subscribe({
-        next: (response) => {
-          if (!environment.production) {
-            console.log('Logout response:', response);
-          }
-        }
-      });
+      this.http
+        .post<{ success: boolean; message: string }>(`${this.apiUrl}/logout`, { refreshToken })
+        .pipe(catchError(() => of({ success: false, message: 'Logout request failed' })))
+        .subscribe({
+          next: (response) => {
+            if (!environment.production) {
+              console.log('Logout response:', response);
+            }
+          },
+        });
     }
 
     // Clear local storage immediately (don't wait for backend)
     this.clearStorage();
     this._isAuthenticated.set(false);
     this._currentUser.set(null);
+
+    // Disconnect WebSocket and clear cached notification state
+    this.getNotificationService()?.reset();
+
     this.router.navigate(['/login']);
   }
 
@@ -164,9 +185,9 @@ export class AuthService {
    * Request password recovery email.
    */
   requestPasswordRecovery(email: string): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.apiUrl}/recovery-password`, { email }).pipe(
-      catchError(this.handleError)
-    );
+    return this.http
+      .post<{ message: string }>(`${this.apiUrl}/recovery-password`, { email })
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -174,22 +195,26 @@ export class AuthService {
    */
   oauthLogin(provider: string, token: string): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/oauth/${provider}`, { token }).pipe(
-      tap(response => this.handleAuthSuccess(response, true)),
-      catchError(this.handleError)
+      tap((response) => this.handleAuthSuccess(response, true)),
+      catchError(this.handleError),
     );
   }
 
   /**
    * Change password for authenticated user.
    */
-  changePassword(currentPassword: string, newPassword: string, confirmPassword: string): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/change-password`, {
-      currentPassword,
-      newPassword,
-      confirmPassword
-    }).pipe(
-      catchError(this.handleError)
-    );
+  changePassword(
+    currentPassword: string,
+    newPassword: string,
+    confirmPassword: string,
+  ): Observable<void> {
+    return this.http
+      .post<void>(`${this.apiUrl}/change-password`, {
+        currentPassword,
+        newPassword,
+        confirmPassword,
+      })
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -224,8 +249,15 @@ export class AuthService {
       userId: response.userId,
       email: response.email,
       fullName: response.fullName,
-      roles: response.roles
+      roles: response.roles,
     });
+
+    // (Re)connect WebSocket for the new user's notifications
+    const notifService = this.getNotificationService();
+    if (notifService) {
+      notifService.reset(); // clear any stale state from previous user
+      notifService.initRealtimeConnection(); // open fresh connection for new user
+    }
   }
 
   private storeTokens(response: AuthResponse, remember: boolean = true): void {
@@ -239,7 +271,7 @@ export class AuthService {
       userId: response.userId,
       email: response.email,
       fullName: response.fullName,
-      roles: response.roles
+      roles: response.roles,
     };
     const storage = remember ? localStorage : sessionStorage;
     storage.setItem(USER_KEY, JSON.stringify(user));
