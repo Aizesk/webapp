@@ -26,6 +26,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { SelectionModel } from '@angular/cdk/collections';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+import { Router } from '@angular/router';
 
 import { DetailedTransaction } from '../../shared/models/transactions.model';
 import { TransactionService } from '../../core/services/transaction.service';
@@ -107,6 +108,7 @@ export class TransactionsPageComponent implements OnInit, OnDestroy {
   private readonly transactionService = inject(TransactionService);
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly router = inject(Router);
   private readonly destroy$ = new Subject<void>();
   private readonly searchInput$ = new Subject<string>();
 
@@ -390,28 +392,7 @@ export class TransactionsPageComponent implements OnInit, OnDestroy {
   }
 
   openCreateDialog(): void {
-    const data: TransactionFormDialogData = { mode: 'create' };
-    const dialogRef = this.dialog.open(TransactionFormDialogComponent, {
-      data,
-      width: '550px',
-      disableClose: true
-    });
-
-    dialogRef.afterClosed().subscribe((result: TransactionFormDialogResult) => {
-      if (result?.action === 'save' && result.data) {
-        this.transactionService.createTransaction(result.data).subscribe({
-          next: () => {
-            this.snackBar.open('Transacción creada correctamente', 'Cerrar', { duration: 3000 });
-            // Reload to get fresh data
-            this.loadTransactions(this.filterParams());
-          },
-          error: (err) => {
-            console.error('Failed to create transaction:', err);
-            this.snackBar.open('Error al crear la transacción', 'Cerrar', { duration: 5000 });
-          }
-        });
-      }
-    });
+    this.router.navigate(['/transactions/manual/new']);
   }
 
   openEditDialog(transaction: DetailedTransaction): void {

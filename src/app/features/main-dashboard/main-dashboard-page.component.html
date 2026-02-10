@@ -84,25 +84,81 @@
       </section>
 
       <!-- PLATFORM SELECTOR -->
-      <section class="platform-selector">
-        <article
-          *ngFor="let platform of platforms; trackBy: trackByPlatform"
-          class="platform-card"
-          [class.platform-card--selected]="selectedPlatform() === platform.id"
-          [style.--accent-color]="platform.accentColor"
-          [style.--accent-color-light]="platform.accentColorLight"
-          (click)="selectPlatform(platform.id)"
-          role="button"
-          tabindex="0"
-        >
-          <div class="platform-card__icon">
-            <span class="material-symbols-rounded">{{ platform.icon }}</span>
-          </div>
-          <span class="platform-card__name">{{ platform.name }}</span>
-          <div class="platform-card__check" *ngIf="selectedPlatform() === platform.id">
-            <span class="material-symbols-rounded">check</span>
-          </div>
-        </article>
+      <section class="platform-selector-wrapper">
+        <div class="platform-selector-grid">
+          <!-- Main platforms: Global and Manual -->
+          <article
+            *ngFor="let platform of mainPlatforms; trackBy: trackByPlatform"
+            class="platform-card"
+            [class.platform-card--selected]="selectedPlatform() === platform.id"
+            [style.--accent-color]="platform.accentColor"
+            [style.--accent-color-light]="platform.accentColorLight"
+            (click)="selectPlatform(platform.id)"
+            role="button"
+            tabindex="0"
+          >
+            <div class="platform-card__icon">
+              <span class="material-symbols-rounded">{{ platform.icon }}</span>
+            </div>
+            <span class="platform-card__name">{{ platform.name }}</span>
+            <div class="platform-card__check" *ngIf="selectedPlatform() === platform.id">
+              <span class="material-symbols-rounded">check</span>
+            </div>
+          </article>
+
+          <!-- Platforms dropdown card -->
+          <article
+            class="platform-card platform-card--dropdown"
+            [class.platform-card--selected]="isPlatformConnectionSelected()"
+            [class.platform-card--expanded]="showPlatformDropdown()"
+            [style.--accent-color]="selectedPlatformConnection()?.accentColor || '#10B981'"
+            [style.--accent-color-light]="
+              selectedPlatformConnection()?.accentColorLight || 'rgba(16, 185, 129, 0.1)'
+            "
+            (click)="togglePlatformDropdown()"
+            role="button"
+            tabindex="0"
+          >
+            <div class="platform-card__icon">
+              <span class="material-symbols-rounded">{{
+                selectedPlatformConnection()?.icon || 'hub'
+              }}</span>
+            </div>
+            <span class="platform-card__name">{{
+              selectedPlatformConnection()?.name || 'Plataformas'
+            }}</span>
+            <div class="platform-card__arrow">
+              <span class="material-symbols-rounded">{{
+                showPlatformDropdown() ? 'expand_less' : 'expand_more'
+              }}</span>
+            </div>
+            <div class="platform-card__check" *ngIf="isPlatformConnectionSelected()">
+              <span class="material-symbols-rounded">check</span>
+            </div>
+          </article>
+        </div>
+
+        <!-- Platform dropdown options -->
+        <div class="platform-dropdown" *ngIf="showPlatformDropdown()">
+          <article
+            *ngFor="let platform of platformConnections; trackBy: trackByPlatform"
+            class="platform-option"
+            [class.platform-option--selected]="selectedPlatform() === platform.id"
+            [style.--accent-color]="platform.accentColor"
+            [style.--accent-color-light]="platform.accentColorLight"
+            (click)="selectPlatform(platform.id); $event.stopPropagation()"
+            role="button"
+            tabindex="0"
+          >
+            <div class="platform-option__icon">
+              <span class="material-symbols-rounded">{{ platform.icon }}</span>
+            </div>
+            <span class="platform-option__name">{{ platform.name }}</span>
+            <div class="platform-option__check" *ngIf="selectedPlatform() === platform.id">
+              <span class="material-symbols-rounded">check</span>
+            </div>
+          </article>
+        </div>
       </section>
 
       <!-- KPI CARDS ROW -->
