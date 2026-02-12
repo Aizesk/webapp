@@ -65,7 +65,95 @@
           </button>
         </div>
 
-        <button type="button" class="text-button">Gestionar sesiones activas</button>
+        <button type="button" class="text-button" (click)="toggleSessions()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="vertical-align: middle; margin-right: 4px;">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+            <line x1="8" y1="21" x2="16" y2="21" />
+            <line x1="12" y1="17" x2="12" y2="21" />
+          </svg>
+          {{ showSessions() ? 'Ocultar sesiones' : 'Gestionar sesiones activas' }}
+          <span class="sessions-count-badge" *ngIf="totalSessions() > 0">{{ totalSessions() }}</span>
+        </button>
+
+        <!-- Sessions Panel -->
+        <div class="sessions-panel" *ngIf="showSessions()">
+          <div class="sessions-panel__header">
+            <h3 class="sessions-panel__title">Sesiones activas</h3>
+            <button type="button" class="ghost-button ghost-button--small ghost-button--danger"
+              *ngIf="activeSessions().length > 1" (click)="revokeAllOtherSessions()" [disabled]="isRevokingAll()">
+              {{ isRevokingAll() ? 'Cerrando...' : 'Cerrar todas las demás' }}
+            </button>
+          </div>
+
+          <!-- Loading -->
+          <div class="sessions-loading" *ngIf="isLoadingSessions()">
+            <div class="spinner"></div>
+            <p>Cargando sesiones...</p>
+          </div>
+
+          <!-- Empty state -->
+          <div class="sessions-empty" *ngIf="!isLoadingSessions() && activeSessions().length === 0">
+            <p>No hay sesiones activas registradas.</p>
+          </div>
+
+          <!-- Session list -->
+          <div class="sessions-list" *ngIf="!isLoadingSessions() && activeSessions().length > 0">
+            <div class="session-item" *ngFor="let session of activeSessions()"
+              [class.session-item--current]="session.currentSession">
+
+              <div class="session-item__icon">
+                {{ parseDeviceInfo(session.deviceInfo).icon }}
+              </div>
+
+              <div class="session-item__info">
+                <div class="session-item__device">
+                  <span class="session-item__browser">
+                    {{ parseDeviceInfo(session.deviceInfo).browser }}
+                  </span>
+                  <span class="session-item__os">
+                    {{ parseDeviceInfo(session.deviceInfo).os }}
+                  </span>
+                  <span class="session-item__current-badge" *ngIf="session.currentSession">
+                    Sesión actual
+                  </span>
+                </div>
+                <div class="session-item__meta">
+                  <span class="session-item__ip">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="2" y1="12" x2="22" y2="12" />
+                      <path
+                        d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                    </svg>
+                    {{ session.ipAddress }}
+                  </span>
+                  <span class="session-item__time">
+                    Última actividad: {{ formatSessionDate(session.lastActivityAt) }}
+                  </span>
+                </div>
+                <div class="session-item__created">
+                  Iniciada: {{ formatSessionDate(session.createdAt) }}
+                </div>
+              </div>
+
+              <div class="session-item__actions">
+                <button type="button" class="session-revoke-btn" *ngIf="!session.currentSession"
+                  (click)="revokeSession(session.id)" [disabled]="isRevokingSession() === session.id">
+                  <svg *ngIf="isRevokingSession() !== session.id" xmlns="http://www.w3.org/2000/svg" width="16"
+                    height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                  <div class="spinner spinner--small" *ngIf="isRevokingSession() === session.id"></div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
         <p class="profile-card__hint">{{ userSummary().lastUpdate }}</p>
       </article>
 

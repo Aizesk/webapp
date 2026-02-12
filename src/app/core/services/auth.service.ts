@@ -13,6 +13,21 @@ const TOKEN_KEY = 'aizesk_access_token';
 const REFRESH_TOKEN_KEY = 'aizesk_refresh_token';
 const USER_KEY = 'aizesk_user';
 
+export interface ActiveSession {
+  id: string;
+  deviceInfo: string;
+  ipAddress: string;
+  location: string | null;
+  createdAt: string;
+  lastActivityAt: string;
+  currentSession: boolean;
+}
+
+export interface ActiveSessionListResponse {
+  sessions: ActiveSession[];
+  totalSessions: number;
+}
+
 
 interface StoredUser {
   userId: string;
@@ -159,6 +174,35 @@ export class AuthService {
         newPassword,
         confirmPassword,
       })
+      .pipe(catchError(this.handleError));
+  }
+
+  // ========== Session Management ==========
+
+  /**
+   * Get all active sessions for the current user.
+   */
+  getActiveSessions(): Observable<ActiveSessionListResponse> {
+    return this.http
+      .get<ActiveSessionListResponse>(`${this.apiUrl}/sessions`)
+      .pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Revoke (close) a specific session by its ID.
+   */
+  revokeSession(sessionId: string): Observable<void> {
+    return this.http
+      .delete<void>(`${this.apiUrl}/sessions/${sessionId}`)
+      .pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Revoke all sessions except the current one.
+   */
+  revokeAllOtherSessions(): Observable<{ revokedCount: number; message: string }> {
+    return this.http
+      .delete<{ revokedCount: number; message: string }>(`${this.apiUrl}/sessions`)
       .pipe(catchError(this.handleError));
   }
 

@@ -8,7 +8,7 @@ import {
 import { TopNavbarComponent } from '../../shared/components/top-navbar/top-navbar.component';
 import { MAIN_NAV_ITEMS } from '../../shared/models/navigation.model';
 import { UserService, UserProfile, UpdateProfileRequest } from '../../core/services/user.service';
-import { AuthService } from '../../core/services/auth.service';
+import { AuthService, ActiveSession } from '../../core/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 interface ContactPreference {
@@ -39,6 +39,14 @@ export class ProfilePageComponent implements OnInit {
   protected readonly isLoading = signal<boolean>(true);
   protected readonly isSaving = signal<boolean>(false);
   protected readonly isUploadingAvatar = signal<boolean>(false);
+
+  // Sessions state
+  protected readonly showSessions = signal<boolean>(false);
+  protected readonly isLoadingSessions = signal<boolean>(false);
+  protected readonly isRevokingSession = signal<string | null>(null);
+  protected readonly isRevokingAll = signal<boolean>(false);
+  protected readonly activeSessions = signal<ActiveSession[]>([]);
+  protected readonly totalSessions = signal<number>(0);
 
   // Avatar preview (local file selected but not yet uploaded, or current avatar)
   protected readonly avatarPreviewUrl = signal<string | null>(null);
@@ -401,6 +409,146 @@ export class ProfilePageComponent implements OnInit {
       return `hace ${Math.floor(diffDays / 30)} meses`;
     } catch {
       return '';
+    }
+  }
+
+  // ==================== Session Management ====================
+
+  protected toggleSessions(): void {
+    const showing = !this.showSessions();
+    this.showSessions.set(showing);
+    if (showing) {
+      this.loadSessions();
+    }
+  }
+
+  protected loadSessions(): void {
+    this.isLoadingSessions.set(true);
+    this.authService.getActiveSessions().subscribe({
+      next: (response) => {
+        this.activeSessions.set(response.sessions);
+        this.totalSessions.set(response.totalSessions);
+        this.isLoadingSessions.set(false);
+      },
+      error: (err) => {
+        this.isLoadingSessions.set(false);
+        console.error('Error loading sessions:', err);
+        this.snackBar.open(
+          'Error al cargar las sesiones activas',
+          'Cerrar',
+          { duration: 5000, panelClass: ['error-snackbar'] }
+        );
+      }
+    });
+  }
+
+  protected revokeSession(sessionId: string): void {
+    this.isRevokingSession.set(sessionId);
+    this.authService.revokeSession(sessionId).subscribe({
+      next: () => {
+        this.isRevokingSession.set(null);
+        // Remove from local list
+        this.activeSessions.update(sessions =>
+          sessions.filter(s => s.id !== sessionId)
+        );
+        this.totalSessions.update(count => count - 1);
+        this.snackBar.open('Sesión cerrada correctamente', 'Cerrar', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+      },
+      error: (err) => {
+        this.isRevokingSession.set(null);
+        console.error('Error revoking session:', err);
+        this.snackBar.open(
+          err.message || 'Error al cerrar la sesión',
+          'Cerrar',
+          { duration: 5000, panelClass: ['error-snackbar'] }
+        );
+      }
+    });
+  }
+
+  protected revokeAllOtherSessions(): void {
+    this.isRevokingAll.set(true);
+    this.authService.revokeAllOtherSessions().subscribe({
+      next: (response) => {
+        this.isRevokingAll.set(false);
+        // Keep only current session
+        this.activeSessions.update(sessions =>
+          sessions.filter(s => s.currentSession)
+        );
+        this.totalSessions.set(this.activeSessions().length);
+        this.snackBar.open(response.message, 'Cerrar', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+      },
+      error: (err) => {
+        this.isRevokingAll.set(false);
+        console.error('Error revoking all sessions:', err);
+        this.snackBar.open(
+          err.message || 'Error al cerrar las sesiones',
+          'Cerrar',
+          { duration: 5000, panelClass: ['error-snackbar'] }
+        );
+      }
+    });
+  }
+
+  protected parseDeviceInfo(userAgent: string): { browser: string; os: string; icon: string } {
+    if (!userAgent) return { browser: 'Desconocido', os: 'Desconocido', icon: '🌐' };
+
+    let browser = 'Navegador desconocido';
+    let os = 'Sistema desconocido';
+    let icon = '🌐';
+
+    // Detect browser
+    if (userAgent.includes('Firefox')) {
+      browser = 'Firefox';
+      icon = '🦊';
+    } else if (userAgent.includes('Edg/')) {
+      browser = 'Microsoft Edge';
+      icon = '🔵';
+    } else if (userAgent.includes('Chrome') && !userAgent.includes('Edg')) {
+      browser = 'Google Chrome';
+      icon = '🟢';
+    } else if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) {
+      browser = 'Safari';
+      icon = '🧭';
+    } else if (userAgent.includes('Opera') || userAgent.includes('OPR')) {
+      browser = 'Opera';
+      icon = '🔴';
+    }
+
+    // Detect OS
+    if (userAgent.includes('Windows')) {
+      os = 'Windows';
+    } else if (userAgent.includes('Mac OS')) {
+      os = 'macOS';
+    } else if (userAgent.includes('Linux')) {
+      os = 'Linux';
+    } else if (userAgent.includes('Android')) {
+      os = 'Android';
+    } else if (userAgent.includes('iPhone') || userAgent.includes('iPad')) {
+      os = 'iOS';
+    }
+
+    return { browser, os, icon };
+  }
+
+  protected formatSessionDate(dateString: string): string {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('es-ES', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return dateString;
     }
   }
 }
