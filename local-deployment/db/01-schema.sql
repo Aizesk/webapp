@@ -29,6 +29,8 @@ CREATE TABLE IF NOT EXISTS users (
     -- User info
     role VARCHAR(50) DEFAULT 'ROLE_USER' COMMENT 'Rol del usuario (ROLE_USER, ROLE_ADMIN)',
     avatar_url VARCHAR(500) COMMENT 'URL del avatar',
+    avatar_data LONGBLOB COMMENT 'Datos binarios de la foto de perfil',
+    avatar_content_type VARCHAR(100) COMMENT 'Tipo MIME de la foto de perfil (image/jpeg, image/png, etc.)',
     
     -- Preferences (embedded)
     pref_billing_alerts TINYINT(1) DEFAULT 1 COMMENT 'Alertas de facturación',

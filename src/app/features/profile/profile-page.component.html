@@ -5,7 +5,30 @@
   <div class="profile__layout">
     <aside class="profile-sidebar">
       <article class="profile-card">
-        <div class="profile-card__avatar">{{ userSummary().avatarInitials }}</div>
+        <!-- Avatar with photo support -->
+        <div class="profile-card__avatar-wrapper">
+          <div class="profile-card__avatar" *ngIf="!avatarPreviewUrl() && !userSummary().avatarUrl">
+            {{ userSummary().avatarInitials }}
+          </div>
+          <img *ngIf="avatarPreviewUrl() || userSummary().avatarUrl" class="profile-card__avatar-img"
+            [src]="avatarPreviewUrl() || userSummary().avatarUrl" [alt]="userSummary().name + ' avatar'"
+            (error)="avatarPreviewUrl() ? null : null" />
+          <div class="profile-card__avatar-overlay" (click)="triggerAvatarUpload()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+              <circle cx="12" cy="13" r="4" />
+            </svg>
+          </div>
+          <div class="profile-card__avatar-spinner" *ngIf="isUploadingAvatar()">
+            <div class="spinner"></div>
+          </div>
+        </div>
+
+        <!-- Hidden file input -->
+        <input #avatarFileInput type="file" accept="image/jpeg,image/png,image/gif,image/webp" class="sr-only"
+          (change)="onAvatarFileSelected($event)" />
+
         <p class="profile-card__role">{{ userSummary().role }}</p>
         <h1 class="profile-card__name">{{ userSummary().name }}</h1>
         <p class="profile-card__email">{{ userSummary().email }}</p>
@@ -25,7 +48,23 @@
           </div>
         </dl>
 
-        <button type="button" class="ghost-button">Actualizar foto</button>
+        <div class="profile-card__avatar-actions">
+          <button type="button" class="ghost-button" (click)="triggerAvatarUpload()" [disabled]="isUploadingAvatar()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+            {{ (avatarPreviewUrl() || userSummary().avatarUrl) ? 'Cambiar foto' : 'Subir foto' }}
+          </button>
+          <button type="button" class="text-button text-button--danger"
+            *ngIf="avatarPreviewUrl() || userSummary().avatarUrl" (click)="deleteAvatar()"
+            [disabled]="isUploadingAvatar()">
+            Eliminar foto
+          </button>
+        </div>
+
         <button type="button" class="text-button">Gestionar sesiones activas</button>
         <p class="profile-card__hint">{{ userSummary().lastUpdate }}</p>
       </article>

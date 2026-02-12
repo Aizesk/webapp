@@ -53,6 +53,11 @@ export interface ChangePasswordRequest {
   readonly confirmPassword: string;
 }
 
+export interface AvatarUploadResponse {
+  readonly avatarUrl: string;
+  readonly message: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class UserService {
   private readonly apiUrl = environment.apiUrls.users;
@@ -127,17 +132,20 @@ export class UserService {
   }
 
   /**
-   * Upload avatar image.
+   * Upload avatar image as multipart form data.
+   * The backend stores it as a BLOB in the database.
    */
-  uploadAvatar(file: File): Observable<{ avatarUrl: string }> {
+  uploadAvatar(file: File): Observable<AvatarUploadResponse> {
     const formData = new FormData();
-    formData.append('avatar', file);
+    formData.append('file', file);
 
-    return this.http.post<{ avatarUrl: string }>(`${this.apiUrl}/avatar`, formData).pipe(
+    return this.http.post<AvatarUploadResponse>(`${this.apiUrl}/avatar`, formData).pipe(
       tap(response => {
         const currentProfile = this._profile();
         if (currentProfile) {
-          this._profile.set({ ...currentProfile, avatarUrl: response.avatarUrl });
+          // Add timestamp to bust browser cache
+          const avatarUrl = response.avatarUrl + '?t=' + Date.now();
+          this._profile.set({ ...currentProfile, avatarUrl });
         }
       }),
       catchError(this.handleError)
@@ -157,6 +165,19 @@ export class UserService {
       }),
       catchError(this.handleError)
     );
+  }
+
+  /**
+   * Build full avatar URL from relative path.
+   * The backend returns relative URLs like /api/v1/users/{id}/avatar
+   */
+  getAvatarFullUrl(avatarUrl: string | null): string | null {
+    if (!avatarUrl) return null;
+    // If it's already an absolute URL, return as-is
+    if (avatarUrl.startsWith('http')) return avatarUrl;
+    // Build full URL from the user-service base
+    const baseUrl = this.apiUrl.replace('/api/v1/users', '');
+    return baseUrl + avatarUrl;
   }
 
   /**
