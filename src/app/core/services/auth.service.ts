@@ -8,6 +8,7 @@ import { LoginCredentials } from '../../shared/models/login-credentials.model';
 import { SignUpRequest } from '../../shared/models/sign-up-request.model';
 import { AuthResponse } from '../../shared/models/auth-response.model';
 import { NOTIFICATION_LIFECYCLE, NotificationLifecycle } from './notification.token';
+import { SESSION_MONITOR, SessionMonitorLifecycle } from './session-monitor.token';
 
 const TOKEN_KEY = 'aizesk_access_token';
 const REFRESH_TOKEN_KEY = 'aizesk_refresh_token';
@@ -59,6 +60,7 @@ export class AuthService {
    * (NotificationService injects AuthService, so we can't inject it directly).
    */
   private _notificationService?: NotificationLifecycle;
+  private _sessionMonitor?: SessionMonitorLifecycle;
 
   private getNotificationService(): NotificationLifecycle | null {
     if (!this._notificationService) {
@@ -69,6 +71,17 @@ export class AuthService {
       }
     }
     return this._notificationService;
+  }
+
+  private getSessionMonitor(): SessionMonitorLifecycle | null {
+    if (!this._sessionMonitor) {
+      try {
+        this._sessionMonitor = this.injector.get(SESSION_MONITOR);
+      } catch {
+        return null;
+      }
+    }
+    return this._sessionMonitor;
   }
 
   /**
@@ -137,6 +150,9 @@ export class AuthService {
 
     // Disconnect WebSocket and clear cached notification state
     this.getNotificationService()?.reset();
+
+    // Stop session monitor
+    this.getSessionMonitor()?.stop();
 
     this.router.navigate(['/login']);
   }
@@ -247,6 +263,9 @@ export class AuthService {
       notifService.reset(); // clear any stale state from previous user
       notifService.initRealtimeConnection(); // open fresh connection for new user
     }
+
+    // Start session monitor to detect remote session revocation
+    this.getSessionMonitor()?.start();
   }
 
   private storeTokens(response: AuthResponse, remember: boolean = true): void {

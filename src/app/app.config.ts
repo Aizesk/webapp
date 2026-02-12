@@ -13,6 +13,8 @@ import { authRefreshInterceptor } from './core/interceptors/auth-refresh.interce
 import { encodingInterceptor } from './core/interceptors/encoding.interceptor';
 import { NOTIFICATION_LIFECYCLE } from './core/services/notification.token';
 import { NotificationService } from './core/services/notification.service';
+import { SESSION_MONITOR } from './core/services/session-monitor.token';
+import { SessionMonitorService } from './core/services/session-monitor.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -26,5 +28,7 @@ export const appConfig: ApplicationConfig = {
     ),
     // Bridge token so AuthService can reach NotificationService without circular import
     { provide: NOTIFICATION_LIFECYCLE, useExisting: NotificationService },
+    // Bridge token so AuthService can reach SessionMonitorService without circular import
+    { provide: SESSION_MONITOR, useExisting: SessionMonitorService },
   ],
 };
