@@ -1,9 +1,17 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { tap, catchError, map } from 'rxjs/operators';
+import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import {
+  UserProfile,
+  UserPreferences,
+  UpdateProfileRequest,
+  ChangePasswordRequest,
+  AvatarUploadResponse,
+} from '../../shared/models/user.model';
 
+<<<<<<< Updated upstream
 /**
  * User profile response from backend.
  * Maps to Java: com.aizesk.user.application.dto.UserProfileResponse
@@ -57,6 +65,17 @@ export interface AvatarUploadResponse {
   readonly avatarUrl: string;
   readonly message: string;
 }
+=======
+// Re-export models so existing consumers don't break
+export type {
+  UserProfile,
+  UserAddress,
+  UserPreferences,
+  UpdateProfileRequest,
+  ChangePasswordRequest,
+  AvatarUploadResponse,
+} from '../../shared/models/user.model';
+>>>>>>> Stashed changes
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -180,15 +199,6 @@ export class UserService {
     return baseUrl + avatarUrl;
   }
 
-  /**
-   * Get active sessions.
-   */
-  getActiveSessions(): Observable<ActiveSession[]> {
-    return this.http.get<ActiveSession[]>(`${this.apiUrl}/sessions`).pipe(
-      catchError(this.handleError)
-    );
-  }
-
   private handleError(error: HttpErrorResponse): Observable<never> {
     let message = 'An error occurred';
     if (error.error?.message) {
@@ -200,12 +210,4 @@ export class UserService {
     }
     return throwError(() => new Error(message));
   }
-}
-
-export interface ActiveSession {
-  readonly sessionId: string;
-  readonly deviceInfo: string;
-  readonly ipAddress: string;
-  readonly lastActivity: string;
-  readonly current: boolean;
 }
