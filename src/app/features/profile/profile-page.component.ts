@@ -1,4 +1,4 @@
-import { NgFor, NgIf } from '@angular/common';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, ElementRef, inject, OnInit, signal, computed, ViewChild } from '@angular/core';
 import {
   FormBuilder,
@@ -20,7 +20,7 @@ interface ContactPreference {
 @Component({
   selector: 'app-profile-page',
   standalone: true,
-  imports: [TopNavbarComponent, ReactiveFormsModule, NgFor, NgIf],
+  imports: [TopNavbarComponent, ReactiveFormsModule, NgFor, NgIf, NgClass],
   templateUrl: './profile-page.component.html',
   styleUrls: ['./profile-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -83,6 +83,58 @@ export class ProfilePageComponent implements OnInit {
     };
   });
 
+  // Computed account status from real data
+  protected readonly accountStatus = computed(() => {
+    const profile = this.userProfile();
+    const sessions = this.totalSessions();
+    const items: { status: 'success' | 'warning' | 'info'; text: string }[] = [];
+
+    if (profile) {
+      // Sessions info
+      if (sessions > 0) {
+        items.push({
+          status: sessions > 3 ? 'warning' : 'success',
+          text: sessions === 1
+            ? '1 sesión activa'
+            : `${sessions} sesiones activas`,
+        });
+      }
+
+      // Last login
+      if (profile.lastLoginAt) {
+        items.push({
+          status: 'success',
+          text: `Último acceso ${this.formatRelativeDate(profile.lastLoginAt)}`,
+        });
+      }
+
+      // Notification preferences
+      if (profile.preferences) {
+        const enabledCount = [
+          profile.preferences.billingAlerts,
+          profile.preferences.weeklyDigest,
+          profile.preferences.securityEvents,
+          profile.preferences.productResearch,
+        ].filter(Boolean).length;
+
+        items.push({
+          status: enabledCount >= 3 ? 'success' : enabledCount > 0 ? 'info' : 'warning',
+          text: `${enabledCount} de 4 notificaciones activadas`,
+        });
+      }
+
+      // Account age
+      if (profile.joinedAt) {
+        items.push({
+          status: 'info',
+          text: `Cuenta creada ${this.formatRelativeDate(profile.joinedAt)}`,
+        });
+      }
+    }
+
+    return items;
+  });
+
   protected readonly contactPreferences: readonly ContactPreference[] = [
     {
       key: 'billingAlerts',
@@ -131,6 +183,19 @@ export class ProfilePageComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadProfile();
+    this.loadSessionCount();
+  }
+
+  /**
+   * Load only the session count for the account status card.
+   */
+  private loadSessionCount(): void {
+    this.authService.getActiveSessions().subscribe({
+      next: (response) => {
+        this.totalSessions.set(response.totalSessions);
+      },
+      error: () => { /* silently ignore - not critical */ }
+    });
   }
 
   private loadProfile(): void {

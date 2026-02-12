@@ -217,6 +217,10 @@
   background: #f97316;
 }
 
+.status-dot--info {
+  background: #3b82f6;
+}
+
 .profile-content {
   display: flex;
   flex-direction: column;

@@ -17,6 +17,7 @@ export interface UserProfile {
   readonly plan?: string;
   readonly location: string | null;
   readonly joinedAt: string;
+  readonly lastLoginAt: string | null;
   readonly avatarInitials: string;
   readonly avatarUrl: string | null;
   readonly lastUpdate: string;
@@ -33,12 +34,10 @@ export interface UserAddress {
 }
 
 export interface UserPreferences {
-  readonly language: string;
-  readonly timezone: string;
-  readonly currency: string;
-  readonly emailNotifications: boolean;
-  readonly pushNotifications: boolean;
-  readonly theme: string;
+  readonly billingAlerts: boolean;
+  readonly weeklyDigest: boolean;
+  readonly securityEvents: boolean;
+  readonly productResearch: boolean;
 }
 
 export interface UpdateProfileRequest {
