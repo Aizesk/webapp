@@ -1,5 +1,5 @@
 import { NgFor, NgIf } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, inject, OnInit, signal, computed, ViewChild } from '@angular/core';
 import {
   FormBuilder,
   ReactiveFormsModule,
@@ -31,11 +31,17 @@ export class ProfilePageComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly snackBar = inject(MatSnackBar);
 
+  @ViewChild('avatarFileInput') avatarFileInput!: ElementRef<HTMLInputElement>;
+
   protected readonly navItems = MAIN_NAV_ITEMS;
 
   // Loading state
   protected readonly isLoading = signal<boolean>(true);
   protected readonly isSaving = signal<boolean>(false);
+  protected readonly isUploadingAvatar = signal<boolean>(false);
+
+  // Avatar preview (local file selected but not yet uploaded, or current avatar)
+  protected readonly avatarPreviewUrl = signal<string | null>(null);
 
   // User profile from backend
   protected readonly userProfile = this.userService.profile;
@@ -52,6 +58,7 @@ export class ProfilePageComponent implements OnInit {
         joinedAt: '',
         location: '',
         avatarInitials: '...',
+        avatarUrl: null as string | null,
         lastUpdate: '',
       };
     }
@@ -63,6 +70,7 @@ export class ProfilePageComponent implements OnInit {
       joinedAt: profile.joinedAt ? `Miembro desde ${this.formatDate(profile.joinedAt)}` : '',
       location: profile.location || 'No especificada',
       avatarInitials: profile.avatarInitials || this.getInitials(profile.fullName),
+      avatarUrl: this.userService.getAvatarFullUrl(profile.avatarUrl),
       lastUpdate: profile.lastUpdate ? `Actualizado ${this.formatRelativeDate(profile.lastUpdate)}` : '',
     };
   });
@@ -123,6 +131,10 @@ export class ProfilePageComponent implements OnInit {
       next: (profile) => {
         this.isLoading.set(false);
         this.populateAccountForm(profile);
+        // Set avatar preview from profile
+        if (profile.avatarUrl) {
+          this.avatarPreviewUrl.set(this.userService.getAvatarFullUrl(profile.avatarUrl));
+        }
       },
       error: (err) => {
         this.isLoading.set(false);
@@ -152,6 +164,107 @@ export class ProfilePageComponent implements OnInit {
     const { newPassword, confirmPassword } = this.securityForm.value;
     return !!newPassword && !!confirmPassword && newPassword !== confirmPassword;
   }
+
+  // ==================== Avatar Methods ====================
+
+  protected triggerAvatarUpload(): void {
+    this.avatarFileInput.nativeElement.click();
+  }
+
+  protected onAvatarFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      this.snackBar.open(
+        'Formato de imagen no válido. Usa JPEG, PNG, GIF o WebP.',
+        'Cerrar',
+        { duration: 5000, panelClass: ['error-snackbar'] }
+      );
+      return;
+    }
+
+    // Validate file size (5 MB max)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      this.snackBar.open(
+        'La imagen es demasiado grande. Máximo 5 MB.',
+        'Cerrar',
+        { duration: 5000, panelClass: ['error-snackbar'] }
+      );
+      return;
+    }
+
+    // Show local preview
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.avatarPreviewUrl.set(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // Upload to backend
+    this.isUploadingAvatar.set(true);
+    this.userService.uploadAvatar(file).subscribe({
+      next: (response) => {
+        this.isUploadingAvatar.set(false);
+        // Update preview with server URL
+        const fullUrl = this.userService.getAvatarFullUrl(response.avatarUrl);
+        if (fullUrl) {
+          this.avatarPreviewUrl.set(fullUrl + '?t=' + Date.now());
+        }
+        this.snackBar.open('Foto de perfil actualizada correctamente', 'Cerrar', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+      },
+      error: (err) => {
+        this.isUploadingAvatar.set(false);
+        console.error('Error uploading avatar:', err);
+        // Revert preview
+        const profile = this.userProfile();
+        this.avatarPreviewUrl.set(
+          profile?.avatarUrl ? this.userService.getAvatarFullUrl(profile.avatarUrl) : null
+        );
+        this.snackBar.open(
+          err.message || 'Error al subir la foto de perfil',
+          'Cerrar',
+          { duration: 5000, panelClass: ['error-snackbar'] }
+        );
+      }
+    });
+
+    // Reset input so user can re-select same file
+    input.value = '';
+  }
+
+  protected deleteAvatar(): void {
+    this.isUploadingAvatar.set(true);
+    this.userService.deleteAvatar().subscribe({
+      next: () => {
+        this.isUploadingAvatar.set(false);
+        this.avatarPreviewUrl.set(null);
+        this.snackBar.open('Foto de perfil eliminada', 'Cerrar', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+      },
+      error: (err) => {
+        this.isUploadingAvatar.set(false);
+        console.error('Error deleting avatar:', err);
+        this.snackBar.open(
+          err.message || 'Error al eliminar la foto de perfil',
+          'Cerrar',
+          { duration: 5000, panelClass: ['error-snackbar'] }
+        );
+      }
+    });
+  }
+
+  // ==================== Form Handlers ====================
 
   protected handleAccountSubmit(): void {
     if (this.accountForm.invalid) {

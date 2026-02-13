@@ -7,7 +7,11 @@ import { environment } from '../../../environments/environment';
 import { LoginCredentials } from '../../shared/models/login-credentials.model';
 import { SignUpRequest } from '../../shared/models/sign-up-request.model';
 import { AuthResponse } from '../../shared/models/auth-response.model';
+import { ActiveSession, ActiveSessionListResponse } from '../../shared/models/session.model';
 import { NOTIFICATION_LIFECYCLE, NotificationLifecycle } from './notification.token';
+
+// Re-export session models so existing consumers don't break
+export type { ActiveSession, ActiveSessionListResponse } from '../../shared/models/session.model';
 
 const TOKEN_KEY = 'aizesk_access_token';
 const REFRESH_TOKEN_KEY = 'aizesk_refresh_token';
