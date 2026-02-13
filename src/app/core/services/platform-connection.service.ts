@@ -75,9 +75,10 @@ const PLATFORM_ACCENTS: Record<string, { icon: string; accent: string }> = {
     AMAZON: { icon: '🛒', accent: '#f97316' },
     SHOPIFY: { icon: '🛍️', accent: '#96bf48' },
     EBAY: { icon: '🏷️', accent: '#0064d2' },
-    ETSY: { icon: '🎨', accent: '#f56400' },
-    WOOCOMMERCE: { icon: '🛒', accent: '#96588a' },
 };
+
+// Only show these platforms in the UI
+const ENABLED_PLATFORMS = new Set(['AMAZON', 'SHOPIFY', 'EBAY']);
 
 // ============================================================================
 // SERVICE
@@ -91,10 +92,12 @@ export class PlatformConnectionService {
     private readonly _platforms = signal<PlatformCardView[]>([]);
     private readonly _loading = signal<boolean>(false);
     private readonly _error = signal<string | null>(null);
+    private readonly _syncingPlatform = signal<string | null>(null);
 
     readonly platforms = this._platforms.asReadonly();
     readonly loading = this._loading.asReadonly();
     readonly error = this._error.asReadonly();
+    readonly syncingPlatform = this._syncingPlatform.asReadonly();
 
     constructor(private readonly http: HttpClient) { }
 
@@ -146,42 +149,69 @@ export class PlatformConnectionService {
     }
 
     /**
-     * Trigger manual sync.
+     * Trigger manual sync. Updates the affected card in-place instead of reloading.
      */
     sync(connectionId: string): Observable<SyncLogResponse> {
+        // Find which platform type is being synced
+        const card = this._platforms().find(p => p.connectionId === connectionId);
+        if (card) this._syncingPlatform.set(card.type);
+
         return this.http.post<SyncLogResponse>(`${this.apiUrl}/connections/${connectionId}/sync`, {}).pipe(
-            tap(() => {
-                // Refresh data after sync completes
-                setTimeout(() => this.loadPlatforms(), 1000);
+            tap((result) => {
+                this._syncingPlatform.set(null);
+                // Update the card in-place with fresh sync data
+                this.updateCardAfterSync(connectionId, result);
+            }),
+            catchError(err => {
+                this._syncingPlatform.set(null);
+                throw err;
             })
         );
     }
 
     // ==================== Private Helpers ====================
 
+    /**
+     * Update only the card that was just synced, in-place.
+     */
+    private updateCardAfterSync(connectionId: string, result: SyncLogResponse): void {
+        const updated = this._platforms().map(card => {
+            if (card.connectionId !== connectionId) return card;
+            return {
+                ...card,
+                lastSyncAt: new Date().toISOString(),
+                totalOrdersSynced: card.totalOrdersSynced + result.ordersCreated,
+                lastSyncError: result.errorMessage,
+            };
+        });
+        this._platforms.set(updated);
+    }
+
     private mergeData(available: AvailablePlatform[], connections: PlatformConnection[]): PlatformCardView[] {
         const connectionMap = new Map<string, PlatformConnection>();
         connections.forEach(c => connectionMap.set(c.platformType, c));
 
-        return available.map(p => {
-            const conn = connectionMap.get(p.type);
-            const brand = PLATFORM_ACCENTS[p.type] ?? { icon: '📦', accent: '#6b7280' };
+        return available
+            .filter(p => ENABLED_PLATFORMS.has(p.type))
+            .map(p => {
+                const conn = connectionMap.get(p.type);
+                const brand = PLATFORM_ACCENTS[p.type] ?? { icon: '📦', accent: '#6b7280' };
 
-            return {
-                type: p.type,
-                displayName: p.displayName,
-                description: p.description,
-                icon: brand.icon,
-                accent: brand.accent,
-                connected: !!conn,
-                connectionId: conn?.id ?? null,
-                accountName: conn?.accountName ?? null,
-                lastSyncAt: conn?.lastSyncAt ?? null,
-                totalOrdersSynced: conn?.totalOrdersSynced ?? 0,
-                canSync: conn?.canSync ?? false,
-                status: conn?.status ?? 'DISCONNECTED',
-                lastSyncError: conn?.lastSyncError ?? null,
-            };
-        });
+                return {
+                    type: p.type,
+                    displayName: p.displayName,
+                    description: p.description,
+                    icon: brand.icon,
+                    accent: brand.accent,
+                    connected: !!conn,
+                    connectionId: conn?.id ?? null,
+                    accountName: conn?.accountName ?? null,
+                    lastSyncAt: conn?.lastSyncAt ?? null,
+                    totalOrdersSynced: conn?.totalOrdersSynced ?? 0,
+                    canSync: conn?.canSync ?? false,
+                    status: conn?.status ?? 'DISCONNECTED',
+                    lastSyncError: conn?.lastSyncError ?? null,
+                };
+            });
     }
 }

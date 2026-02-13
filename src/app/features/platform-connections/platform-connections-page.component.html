@@ -42,7 +42,7 @@
       @if (!loading()) {
       <div class="connections__grid">
         @for (platform of platforms(); track platform.type) {
-        <article class="connection-card">
+        <article class="connection-card" [ngClass]="{'syncing': syncingPlatform() === platform.type}">
           <div class="connection-card__header">
             <div class="icon" [style.background-color]="platform.accent + '22'">
               {{ platform.icon }}
@@ -62,12 +62,13 @@
 
           <div class="connection-meta">
             <span>Última sincronización: {{ formatLastSync(platform.lastSyncAt) }}</span>
-            @if (platform.totalOrdersSynced > 0) {
-            <span class="orders-count">{{ platform.totalOrdersSynced }} pedidos sincronizados</span>
-            }
           </div>
 
-          @if (platform.lastSyncError) {
+          @if (syncResult()?.type === platform.type) {
+          <div class="sync-result-inline">{{ syncResult()!.message }}</div>
+          }
+
+          @if (platform.lastSyncError && syncResult()?.type !== platform.type) {
           <div class="sync-error-msg">
             <span class="material-symbols-rounded">warning</span>
             {{ platform.lastSyncError }}
@@ -77,16 +78,17 @@
           <div class="connection-actions">
             @if (platform.connected) {
             @if (platform.canSync) {
-            <app-button variant="ghost" size="sm" [disabled]="actionLoading() === platform.type"
+            <app-button variant="ghost" size="sm" [disabled]="syncingPlatform() === platform.type"
               (click)="handleSync(platform)">
-              @if (actionLoading() === platform.type) {
-              Sincronizando…
+              @if (syncingPlatform() === platform.type) {
+              <span class="sync-spinner"></span> Sincronizando…
               } @else {
               Sincronizar ahora
               }
             </app-button>
             }
-            <button type="button" class="text-button text-button--danger" [disabled]="actionLoading() === platform.type"
+            <button type="button" class="text-button text-button--danger"
+              [disabled]="actionLoading() === platform.type || syncingPlatform() === platform.type"
               (click)="handleDisconnect(platform)">
               Desconectar
             </button>

@@ -516,3 +516,62 @@
     align-items: flex-start;
   }
 }
+
+/* Syncing card animation */
+.connection-card.syncing {
+  border-color: var(--accent, #6366f1);
+  animation: syncPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes syncPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.15);
+  }
+
+  50% {
+    box-shadow: 0 0 0 6px rgba(99, 102, 241, 0.08);
+  }
+}
+
+/* Inline sync spinner */
+.sync-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(99, 102, 241, 0.25);
+  border-top-color: var(--accent, #6366f1);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Inline sync result */
+.sync-result-inline {
+  font-size: 0.82rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  background: rgba(99, 102, 241, 0.08);
+  color: var(--text-secondary, #64748b);
+  animation: fadeSlideIn 0.3s ease-out;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

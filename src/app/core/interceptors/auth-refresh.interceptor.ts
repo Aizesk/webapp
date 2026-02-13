@@ -24,8 +24,8 @@ export const authRefreshInterceptor: HttpInterceptorFn = (
 
     return next(req).pipe(
         catchError((error: HttpErrorResponse) => {
-            // Only handle 401 Unauthorized errors
-            if (error.status !== 401) {
+            // Only handle 401 Unauthorized and 403 Forbidden errors (expired JWT returns 403)
+            if (error.status !== 401 && error.status !== 403) {
                 return throwError(() => error);
             }
 

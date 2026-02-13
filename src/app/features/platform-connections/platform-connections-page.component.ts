@@ -29,6 +29,10 @@ export class PlatformConnectionsPageComponent implements OnInit {
   // Action feedback
   protected readonly actionLoading = signal<string | null>(null);
   protected readonly actionMessage = signal<string | null>(null);
+  protected readonly syncResult = signal<{ type: string; message: string } | null>(null);
+
+  // Syncing state from service
+  protected readonly syncingPlatform;
 
   // Computed values for sidebar (Angular templates don't support arrow fn)
   protected readonly connectedCount = computed(() =>
@@ -42,6 +46,7 @@ export class PlatformConnectionsPageComponent implements OnInit {
     this.platforms = this.platformService.platforms;
     this.loading = this.platformService.loading;
     this.error = this.platformService.error;
+    this.syncingPlatform = this.platformService.syncingPlatform;
   }
 
   ngOnInit(): void {
@@ -95,15 +100,21 @@ export class PlatformConnectionsPageComponent implements OnInit {
   protected handleSync(platform: PlatformCardView): void {
     if (!platform.connectionId) return;
 
-    this.actionLoading.set(platform.type);
+    this.syncResult.set(null);
     this.platformService.sync(platform.connectionId).subscribe({
       next: (result) => {
-        this.actionLoading.set(null);
-        this.showFeedback(`Sincronizado: ${result.ordersFound} pedidos encontrados`);
+        this.syncResult.set({
+          type: platform.type,
+          message: `✅ ${result.ordersFound} pedidos encontrados, ${result.ordersCreated} nuevos`
+        });
+        setTimeout(() => this.syncResult.set(null), 5000);
       },
       error: (err) => {
-        this.actionLoading.set(null);
-        this.showFeedback('Error al sincronizar: ' + err.message);
+        this.syncResult.set({
+          type: platform.type,
+          message: '❌ Error al sincronizar'
+        });
+        setTimeout(() => this.syncResult.set(null), 5000);
       },
     });
   }
