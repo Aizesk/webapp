@@ -3,9 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap, catchError, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
-// ============================================================================
-// INTERFACES (match backend DTOs)
-// ============================================================================
+
 
 export interface AvailablePlatform {
     readonly type: string;
@@ -80,15 +78,13 @@ const PLATFORM_ACCENTS: Record<string, { icon: string; accent: string }> = {
 // Only show these platforms in the UI
 const ENABLED_PLATFORMS = new Set(['AMAZON', 'SHOPIFY', 'EBAY']);
 
-// ============================================================================
-// SERVICE
-// ============================================================================
+
 
 @Injectable({ providedIn: 'root' })
 export class PlatformConnectionService {
     private readonly apiUrl = environment.apiUrls.platforms;
 
-    // Reactive state
+
     private readonly _platforms = signal<PlatformCardView[]>([]);
     private readonly _loading = signal<boolean>(false);
     private readonly _error = signal<string | null>(null);
@@ -101,11 +97,9 @@ export class PlatformConnectionService {
 
     constructor(private readonly http: HttpClient) { }
 
-    // ==================== Public API ====================
 
-    /**
-     * Load all platforms + user connections and merge into card views.
-     */
+
+
     loadPlatforms(): void {
         this._loading.set(true);
         this._error.set(null);
@@ -131,35 +125,27 @@ export class PlatformConnectionService {
         });
     }
 
-    /**
-     * Initiate OAuth connection for a platform.
-     * Returns the authorization URL to redirect the user.
-     */
+
     connect(platformType: string): Observable<OAuthUrlResponse> {
         return this.http.post<OAuthUrlResponse>(`${this.apiUrl}/connect`, { platformType });
     }
 
-    /**
-     * Disconnect a platform connection.
-     */
+
     disconnect(connectionId: string): Observable<{ message: string }> {
         return this.http.delete<{ message: string }>(`${this.apiUrl}/connections/${connectionId}`).pipe(
             tap(() => this.loadPlatforms())
         );
     }
 
-    /**
-     * Trigger manual sync. Updates the affected card in-place instead of reloading.
-     */
+
     sync(connectionId: string): Observable<SyncLogResponse> {
-        // Find which platform type is being synced
+
         const card = this._platforms().find(p => p.connectionId === connectionId);
         if (card) this._syncingPlatform.set(card.type);
 
         return this.http.post<SyncLogResponse>(`${this.apiUrl}/connections/${connectionId}/sync`, {}).pipe(
             tap((result) => {
                 this._syncingPlatform.set(null);
-                // Update the card in-place with fresh sync data
                 this.updateCardAfterSync(connectionId, result);
             }),
             catchError(err => {
@@ -169,11 +155,9 @@ export class PlatformConnectionService {
         );
     }
 
-    // ==================== Private Helpers ====================
 
-    /**
-     * Update only the card that was just synced, in-place.
-     */
+
+
     private updateCardAfterSync(connectionId: string, result: SyncLogResponse): void {
         const updated = this._platforms().map(card => {
             if (card.connectionId !== connectionId) return card;
