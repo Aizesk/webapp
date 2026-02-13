@@ -9,6 +9,7 @@ import { SignUpRequest } from '../../shared/models/sign-up-request.model';
 import { AuthResponse } from '../../shared/models/auth-response.model';
 import { ActiveSession, ActiveSessionListResponse } from '../../shared/models/session.model';
 import { NOTIFICATION_LIFECYCLE, NotificationLifecycle } from './notification.token';
+import { SESSION_MONITOR, SessionMonitorLifecycle } from './session-monitor.token';
 
 // Re-export session models so existing consumers don't break
 export type { ActiveSession, ActiveSessionListResponse } from '../../shared/models/session.model';
@@ -16,6 +17,21 @@ export type { ActiveSession, ActiveSessionListResponse } from '../../shared/mode
 const TOKEN_KEY = 'aizesk_access_token';
 const REFRESH_TOKEN_KEY = 'aizesk_refresh_token';
 const USER_KEY = 'aizesk_user';
+
+export interface ActiveSession {
+  id: string;
+  deviceInfo: string;
+  ipAddress: string;
+  location: string | null;
+  createdAt: string;
+  lastActivityAt: string;
+  currentSession: boolean;
+}
+
+export interface ActiveSessionListResponse {
+  sessions: ActiveSession[];
+  totalSessions: number;
+}
 
 
 interface StoredUser {
@@ -48,6 +64,7 @@ export class AuthService {
    * (NotificationService injects AuthService, so we can't inject it directly).
    */
   private _notificationService?: NotificationLifecycle;
+  private _sessionMonitor?: SessionMonitorLifecycle;
 
   private getNotificationService(): NotificationLifecycle | null {
     if (!this._notificationService) {
@@ -58,6 +75,17 @@ export class AuthService {
       }
     }
     return this._notificationService;
+  }
+
+  private getSessionMonitor(): SessionMonitorLifecycle | null {
+    if (!this._sessionMonitor) {
+      try {
+        this._sessionMonitor = this.injector.get(SESSION_MONITOR);
+      } catch {
+        return null;
+      }
+    }
+    return this._sessionMonitor;
   }
 
   /**
@@ -127,6 +155,9 @@ export class AuthService {
     // Disconnect WebSocket and clear cached notification state
     this.getNotificationService()?.reset();
 
+    // Stop session monitor
+    this.getSessionMonitor()?.stop();
+
     this.router.navigate(['/login']);
   }
 
@@ -163,6 +194,35 @@ export class AuthService {
         newPassword,
         confirmPassword,
       })
+      .pipe(catchError(this.handleError));
+  }
+
+  // ========== Session Management ==========
+
+  /**
+   * Get all active sessions for the current user.
+   */
+  getActiveSessions(): Observable<ActiveSessionListResponse> {
+    return this.http
+      .get<ActiveSessionListResponse>(`${this.apiUrl}/sessions`)
+      .pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Revoke (close) a specific session by its ID.
+   */
+  revokeSession(sessionId: string): Observable<void> {
+    return this.http
+      .delete<void>(`${this.apiUrl}/sessions/${sessionId}`)
+      .pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Revoke all sessions except the current one.
+   */
+  revokeAllOtherSessions(): Observable<{ revokedCount: number; message: string }> {
+    return this.http
+      .delete<{ revokedCount: number; message: string }>(`${this.apiUrl}/sessions`)
       .pipe(catchError(this.handleError));
   }
 
@@ -207,6 +267,9 @@ export class AuthService {
       notifService.reset(); // clear any stale state from previous user
       notifService.initRealtimeConnection(); // open fresh connection for new user
     }
+
+    // Start session monitor to detect remote session revocation
+    this.getSessionMonitor()?.start();
   }
 
   private storeTokens(response: AuthResponse, remember: boolean = true): void {
