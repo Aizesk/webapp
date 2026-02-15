@@ -11,16 +11,6 @@ import {
   AvatarUploadResponse,
 } from '../../shared/models/user.model';
 
-// Re-export models so existing consumers don't break
-export type {
-  UserProfile,
-  UserAddress,
-  UserPreferences,
-  UpdateProfileRequest,
-  ChangePasswordRequest,
-  AvatarUploadResponse,
-} from '../../shared/models/user.model';
-
 @Injectable({ providedIn: 'root' })
 export class UserService {
   private readonly apiUrl = environment.apiUrls.users;

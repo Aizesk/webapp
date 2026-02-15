@@ -160,14 +160,17 @@
       <article class="profile-health">
         <h2>Estado de la cuenta</h2>
         <ul>
-          <!-- Removed 2FA status -->
-          <li>
-            <span class="status-dot status-dot--success"></span>
-            Dispositivo confiable verificado ayer
+          <li *ngFor="let item of accountStatus()">
+            <span class="status-dot" [ngClass]="{
+              'status-dot--success': item.status === 'success',
+              'status-dot--warning': item.status === 'warning',
+              'status-dot--info': item.status === 'info'
+            }"></span>
+            {{ item.text }}
           </li>
-          <li>
-            <span class="status-dot status-dot--warning"></span>
-            1 invitación pendiente de aceptar
+          <li *ngIf="accountStatus().length === 0">
+            <span class="status-dot status-dot--info"></span>
+            Cargando estado de la cuenta...
           </li>
         </ul>
       </article>
