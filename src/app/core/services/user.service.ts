@@ -1,61 +1,15 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { tap, catchError, map } from 'rxjs/operators';
+import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-
-/**
- * User profile response from backend.
- * Maps to Java: com.aizesk.user.application.dto.UserProfileResponse
- */
-export interface UserProfile {
-  readonly id: string;
-  readonly fullName: string;
-  readonly email: string;
-  readonly phone: string | null;
-  readonly role: string;
-  readonly plan?: string;
-  readonly location: string | null;
-  readonly joinedAt: string;
-  readonly lastLoginAt: string | null;
-  readonly avatarInitials: string;
-  readonly avatarUrl: string | null;
-  readonly lastUpdate: string;
-  readonly address: UserAddress | null;
-  readonly preferences: UserPreferences | null;
-}
-
-export interface UserAddress {
-  readonly street: string | null;
-  readonly city: string | null;
-  readonly state: string | null;
-  readonly postalCode: string | null;
-  readonly country: string | null;
-}
-
-export interface UserPreferences {
-  readonly billingAlerts: boolean;
-  readonly weeklyDigest: boolean;
-  readonly securityEvents: boolean;
-  readonly productResearch: boolean;
-}
-
-export interface UpdateProfileRequest {
-  readonly fullName?: string;
-  readonly phone?: string;
-  readonly address?: UserAddress;
-}
-
-export interface ChangePasswordRequest {
-  readonly currentPassword: string;
-  readonly newPassword: string;
-  readonly confirmPassword: string;
-}
-
-export interface AvatarUploadResponse {
-  readonly avatarUrl: string;
-  readonly message: string;
-}
+import {
+  UserProfile,
+  UserPreferences,
+  UpdateProfileRequest,
+  ChangePasswordRequest,
+  AvatarUploadResponse,
+} from '../../shared/models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -179,15 +133,6 @@ export class UserService {
     return baseUrl + avatarUrl;
   }
 
-  /**
-   * Get active sessions.
-   */
-  getActiveSessions(): Observable<ActiveSession[]> {
-    return this.http.get<ActiveSession[]>(`${this.apiUrl}/sessions`).pipe(
-      catchError(this.handleError)
-    );
-  }
-
   private handleError(error: HttpErrorResponse): Observable<never> {
     let message = 'An error occurred';
     if (error.error?.message) {
@@ -199,12 +144,4 @@ export class UserService {
     }
     return throwError(() => new Error(message));
   }
-}
-
-export interface ActiveSession {
-  readonly sessionId: string;
-  readonly deviceInfo: string;
-  readonly ipAddress: string;
-  readonly lastActivity: string;
-  readonly current: boolean;
 }

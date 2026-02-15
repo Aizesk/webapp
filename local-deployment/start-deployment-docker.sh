@@ -37,6 +37,17 @@ if [ ! -f .env ]; then
 MYSQL_ROOT_PASSWORD=root-password-2024
 MYSQL_PASSWORD=aizesk-mysql-2024
 JWT_SECRET=aizesk-super-secret-key-for-jwt-tokens-2024-must-be-long-enough
+
+# Marketplace Integrations
+EBAY_CLIENT_ID=mock-ebay-client-id
+EBAY_CLIENT_SECRET=mock-ebay-client-secret
+EBAY_RUNAME=mock-runame
+
+# Payment Gateway (Stripe)
+STRIPE_API_KEY=sk_test_your_key_here
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
+
+# App Config
 MAIL_DEV_MODE=true
 CORS_ALLOWED_ORIGINS=http://localhost:4200,http://localhost:3000
 
@@ -75,13 +86,7 @@ case "$MODE" in
     echo ""
     echo "====================================================="
     echo ""
-    echo "📝 Now run your microservices locally:"
-    echo "   cd ../notification-service"
-    echo "   mvn spring-boot:run"
-    echo ""
-    echo "📝 Useful Commands:"
-    echo "   ./scripts/db-utils.sh shell    # Connect to MySQL"
-    echo "   docker-compose down            # Stop infrastructure"
+    echo "📝 Now run your microservices locally (IDE/Terminal)"
     echo ""
     ;;
     
@@ -98,7 +103,7 @@ case "$MODE" in
     
     echo ""
     echo "⏳ Waiting for services to be ready..."
-    sleep 5
+    sleep 10
     
     echo ""
     echo "✅ Environment Started!"
@@ -107,16 +112,30 @@ case "$MODE" in
     echo "🌐 AVAILABLE SERVICES"
     echo "====================================================="
     echo ""
-    echo "  📊 Database (MySQL)"
-    echo "     └── localhost:3307"
+    echo "  🏗️ Infrastructure"
+    echo "     ├── 📊 MySQL:    localhost:3307"
+    echo "     └── 📧 MailHog:  http://localhost:8025"
     echo ""
-    echo "  📧 Email Testing (MailHog)"
-    echo "     └── http://localhost:8025"
+    echo "  🔐 Auth Service (8081)"
+    echo "     └── Health: http://localhost:8081/actuator/health"
     echo ""
-    echo "  🔔 Notification Service"
-    echo "     ├── API:     http://localhost:8086"
-    echo "     ├── Swagger: http://localhost:8086/swagger-ui.html"
-    echo "     └── Health:  http://localhost:8086/actuator/health"
+    echo "  � User Service (8082)"
+    echo "     └── Health: http://localhost:8082/actuator/health"
+    echo ""
+    echo "  💰 Transaction Service (8083)"
+    echo "     └── Health: http://localhost:8083/actuator/health"
+    echo ""
+    echo "  💳 Subscription Service (8084)"
+    echo "     └── Health: http://localhost:8084/actuator/health"
+    echo ""
+    echo "  � Platform Connection Service (8085)"
+    echo "     └── Health: http://localhost:8085/actuator/health"
+    echo ""
+    echo "  🔔 Notification Service (8086)"
+    echo "     └── Health: http://localhost:8086/actuator/health"
+    echo ""
+    echo "  📈 Reporting Service (8087)"
+    echo "     └── Health: http://localhost:8087/actuator/health"
     echo ""
     echo "====================================================="
     echo ""
