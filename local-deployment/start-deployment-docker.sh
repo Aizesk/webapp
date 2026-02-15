@@ -43,6 +43,10 @@ EBAY_CLIENT_ID=mock-ebay-client-id
 EBAY_CLIENT_SECRET=mock-ebay-client-secret
 EBAY_RUNAME=mock-runame
 
+# Payment Gateway (Stripe)
+STRIPE_API_KEY=sk_test_your_key_here
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
+
 # App Config
 MAIL_DEV_MODE=true
 CORS_ALLOWED_ORIGINS=http://localhost:4200,http://localhost:3000

@@ -157,6 +157,8 @@ services:
       - SERVICES_USER_SERVICE_URL=http://user-service:8082
       - SERVICES_NOTIFICATION_SERVICE_URL=http://notification-service:8086
       - JWT_SECRET=${JWT_SECRET:-aizesk-super-secret-key-for-jwt-tokens-2024-must-be-long-enough}
+      - STRIPE_API_KEY=${STRIPE_API_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
     depends_on:
       mysql:
         condition: service_healthy
