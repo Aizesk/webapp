@@ -18,21 +18,6 @@ const TOKEN_KEY = 'aizesk_access_token';
 const REFRESH_TOKEN_KEY = 'aizesk_refresh_token';
 const USER_KEY = 'aizesk_user';
 
-export interface ActiveSession {
-  id: string;
-  deviceInfo: string;
-  ipAddress: string;
-  location: string | null;
-  createdAt: string;
-  lastActivityAt: string;
-  currentSession: boolean;
-}
-
-export interface ActiveSessionListResponse {
-  sessions: ActiveSession[];
-  totalSessions: number;
-}
-
 
 interface StoredUser {
   userId: string;

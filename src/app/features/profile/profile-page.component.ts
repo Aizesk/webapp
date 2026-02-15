@@ -7,7 +7,8 @@ import {
 } from '@angular/forms';
 import { TopNavbarComponent } from '../../shared/components/top-navbar/top-navbar.component';
 import { MAIN_NAV_ITEMS } from '../../shared/models/navigation.model';
-import { UserService, UserProfile, UpdateProfileRequest } from '../../core/services/user.service';
+import { UserService } from '../../core/services/user.service';
+import { UserProfile, UpdateProfileRequest } from '../../shared/models/user.model';
 import { AuthService, ActiveSession } from '../../core/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
