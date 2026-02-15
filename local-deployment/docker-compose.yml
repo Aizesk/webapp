@@ -27,7 +27,7 @@ services:
       MYSQL_USER: aizesk
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-aizesk-mysql-2024}
     ports:
-      - "3307:3306"
+      - '3307:3306'
     volumes:
       - mysql_data:/var/lib/mysql
       - ./db:/docker-entrypoint-initdb.d:ro
@@ -36,7 +36,17 @@ services:
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root-password-2024}"]
+      test:
+        [
+          'CMD',
+          'mysqladmin',
+          'ping',
+          '-h',
+          'localhost',
+          '-u',
+          'root',
+          '-p${MYSQL_ROOT_PASSWORD:-root-password-2024}',
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -51,8 +61,8 @@ services:
     container_name: aizesk-mailhog
     restart: unless-stopped
     ports:
-      - "1025:1025"  # SMTP Port
-      - "8025:8025"  # Web UI - http://localhost:8025
+      - '1025:1025' # SMTP Port
+      - '8025:8025' # Web UI - http://localhost:8025
     environment:
       - MH_JIM_ACCEPT_CHANCE=1.0
       - MH_JIM_DISCONNECT_CHANCE=0.0
@@ -66,34 +76,17 @@ services:
   # ========================================================================================
   # MICROSERVICES
   # ========================================================================================
-
-  # --- Notification Service (Port 8086) ---
-  notification-service:
-    build:
-      context: ../../notification-service
-      dockerfile: Dockerfile
-    container_name: aizesk-notification-service
-    restart: unless-stopped
-    ports:
-      - "8086:8086"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/aizesk?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
-      - SPRING_DATASOURCE_USERNAME=aizesk
-      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD:-aizesk-mysql-2024}
-      - SERVICES_AUTH_URL=http://auth-service:8081
-      - SERVICES_USER_URL=http://user-service:8082
-      - MAIL_DEV_MODE=${MAIL_DEV_MODE:-true}
-      - spring.mail.host=mailhog
-      - spring.mail.port=1025
-      - JWT_SECRET=${JWT_SECRET:-aizesk-super-secret-key-for-jwt-tokens-2024-must-be-long-enough}
-    depends_on:
-      mysql:
-        condition: service_healthy
-      mailhog:
-        condition: service_started
-    networks:
-      - aizesk-network
+  # All services use SPRING_PROFILES_ACTIVE=docker which activates
+  # application-docker.properties in each service. That profile handles:
+  #   - MySQL connection (mysql:3306)
+  #   - Inter-service URLs (Docker hostnames)
+  #   - JWT secret (shared default)
+  #   - CORS, actuator, logging
+  #
+  # To override secrets, create a .env file in this directory:
+  #   JWT_SECRET=your-custom-secret
+  #   STRIPE_API_KEY=sk_test_xxx
+  #   STRIPE_WEBHOOK_SECRET=whsec_xxx
 
   # --- Auth Service (Port 8081) ---
   auth-service:
@@ -103,13 +96,9 @@ services:
     container_name: aizesk-auth-service
     restart: unless-stopped
     ports:
-      - "8081:8081"
+      - '8081:8081'
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/aizesk?useSSL=false&allowPublicKeyRetrieval=true
-      - SPRING_DATASOURCE_USERNAME=aizesk
-      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD:-aizesk-mysql-2024}
-      - JWT_SECRET=${JWT_SECRET:-aizesk-super-secret-key-for-jwt-tokens-2024-must-be-long-enough}
     depends_on:
       mysql:
         condition: service_healthy
@@ -124,41 +113,9 @@ services:
     container_name: aizesk-user-service
     restart: unless-stopped
     ports:
-      - "8082:8082"
+      - '8082:8082'
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/aizesk?useSSL=false&allowPublicKeyRetrieval=true
-      - SPRING_DATASOURCE_USERNAME=aizesk
-      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD:-aizesk-mysql-2024}
-      - SERVICES_AUTH_SERVICE_URL=http://auth-service:8081
-      - JWT_SECRET=${JWT_SECRET:-aizesk-super-secret-key-for-jwt-tokens-2024-must-be-long-enough}
-    depends_on:
-      mysql:
-        condition: service_healthy
-      auth-service:
-        condition: service_started
-    networks:
-      - aizesk-network
-
-  # --- Subscription Service (Port 8084) ---
-  subscription-service:
-    build:
-      context: ../../subscription-service
-      dockerfile: Dockerfile
-    container_name: aizesk-subscription-service
-    ports:
-      - "8084:8084"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/aizesk?useSSL=false&allowPublicKeyRetrieval=true
-      - SPRING_DATASOURCE_USERNAME=aizesk
-      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD:-aizesk-mysql-2024}
-      - SERVICES_AUTH_SERVICE_URL=http://auth-service:8081
-      - SERVICES_USER_SERVICE_URL=http://user-service:8082
-      - SERVICES_NOTIFICATION_SERVICE_URL=http://notification-service:8086
-      - JWT_SECRET=${JWT_SECRET:-aizesk-super-secret-key-for-jwt-tokens-2024-must-be-long-enough}
-      - STRIPE_API_KEY=${STRIPE_API_KEY}
-      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
     depends_on:
       mysql:
         condition: service_healthy
@@ -173,15 +130,30 @@ services:
       context: ../../transaction-service
       dockerfile: Dockerfile
     container_name: aizesk-transaction-service
+    restart: unless-stopped
     ports:
-      - "8083:8083"
+      - '8083:8083'
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/aizesk?useSSL=false&allowPublicKeyRetrieval=true
-      - SPRING_DATASOURCE_USERNAME=aizesk
-      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD:-aizesk-mysql-2024}
-      - SERVICES_AUTH_SERVICE_URL=http://auth-service:8081
-      - JWT_SECRET=${JWT_SECRET:-aizesk-super-secret-key-for-jwt-tokens-2024-must-be-long-enough}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+    networks:
+      - aizesk-network
+
+  # --- Subscription Service (Port 8084) ---
+  subscription-service:
+    build:
+      context: ../../subscription-service
+      dockerfile: Dockerfile
+    container_name: aizesk-subscription-service
+    restart: unless-stopped
+    ports:
+      - '8084:8084'
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       mysql:
         condition: service_healthy
@@ -196,22 +168,34 @@ services:
       context: ../../platform-connection-service
       dockerfile: Dockerfile
     container_name: aizesk-platform-connection-service
+    restart: unless-stopped
     ports:
-      - "8085:8085"
+      - '8085:8085'
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/aizesk?useSSL=false&allowPublicKeyRetrieval=true
-      - SPRING_DATASOURCE_USERNAME=aizesk
-      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD:-aizesk-mysql-2024}
-      - SERVICES_AUTH_SERVICE_URL=http://auth-service:8081
-      - SERVICES_USER_SERVICE_URL=http://user-service:8082
-      - SERVICES_TRANSACTION_SERVICE_URL=http://transaction-service:8083
-      - SERVICES_SUBSCRIPTION_URL=http://subscription-service:8084
-      - JWT_SECRET=${JWT_SECRET:-aizesk-super-secret-key-for-jwt-tokens-2024-must-be-long-enough}
     depends_on:
       mysql:
         condition: service_healthy
       auth-service:
+        condition: service_started
+    networks:
+      - aizesk-network
+
+  # --- Notification Service (Port 8086) ---
+  notification-service:
+    build:
+      context: ../../notification-service
+      dockerfile: Dockerfile
+    container_name: aizesk-notification-service
+    restart: unless-stopped
+    ports:
+      - '8086:8086'
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      mysql:
+        condition: service_healthy
+      mailhog:
         condition: service_started
     networks:
       - aizesk-network
@@ -222,18 +206,11 @@ services:
       context: ../../reporting-service
       dockerfile: Dockerfile
     container_name: aizesk-reporting-service
+    restart: unless-stopped
     ports:
-      - "8087:8087"
+      - '8087:8087'
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/aizesk?useSSL=false&allowPublicKeyRetrieval=true
-      - SPRING_DATASOURCE_USERNAME=aizesk
-      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD:-aizesk-mysql-2024}
-      - SERVICES_AUTH_URL=http://auth-service:8081
-      - SERVICES_TRANSACTION_URL=http://transaction-service:8083
-      - SERVICES_SUBSCRIPTION_URL=http://subscription-service:8084
-      - SERVICES_NOTIFICATION_URL=http://notification-service:8086
-      - JWT_SECRET=${JWT_SECRET:-aizesk-super-secret-key-for-jwt-tokens-2024-must-be-long-enough}
     depends_on:
       mysql:
         condition: service_healthy

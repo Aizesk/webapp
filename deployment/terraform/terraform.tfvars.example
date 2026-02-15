@@ -1,0 +1,28 @@
+# ===========================================
+# EXAMPLE TFVARS — Copy to terraform.tfvars
+# ===========================================
+# DO NOT commit terraform.tfvars to git!
+
+aws_region  = "eu-west-1"
+environment = "prod"
+
+# Database
+db_username = "aizesk"
+db_password = "CHANGE-ME-strong-password-here"
+db_name     = "aizesk"
+
+# JWT
+jwt_secret = "CHANGE-ME-production-jwt-secret-minimum-256-bits"
+
+# Stripe (use live keys for production)
+stripe_api_key        = "sk_live_..."
+stripe_webhook_secret = "whsec_..."
+
+# Shopify
+shopify_client_id     = ""
+shopify_client_secret = ""
+
+# Domain
+domain_name   = "aizesk.com"
+api_subdomain = "api"
+app_subdomain = "app"
