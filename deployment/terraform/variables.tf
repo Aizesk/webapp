@@ -107,6 +107,30 @@ variable "stripe_webhook_secret" {
   default     = ""
 }
 
+variable "stripe_price_professional_monthly" {
+  description = "Stripe Price ID for Professional Monthly plan"
+  type        = string
+  default     = ""
+}
+
+variable "stripe_price_professional_annual" {
+  description = "Stripe Price ID for Professional Annual plan"
+  type        = string
+  default     = ""
+}
+
+variable "stripe_price_enterprise_monthly" {
+  description = "Stripe Price ID for Enterprise Monthly plan"
+  type        = string
+  default     = ""
+}
+
+variable "stripe_price_enterprise_annual" {
+  description = "Stripe Price ID for Enterprise Annual plan"
+  type        = string
+  default     = ""
+}
+
 variable "shopify_client_id" {
   description = "Shopify OAuth client ID"
   type        = string

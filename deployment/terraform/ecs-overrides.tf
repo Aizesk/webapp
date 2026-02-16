@@ -36,6 +36,10 @@ resource "aws_ecs_task_definition" "subscription_service" {
         { name = "NOTIFICATION_SERVICE_URL", value = "http://notification-service.${var.project_name}.local:8086" },
         { name = "STRIPE_SUCCESS_URL", value = "https://${var.app_subdomain}.${var.domain_name}/subscriptions?checkout=success" },
         { name = "STRIPE_CANCEL_URL", value = "https://${var.app_subdomain}.${var.domain_name}/subscriptions?checkout=cancelled" },
+        { name = "STRIPE_PRICE_PROFESSIONAL_MONTHLY", value = var.stripe_price_professional_monthly },
+        { name = "STRIPE_PRICE_PROFESSIONAL_ANNUAL", value = var.stripe_price_professional_annual },
+        { name = "STRIPE_PRICE_ENTERPRISE_MONTHLY", value = var.stripe_price_enterprise_monthly },
+        { name = "STRIPE_PRICE_ENTERPRISE_ANNUAL", value = var.stripe_price_enterprise_annual },
         { name = "FRONTEND_URL", value = "https://${var.app_subdomain}.${var.domain_name}" },
       ]
 
@@ -233,6 +237,11 @@ resource "aws_ecs_service" "subscription_service" {
 
   health_check_grace_period_seconds = 180
 
+  deployment_configuration {
+    maximum_percent         = 200
+    minimum_healthy_percent = 100
+  }
+
   depends_on = [aws_lb_listener.https, aws_db_instance.main]
 
   tags = { Service = "subscription-service" }
@@ -267,6 +276,11 @@ resource "aws_ecs_service" "platform_connection_service" {
 
   health_check_grace_period_seconds = 180
 
+  deployment_configuration {
+    maximum_percent         = 200
+    minimum_healthy_percent = 100
+  }
+
   depends_on = [aws_lb_listener.https, aws_db_instance.main]
 
   tags = { Service = "platform-connection-service" }
@@ -300,6 +314,11 @@ resource "aws_ecs_service" "notification_service" {
   }
 
   health_check_grace_period_seconds = 180
+
+  deployment_configuration {
+    maximum_percent         = 200
+    minimum_healthy_percent = 100
+  }
 
   depends_on = [aws_lb_listener.https, aws_db_instance.main]
 

@@ -18,6 +18,12 @@ jwt_secret = "CHANGE-ME-production-jwt-secret-minimum-256-bits"
 stripe_api_key        = "sk_live_..."
 stripe_webhook_secret = "whsec_..."
 
+# Stripe Price IDs (from Stripe Dashboard > Products > Price IDs)
+stripe_price_professional_monthly = "price_..."
+stripe_price_professional_annual  = "price_..."
+stripe_price_enterprise_monthly   = "price_..."
+stripe_price_enterprise_annual    = "price_..."
+
 # Shopify
 shopify_client_id     = ""
 shopify_client_secret = ""

@@ -1,7 +1,9 @@
 # ===========================================
 # CI/CD - Initialize Database Schema
 # ===========================================
-# Runs SQL schema + seed data on RDS
+# Runs SQL schema + seed data on RDS via ECS task
+# (RDS is in private subnets — not reachable from GitHub Actions directly)
+# Uses a temporary ECS task with mysql client in the same VPC
 # Only triggered manually for initial setup
 
 name: Initialize Database
@@ -17,6 +19,8 @@ on:
 
 env:
   AWS_REGION: eu-west-1
+  PROJECT_NAME: aizesk
+  S3_BUCKET: aizesk-frontend-prod
 
 jobs:
   init-db:
@@ -32,45 +36,185 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Get RDS endpoint
-        id: rds
+      - name: Get infrastructure info
+        id: infra
         run: |
-          ENDPOINT=$(aws rds describe-db-instances \
-            --db-instance-identifier aizesk-db \
-            --query 'DBInstances[0].Endpoint.Address' \
-            --output text)
-          echo "endpoint=$ENDPOINT" >> $GITHUB_OUTPUT
+          # RDS endpoint
+          RDS_HOST=$(aws rds describe-db-instances \
+            --db-instance-identifier ${{ env.PROJECT_NAME }}-db \
+            --query 'DBInstances[0].Endpoint.Address' --output text)
+          echo "rds_host=$RDS_HOST" >> $GITHUB_OUTPUT
+
+          # VPC ID
+          VPC_ID=$(aws ec2 describe-vpcs \
+            --filters "Name=tag:Name,Values=${{ env.PROJECT_NAME }}-vpc" \
+            --query 'Vpcs[0].VpcId' --output text)
+
+          # Public subnet IDs (ECS tasks need internet to pull Docker image)
+          SUBNET_IDS=$(aws ec2 describe-subnets \
+            --filters "Name=vpc-id,Values=$VPC_ID" "Name=tag:Type,Values=public" \
+            --query 'Subnets[*].SubnetId' --output text | tr '\t' ',')
+          echo "subnet_ids=$SUBNET_IDS" >> $GITHUB_OUTPUT
+
+          # ECS tasks security group (allowed to reach RDS)
+          SG_ID=$(aws ec2 describe-security-groups \
+            --filters "Name=vpc-id,Values=$VPC_ID" "Name=group-name,Values=${{ env.PROJECT_NAME }}-ecs-*" \
+            --query 'SecurityGroups[0].GroupId' --output text)
+          echo "security_group=$SG_ID" >> $GITHUB_OUTPUT
+
+          # ECS task execution role
+          EXEC_ROLE=$(aws iam get-role \
+            --role-name ${{ env.PROJECT_NAME }}-ecs-task-execution \
+            --query 'Role.Arn' --output text)
+          echo "execution_role=$EXEC_ROLE" >> $GITHUB_OUTPUT
+
+          echo "📋 RDS: $RDS_HOST | SG: $SG_ID | Subnets: $SUBNET_IDS"
 
       - name: Get DB credentials from SSM
         id: creds
         run: |
-          USERNAME=$(aws ssm get-parameter --name "/aizesk/database/username" --with-decryption --query 'Parameter.Value' --output text)
-          PASSWORD=$(aws ssm get-parameter --name "/aizesk/database/password" --with-decryption --query 'Parameter.Value' --output text)
+          USERNAME=$(aws ssm get-parameter \
+            --name "/${{ env.PROJECT_NAME }}/database/username" \
+            --with-decryption --query 'Parameter.Value' --output text)
+          PASSWORD=$(aws ssm get-parameter \
+            --name "/${{ env.PROJECT_NAME }}/database/password" \
+            --with-decryption --query 'Parameter.Value' --output text)
           echo "::add-mask::$PASSWORD"
           echo "username=$USERNAME" >> $GITHUB_OUTPUT
           echo "password=$PASSWORD" >> $GITHUB_OUTPUT
 
-      - name: Install MySQL client
-        run: sudo apt-get update && sudo apt-get install -y mysql-client
-
-      - name: Run schema
+      - name: Upload SQL files to S3
         run: |
-          mysql -h ${{ steps.rds.outputs.endpoint }} \
-            -u ${{ steps.creds.outputs.username }} \
-            -p${{ steps.creds.outputs.password }} \
-            aizesk < local-deployment/db/01-schema.sql
+          aws s3 cp local-deployment/db/01-schema.sql s3://${{ env.S3_BUCKET }}/tmp/db/01-schema.sql
+          if [ "${{ inputs.run_seed }}" = "true" ]; then
+            aws s3 cp local-deployment/db/02-seed-data.sql s3://${{ env.S3_BUCKET }}/tmp/db/02-seed-data.sql
+          fi
 
-      - name: Run seed data
-        if: ${{ inputs.run_seed }}
+      - name: Create presigned URLs
+        id: urls
         run: |
-          mysql -h ${{ steps.rds.outputs.endpoint }} \
-            -u ${{ steps.creds.outputs.username }} \
-            -p${{ steps.creds.outputs.password }} \
-            aizesk < local-deployment/db/02-seed-data.sql
+          SCHEMA_URL=$(aws s3 presign s3://${{ env.S3_BUCKET }}/tmp/db/01-schema.sql --expires-in 600)
+          echo "schema_url=$SCHEMA_URL" >> $GITHUB_OUTPUT
+          if [ "${{ inputs.run_seed }}" = "true" ]; then
+            SEED_URL=$(aws s3 presign s3://${{ env.S3_BUCKET }}/tmp/db/02-seed-data.sql --expires-in 600)
+            echo "seed_url=$SEED_URL" >> $GITHUB_OUTPUT
+          fi
 
-      - name: Verify tables
+      - name: Build SQL command
+        id: cmd
         run: |
-          mysql -h ${{ steps.rds.outputs.endpoint }} \
-            -u ${{ steps.creds.outputs.username }} \
-            -p${{ steps.creds.outputs.password }} \
-            -e "USE aizesk; SHOW TABLES;"
+          # Base command: install mysql-client, download schema, run it
+          CMD="apk add --no-cache mysql-client"
+          CMD="$CMD && wget -qO /tmp/schema.sql '${SCHEMA_URL}'"
+          CMD="$CMD && echo '🔄 Running schema...' && mysql -h ${DB_HOST} -u ${DB_USER} -p\"\${DB_PASS}\" ${DB_NAME} < /tmp/schema.sql"
+          CMD="$CMD && echo '✅ Schema applied'"
+
+          if [ "${{ inputs.run_seed }}" = "true" ]; then
+            CMD="$CMD && wget -qO /tmp/seed.sql '${SEED_URL}'"
+            CMD="$CMD && echo '🔄 Running seed data...' && mysql -h ${DB_HOST} -u ${DB_USER} -p\"\${DB_PASS}\" ${DB_NAME} < /tmp/seed.sql"
+            CMD="$CMD && echo '✅ Seed data loaded'"
+          fi
+
+          CMD="$CMD && echo '🔍 Verifying tables...' && mysql -h ${DB_HOST} -u ${DB_USER} -p\"\${DB_PASS}\" -e 'USE ${DB_NAME}; SHOW TABLES;'"
+
+          echo "sql_cmd=$CMD" >> $GITHUB_OUTPUT
+        env:
+          SCHEMA_URL: ${{ steps.urls.outputs.schema_url }}
+          SEED_URL: ${{ steps.urls.outputs.seed_url }}
+          DB_HOST: ${{ steps.infra.outputs.rds_host }}
+          DB_USER: ${{ steps.creds.outputs.username }}
+          DB_NAME: aizesk
+
+      - name: Register temporary task definition
+        run: |
+          cat > /tmp/task-def.json <<'TASKEOF'
+          {
+            "family": "aizesk-db-init",
+            "networkMode": "awsvpc",
+            "requiresCompatibilities": ["FARGATE"],
+            "cpu": "256",
+            "memory": "512",
+            "executionRoleArn": "${{ steps.infra.outputs.execution_role }}",
+            "containerDefinitions": [
+              {
+                "name": "db-init",
+                "image": "alpine:3.19",
+                "essential": true,
+                "environment": [
+                  { "name": "DB_HOST", "value": "${{ steps.infra.outputs.rds_host }}" },
+                  { "name": "DB_USER", "value": "${{ steps.creds.outputs.username }}" },
+                  { "name": "DB_PASS", "value": "${{ steps.creds.outputs.password }}" },
+                  { "name": "DB_NAME", "value": "aizesk" }
+                ],
+                "command": ["sh", "-c", "${{ steps.cmd.outputs.sql_cmd }}"],
+                "logConfiguration": {
+                  "logDriver": "awslogs",
+                  "options": {
+                    "awslogs-group": "/ecs/${{ env.PROJECT_NAME }}/db-init",
+                    "awslogs-region": "${{ env.AWS_REGION }}",
+                    "awslogs-stream-prefix": "init",
+                    "awslogs-create-group": "true"
+                  }
+                }
+              }
+            ]
+          }
+          TASKEOF
+
+          aws ecs register-task-definition --cli-input-json file:///tmp/task-def.json
+
+      - name: Run ECS database init task
+        id: task
+        run: |
+          # Convert subnet list to JSON array
+          IFS=',' read -ra SUBNETS <<< "${{ steps.infra.outputs.subnet_ids }}"
+          SUBNET_JSON=$(printf '"%s",' "${SUBNETS[@]}" | sed 's/,$//')
+
+          RESULT=$(aws ecs run-task \
+            --cluster ${{ env.PROJECT_NAME }}-cluster \
+            --task-definition aizesk-db-init \
+            --launch-type FARGATE \
+            --network-configuration "{
+              \"awsvpcConfiguration\": {
+                \"subnets\": [$SUBNET_JSON],
+                \"securityGroups\": [\"${{ steps.infra.outputs.security_group }}\"],
+                \"assignPublicIp\": \"ENABLED\"
+              }
+            }" \
+            --query 'tasks[0].taskArn' --output text)
+
+          echo "task_arn=$RESULT" >> $GITHUB_OUTPUT
+          echo "🚀 ECS task started: $RESULT"
+
+      - name: Wait for task completion
+        run: |
+          echo "⏳ Waiting for database initialization to complete..."
+          aws ecs wait tasks-stopped \
+            --cluster ${{ env.PROJECT_NAME }}-cluster \
+            --tasks ${{ steps.task.outputs.task_arn }}
+
+      - name: Check result
+        run: |
+          EXIT_CODE=$(aws ecs describe-tasks \
+            --cluster ${{ env.PROJECT_NAME }}-cluster \
+            --tasks ${{ steps.task.outputs.task_arn }} \
+            --query 'tasks[0].containers[0].exitCode' --output text)
+
+          if [ "$EXIT_CODE" = "0" ]; then
+            echo "✅ Database initialized successfully!"
+          else
+            echo "❌ Database initialization failed (exit code: $EXIT_CODE)"
+            echo "Check CloudWatch logs at: /ecs/${{ env.PROJECT_NAME }}/db-init"
+            exit 1
+          fi
+
+      - name: Cleanup
+        if: always()
+        run: |
+          # Remove temporary SQL files from S3
+          aws s3 rm s3://${{ env.S3_BUCKET }}/tmp/db/ --recursive 2>/dev/null || true
+          # Deregister temporary task definition
+          TASK_DEF=$(aws ecs describe-task-definition --task-definition aizesk-db-init --query 'taskDefinition.taskDefinitionArn' --output text 2>/dev/null)
+          if [ -n "$TASK_DEF" ] && [ "$TASK_DEF" != "None" ]; then
+            aws ecs deregister-task-definition --task-definition "$TASK_DEF" 2>/dev/null || true
+          fi
