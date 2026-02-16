@@ -1,10 +1,6 @@
 # ===========================================
-# CI/CD - Deploy Backend Microservices
+# CI/CD - Deploy Backend Microservices (ACADEMY VERSION)
 # ===========================================
-# Builds Docker images, pushes to ECR, updates ECS services
-# Triggered manually from webapp repo (central deployment hub)
-# Each microservice lives in its own GitHub repo under Aizesk org
-
 name: Deploy Backend
 
 on:
@@ -31,14 +27,15 @@ on:
         type: string
 
 env:
-  AWS_REGION: eu-west-1
-  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-west-1.amazonaws.com
+  # CORRECCIÓN: La región debe ser us-west-2 según tus credenciales de Vocareum
+  AWS_REGION: us-west-2 
+  AWS_ACCOUNT_ID: "946693320543"
+  ECR_REGISTRY: 946693320543.dkr.ecr.us-west-2.amazonaws.com
   ECS_CLUSTER: aizesk-cluster
   PROJECT_NAME: aizesk
   GITHUB_ORG: Aizesk
 
 jobs:
-  # ---- Resolve which services to deploy ----
   prepare:
     runs-on: ubuntu-latest
     outputs:
@@ -53,10 +50,6 @@ jobs:
             echo 'services=["${{ inputs.service }}"]' >> $GITHUB_OUTPUT
           fi
 
-      - name: Print services to deploy
-        run: echo "🚀 Deploying ${{ steps.set-services.outputs.services }} from branch ${{ inputs.ref }}"
-
-  # ---- Build and Deploy each service ----
   deploy:
     needs: prepare
     runs-on: ubuntu-latest
@@ -73,11 +66,13 @@ jobs:
           ref: ${{ inputs.ref }}
           token: ${{ secrets.GH_PAT }}
 
+      # CORRECCIÓN: Se añade el session-token necesario para laboratorios
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }} # <--- ESTO ES VITAL
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
@@ -96,6 +91,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
+          # Usamos la variable env.ECR_REGISTRY corregida arriba
           IMAGE_TAG="${{ env.ECR_REGISTRY }}/${{ env.PROJECT_NAME }}/${{ matrix.service }}:${{ github.sha }}"
           IMAGE_LATEST="${{ env.ECR_REGISTRY }}/${{ env.PROJECT_NAME }}/${{ matrix.service }}:latest"
 
