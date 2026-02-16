@@ -3,11 +3,11 @@
 # ===========================================
 # Secrets stored in SSM and injected into ECS task definitions
 # Standard parameters are FREE (no cost)
-# No SES resources (not available in Learner Lab)
+# Using "String" type because Learner Lab doesn't allow SecureString (requires custom KMS key)
 
 resource "aws_ssm_parameter" "db_username" {
   name  = "/${var.project_name}/database/username"
-  type  = "SecureString"
+  type  = "String"
   value = var.db_username
 
   tags = {
@@ -17,7 +17,7 @@ resource "aws_ssm_parameter" "db_username" {
 
 resource "aws_ssm_parameter" "db_password" {
   name  = "/${var.project_name}/database/password"
-  type  = "SecureString"
+  type  = "String"
   value = var.db_password
 
   tags = {
@@ -27,7 +27,7 @@ resource "aws_ssm_parameter" "db_password" {
 
 resource "aws_ssm_parameter" "jwt_secret" {
   name  = "/${var.project_name}/auth/jwt-secret"
-  type  = "SecureString"
+  type  = "String"
   value = var.jwt_secret
 
   tags = {
@@ -37,7 +37,7 @@ resource "aws_ssm_parameter" "jwt_secret" {
 
 resource "aws_ssm_parameter" "stripe_api_key" {
   name  = "/${var.project_name}/stripe/api-key"
-  type  = "SecureString"
+  type  = "String"
   value = var.stripe_api_key
 
   tags = {
@@ -47,7 +47,7 @@ resource "aws_ssm_parameter" "stripe_api_key" {
 
 resource "aws_ssm_parameter" "stripe_webhook_secret" {
   name  = "/${var.project_name}/stripe/webhook-secret"
-  type  = "SecureString"
+  type  = "String"
   value = var.stripe_webhook_secret
 
   tags = {
@@ -57,7 +57,7 @@ resource "aws_ssm_parameter" "stripe_webhook_secret" {
 
 resource "aws_ssm_parameter" "shopify_client_id" {
   name  = "/${var.project_name}/shopify/client-id"
-  type  = "SecureString"
+  type  = "String"
   value = var.shopify_client_id
 
   tags = {
@@ -67,7 +67,7 @@ resource "aws_ssm_parameter" "shopify_client_id" {
 
 resource "aws_ssm_parameter" "shopify_client_secret" {
   name  = "/${var.project_name}/shopify/client-secret"
-  type  = "SecureString"
+  type  = "String"
   value = var.shopify_client_secret
 
   tags = {
