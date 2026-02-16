@@ -3,6 +3,7 @@
 # ===========================================
 # Additional environment variables and secrets per service
 # These override the generic task definitions in ecs.tf
+# Adapted for AWS Academy Learner Lab
 
 # ---- Subscription Service: Stripe secrets ----
 resource "aws_ecs_task_definition" "subscription_service" {
@@ -11,8 +12,8 @@ resource "aws_ecs_task_definition" "subscription_service" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.service_cpu
   memory                   = var.service_memory
-  execution_role_arn       = aws_iam_role.ecs_task_execution.arn
-  task_role_arn            = aws_iam_role.ecs_task.arn
+  execution_role_arn       = local.lab_role_arn
+  task_role_arn            = local.lab_role_arn
 
   container_definitions = jsonencode([
     {
@@ -30,17 +31,17 @@ resource "aws_ecs_task_definition" "subscription_service" {
       environment = [
         { name = "SPRING_PROFILES_ACTIVE", value = "prod" },
         { name = "SPRING_DATASOURCE_URL", value = "jdbc:mysql://${aws_db_instance.main.endpoint}/${var.db_name}?useSSL=true&requireSSL=true&allowPublicKeyRetrieval=true" },
-        { name = "CORS_ALLOWED_ORIGINS", value = "https://${var.app_subdomain}.${var.domain_name},https://www.${var.domain_name}" },
+        { name = "CORS_ALLOWED_ORIGINS", value = "https://${aws_cloudfront_distribution.frontend.domain_name},http://${aws_lb.main.dns_name}" },
         { name = "AUTH_SERVICE_URL", value = "http://auth-service.${var.project_name}.local:8081" },
         { name = "USER_SERVICE_URL", value = "http://user-service.${var.project_name}.local:8082" },
         { name = "NOTIFICATION_SERVICE_URL", value = "http://notification-service.${var.project_name}.local:8086" },
-        { name = "STRIPE_SUCCESS_URL", value = "https://${var.app_subdomain}.${var.domain_name}/subscriptions?checkout=success" },
-        { name = "STRIPE_CANCEL_URL", value = "https://${var.app_subdomain}.${var.domain_name}/subscriptions?checkout=cancelled" },
+        { name = "STRIPE_SUCCESS_URL", value = "https://${aws_cloudfront_distribution.frontend.domain_name}/subscriptions?checkout=success" },
+        { name = "STRIPE_CANCEL_URL", value = "https://${aws_cloudfront_distribution.frontend.domain_name}/subscriptions?checkout=cancelled" },
         { name = "STRIPE_PRICE_PROFESSIONAL_MONTHLY", value = var.stripe_price_professional_monthly },
         { name = "STRIPE_PRICE_PROFESSIONAL_ANNUAL", value = var.stripe_price_professional_annual },
         { name = "STRIPE_PRICE_ENTERPRISE_MONTHLY", value = var.stripe_price_enterprise_monthly },
         { name = "STRIPE_PRICE_ENTERPRISE_ANNUAL", value = var.stripe_price_enterprise_annual },
-        { name = "FRONTEND_URL", value = "https://${var.app_subdomain}.${var.domain_name}" },
+        { name = "FRONTEND_URL", value = "https://${aws_cloudfront_distribution.frontend.domain_name}" },
       ]
 
       secrets = [
@@ -82,8 +83,8 @@ resource "aws_ecs_task_definition" "platform_connection_service" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.service_cpu
   memory                   = var.service_memory
-  execution_role_arn       = aws_iam_role.ecs_task_execution.arn
-  task_role_arn            = aws_iam_role.ecs_task.arn
+  execution_role_arn       = local.lab_role_arn
+  task_role_arn            = local.lab_role_arn
 
   container_definitions = jsonencode([
     {
@@ -101,13 +102,13 @@ resource "aws_ecs_task_definition" "platform_connection_service" {
       environment = [
         { name = "SPRING_PROFILES_ACTIVE", value = "prod" },
         { name = "SPRING_DATASOURCE_URL", value = "jdbc:mysql://${aws_db_instance.main.endpoint}/${var.db_name}?useSSL=true&requireSSL=true&allowPublicKeyRetrieval=true" },
-        { name = "CORS_ALLOWED_ORIGINS", value = "https://${var.app_subdomain}.${var.domain_name},https://www.${var.domain_name}" },
+        { name = "CORS_ALLOWED_ORIGINS", value = "https://${aws_cloudfront_distribution.frontend.domain_name},http://${aws_lb.main.dns_name}" },
         { name = "AUTH_SERVICE_URL", value = "http://auth-service.${var.project_name}.local:8081" },
         { name = "USER_SERVICE_URL", value = "http://user-service.${var.project_name}.local:8082" },
         { name = "TRANSACTION_SERVICE_URL", value = "http://transaction-service.${var.project_name}.local:8083" },
         { name = "SUBSCRIPTION_SERVICE_URL", value = "http://subscription-service.${var.project_name}.local:8084" },
-        { name = "FRONTEND_URL", value = "https://${var.app_subdomain}.${var.domain_name}" },
-        { name = "SHOPIFY_REDIRECT_URI", value = "https://${var.api_subdomain}.${var.domain_name}/api/v1/platforms/callback/shopify" },
+        { name = "FRONTEND_URL", value = "https://${aws_cloudfront_distribution.frontend.domain_name}" },
+        { name = "SHOPIFY_REDIRECT_URI", value = "http://${aws_lb.main.dns_name}/api/v1/platforms/callback/shopify" },
         { name = "SHOPIFY_API_VERSION", value = "2026-01" },
       ]
 
@@ -143,15 +144,15 @@ resource "aws_ecs_task_definition" "platform_connection_service" {
   }
 }
 
-# ---- Notification Service: SES SMTP secrets ----
+# ---- Notification Service: Dev Mode (SES not available in Learner Lab) ----
 resource "aws_ecs_task_definition" "notification_service" {
   family                   = "${var.project_name}-notification-service"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.service_cpu
   memory                   = var.service_memory
-  execution_role_arn       = aws_iam_role.ecs_task_execution.arn
-  task_role_arn            = aws_iam_role.ecs_task.arn
+  execution_role_arn       = local.lab_role_arn
+  task_role_arn            = local.lab_role_arn
 
   container_definitions = jsonencode([
     {
@@ -169,22 +170,23 @@ resource "aws_ecs_task_definition" "notification_service" {
       environment = [
         { name = "SPRING_PROFILES_ACTIVE", value = "prod" },
         { name = "SPRING_DATASOURCE_URL", value = "jdbc:mysql://${aws_db_instance.main.endpoint}/${var.db_name}?useSSL=true&requireSSL=true&allowPublicKeyRetrieval=true" },
-        { name = "CORS_ALLOWED_ORIGINS", value = "https://${var.app_subdomain}.${var.domain_name},https://www.${var.domain_name}" },
+        { name = "CORS_ALLOWED_ORIGINS", value = "https://${aws_cloudfront_distribution.frontend.domain_name},http://${aws_lb.main.dns_name}" },
         { name = "AUTH_SERVICE_URL", value = "http://auth-service.${var.project_name}.local:8081" },
         { name = "USER_SERVICE_URL", value = "http://user-service.${var.project_name}.local:8082" },
-        { name = "MAIL_DEV_MODE", value = "false" },
-        { name = "SPRING_MAIL_HOST", value = "email-smtp.${var.aws_region}.amazonaws.com" },
-        { name = "SPRING_MAIL_PORT", value = "587" },
-        { name = "MAIL_FROM_ADDRESS", value = "noreply@${var.domain_name}" },
-        { name = "FRONTEND_URL", value = "https://${var.app_subdomain}.${var.domain_name}" },
+        # SES not available in Learner Lab — emails are logged, not sent
+        { name = "MAIL_DEV_MODE", value = "true" },
+        { name = "SPRING_MAIL_HOST", value = "localhost" },
+        { name = "SPRING_MAIL_PORT", value = "1025" },
+        { name = "SPRING_MAIL_USERNAME", value = "not-configured" },
+        { name = "SPRING_MAIL_PASSWORD", value = "not-configured" },
+        { name = "MAIL_FROM_ADDRESS", value = "noreply@aizesk.local" },
+        { name = "FRONTEND_URL", value = "https://${aws_cloudfront_distribution.frontend.domain_name}" },
       ]
 
       secrets = [
         { name = "SPRING_DATASOURCE_USERNAME", valueFrom = aws_ssm_parameter.db_username.arn },
         { name = "SPRING_DATASOURCE_PASSWORD", valueFrom = aws_ssm_parameter.db_password.arn },
         { name = "JWT_SECRET", valueFrom = aws_ssm_parameter.jwt_secret.arn },
-        { name = "SPRING_MAIL_USERNAME", valueFrom = aws_ssm_parameter.ses_smtp_username.arn },
-        { name = "SPRING_MAIL_PASSWORD", valueFrom = aws_ssm_parameter.ses_smtp_password.arn },
       ]
 
       logConfiguration = {
@@ -242,7 +244,7 @@ resource "aws_ecs_service" "subscription_service" {
     minimum_healthy_percent = 100
   }
 
-  depends_on = [aws_lb_listener.https, aws_db_instance.main]
+  depends_on = [aws_lb_listener.http, aws_db_instance.main]
 
   tags = { Service = "subscription-service" }
 
@@ -281,7 +283,7 @@ resource "aws_ecs_service" "platform_connection_service" {
     minimum_healthy_percent = 100
   }
 
-  depends_on = [aws_lb_listener.https, aws_db_instance.main]
+  depends_on = [aws_lb_listener.http, aws_db_instance.main]
 
   tags = { Service = "platform-connection-service" }
 
@@ -320,7 +322,7 @@ resource "aws_ecs_service" "notification_service" {
     minimum_healthy_percent = 100
   }
 
-  depends_on = [aws_lb_listener.https, aws_db_instance.main]
+  depends_on = [aws_lb_listener.http, aws_db_instance.main]
 
   tags = { Service = "notification-service" }
 

@@ -2,6 +2,7 @@
 # ECS CLUSTER + FARGATE SERVICES
 # ===========================================
 # 7 microservices on ECS Fargate with minimal resources
+# Adapted for AWS Academy Learner Lab (uses LabRole)
 
 # ---- ECS Cluster ----
 resource "aws_ecs_cluster" "main" {
@@ -17,85 +18,12 @@ resource "aws_ecs_cluster" "main" {
   }
 }
 
-# ---- IAM Role for ECS Task Execution ----
-resource "aws_iam_role" "ecs_task_execution" {
-  name = "${var.project_name}-ecs-task-execution"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "ecs-tasks.amazonaws.com"
-        }
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "ecs_task_execution" {
-  role       = aws_iam_role.ecs_task_execution.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-}
-
-# Allow ECS to read SSM parameters (for secrets)
-resource "aws_iam_role_policy" "ecs_ssm_access" {
-  name = "${var.project_name}-ecs-ssm-access"
-  role = aws_iam_role.ecs_task_execution.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "ssm:GetParameters",
-          "ssm:GetParameter"
-        ]
-        Resource = "arn:aws:ssm:${var.aws_region}:*:parameter/${var.project_name}/*"
-      }
-    ]
-  })
-}
-
-# ---- IAM Role for ECS Tasks (runtime permissions) ----
-resource "aws_iam_role" "ecs_task" {
-  name = "${var.project_name}-ecs-task"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "ecs-tasks.amazonaws.com"
-        }
-      }
-    ]
-  })
-}
-
-# Allow tasks to send emails via SES
-resource "aws_iam_role_policy" "ecs_ses_access" {
-  name = "${var.project_name}-ecs-ses-access"
-  role = aws_iam_role.ecs_task.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "ses:SendEmail",
-          "ses:SendRawEmail"
-        ]
-        Resource = "*"
-      }
-    ]
-  })
+# ---- IAM Role: AWS Academy LabRole ----
+# Learner Lab provides a pre-configured LabRole with broad permissions.
+# Custom IAM roles cannot be created in Learner Lab environments.
+# LabRole includes: ECS, ECR, S3, RDS, SSM, CloudWatch, VPC, ALB, CloudFront
+locals {
+  lab_role_arn = "arn:aws:iam::${var.aws_account_id}:role/LabRole"
 }
 
 # ---- CloudWatch Log Groups ----
@@ -147,7 +75,7 @@ locals {
   }
 }
 
-# ---- Task Definitions ----
+# ---- Task Definitions (Generic Services) ----
 resource "aws_ecs_task_definition" "services" {
   for_each = local.generic_services
 
@@ -156,8 +84,8 @@ resource "aws_ecs_task_definition" "services" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.service_cpu
   memory                   = var.service_memory
-  execution_role_arn       = aws_iam_role.ecs_task_execution.arn
-  task_role_arn            = aws_iam_role.ecs_task.arn
+  execution_role_arn       = local.lab_role_arn
+  task_role_arn            = local.lab_role_arn
 
   container_definitions = jsonencode([
     {
@@ -183,7 +111,7 @@ resource "aws_ecs_task_definition" "services" {
         },
         {
           name  = "CORS_ALLOWED_ORIGINS"
-          value = "https://${var.app_subdomain}.${var.domain_name},https://www.${var.domain_name}"
+          value = "https://${aws_cloudfront_distribution.frontend.domain_name},http://${aws_lb.main.dns_name}"
         },
         # Service discovery URLs
         {
@@ -216,7 +144,7 @@ resource "aws_ecs_task_definition" "services" {
         },
         {
           name  = "FRONTEND_URL"
-          value = "https://${var.app_subdomain}.${var.domain_name}"
+          value = "https://${aws_cloudfront_distribution.frontend.domain_name}"
         },
       ]
 
@@ -285,7 +213,6 @@ resource "aws_ecs_service" "services" {
     registry_arn = aws_service_discovery_service.services[each.key].arn
   }
 
-  # Allow service to stabilize during deployments
   health_check_grace_period_seconds = 180
 
   deployment_configuration {
@@ -293,13 +220,12 @@ resource "aws_ecs_service" "services" {
     minimum_healthy_percent = 100
   }
 
-  # Ignore changes to desired_count (if scaling manually)
   lifecycle {
     ignore_changes = [desired_count]
   }
 
   depends_on = [
-    aws_lb_listener.https,
+    aws_lb_listener.http,
     aws_db_instance.main
   ]
 

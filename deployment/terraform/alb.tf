@@ -2,6 +2,7 @@
 # ALB + PATH-BASED ROUTING
 # ===========================================
 # Single ALB routing to all 7 microservices by URL path
+# HTTP only (no custom domain/ACM certificate in Learner Lab)
 
 resource "aws_lb" "main" {
   name               = "${var.project_name}-alb"
@@ -50,13 +51,12 @@ resource "aws_lb_target_group" "services" {
   }
 }
 
-# ---- HTTPS Listener (primary) ----
-resource "aws_lb_listener" "https" {
+# ---- HTTP Listener (primary) ----
+# Learner Lab: no custom domain/ACM certificate available for HTTPS
+resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.main.arn
-  port              = 443
-  protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
-  certificate_arn   = aws_acm_certificate_validation.api.certificate_arn
+  port              = 80
+  protocol          = "HTTP"
 
   default_action {
     type = "fixed-response"
@@ -68,27 +68,11 @@ resource "aws_lb_listener" "https" {
   }
 }
 
-# ---- HTTP Listener (redirect to HTTPS) ----
-resource "aws_lb_listener" "http" {
-  load_balancer_arn = aws_lb.main.arn
-  port              = 80
-  protocol          = "HTTP"
-
-  default_action {
-    type = "redirect"
-    redirect {
-      port        = "443"
-      protocol    = "HTTPS"
-      status_code = "HTTP_301"
-    }
-  }
-}
-
 # ---- Path-based Routing Rules ----
 resource "aws_lb_listener_rule" "services" {
   for_each = var.microservices
 
-  listener_arn = aws_lb_listener.https.arn
+  listener_arn = aws_lb_listener.http.arn
   priority     = each.value.priority
 
   action {
@@ -100,54 +84,5 @@ resource "aws_lb_listener_rule" "services" {
     path_pattern {
       values = each.value.path_pattern
     }
-  }
-}
-
-# ---- ACM Certificate for API subdomain ----
-resource "aws_acm_certificate" "api" {
-  domain_name       = "${var.api_subdomain}.${var.domain_name}"
-  validation_method = "DNS"
-
-  tags = {
-    Name = "${var.project_name}-api-cert"
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "aws_route53_record" "api_cert_validation" {
-  for_each = {
-    for dvo in aws_acm_certificate.api.domain_validation_options : dvo.domain_name => {
-      name   = dvo.resource_record_name
-      record = dvo.resource_record_value
-      type   = dvo.resource_record_type
-    }
-  }
-
-  allow_overwrite = true
-  name            = each.value.name
-  records         = [each.value.record]
-  ttl             = 60
-  type            = each.value.type
-  zone_id         = aws_route53_zone.main.zone_id
-}
-
-resource "aws_acm_certificate_validation" "api" {
-  certificate_arn         = aws_acm_certificate.api.arn
-  validation_record_fqdns = [for record in aws_route53_record.api_cert_validation : record.fqdn]
-}
-
-# ---- Route 53 record for API subdomain ----
-resource "aws_route53_record" "api" {
-  zone_id = aws_route53_zone.main.zone_id
-  name    = "${var.api_subdomain}.${var.domain_name}"
-  type    = "A"
-
-  alias {
-    name                   = aws_lb.main.dns_name
-    zone_id                = aws_lb.main.zone_id
-    evaluate_target_health = true
   }
 }

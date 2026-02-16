@@ -2,6 +2,8 @@
 # S3 + CLOUDFRONT (Frontend Hosting)
 # ===========================================
 # Angular SPA served from S3 via CloudFront
+# Uses CloudFront default domain (*.cloudfront.net)
+# No custom domain in Learner Lab
 
 # ---- S3 Bucket for Frontend ----
 resource "aws_s3_bucket" "frontend" {
@@ -64,44 +66,6 @@ resource "aws_s3_bucket_policy" "frontend" {
   })
 }
 
-# ---- ACM Certificate for CloudFront (must be in us-east-1) ----
-resource "aws_acm_certificate" "frontend" {
-  provider          = aws.us_east_1
-  domain_name       = "${var.app_subdomain}.${var.domain_name}"
-  validation_method = "DNS"
-
-  tags = {
-    Name = "${var.project_name}-frontend-cert"
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "aws_route53_record" "frontend_cert_validation" {
-  for_each = {
-    for dvo in aws_acm_certificate.frontend.domain_validation_options : dvo.domain_name => {
-      name   = dvo.resource_record_name
-      record = dvo.resource_record_value
-      type   = dvo.resource_record_type
-    }
-  }
-
-  allow_overwrite = true
-  name            = each.value.name
-  records         = [each.value.record]
-  ttl             = 60
-  type            = each.value.type
-  zone_id         = aws_route53_zone.main.zone_id
-}
-
-resource "aws_acm_certificate_validation" "frontend" {
-  provider                = aws.us_east_1
-  certificate_arn         = aws_acm_certificate.frontend.arn
-  validation_record_fqdns = [for record in aws_route53_record.frontend_cert_validation : record.fqdn]
-}
-
 # ---- CloudFront Distribution ----
 resource "aws_cloudfront_distribution" "frontend" {
   enabled             = true
@@ -109,7 +73,7 @@ resource "aws_cloudfront_distribution" "frontend" {
   default_root_object = "index.html"
   comment             = "${var.project_name} frontend"
   price_class         = "PriceClass_100" # Only US + Europe (cheapest)
-  aliases             = ["${var.app_subdomain}.${var.domain_name}"]
+  # No custom aliases — uses default *.cloudfront.net domain (Learner Lab)
 
   # ---- S3 Origin (Angular SPA) ----
   origin {
@@ -152,11 +116,9 @@ resource "aws_cloudfront_distribution" "frontend" {
     response_page_path = "/index.html"
   }
 
-  # ---- SSL Certificate ----
+  # ---- SSL Certificate (CloudFront default *.cloudfront.net) ----
   viewer_certificate {
-    acm_certificate_arn      = aws_acm_certificate_validation.frontend.certificate_arn
-    ssl_support_method       = "sni-only"
-    minimum_protocol_version = "TLSv1.2_2021"
+    cloudfront_default_certificate = true
   }
 
   # ---- Geo Restrictions (none) ----
@@ -168,27 +130,5 @@ resource "aws_cloudfront_distribution" "frontend" {
 
   tags = {
     Name = "${var.project_name}-frontend-cdn"
-  }
-}
-
-# ---- Route 53 Record for Frontend ----
-resource "aws_route53_record" "frontend" {
-  zone_id = aws_route53_zone.main.zone_id
-  name    = "${var.app_subdomain}.${var.domain_name}"
-  type    = "A"
-
-  alias {
-    name                   = aws_cloudfront_distribution.frontend.domain_name
-    zone_id                = aws_cloudfront_distribution.frontend.hosted_zone_id
-    evaluate_target_health = false
-  }
-}
-
-# ---- Route 53 Hosted Zone ----
-resource "aws_route53_zone" "main" {
-  name = var.domain_name
-
-  tags = {
-    Name = "${var.project_name}-zone"
   }
 }

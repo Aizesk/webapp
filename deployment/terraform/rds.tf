@@ -5,7 +5,8 @@
 
 resource "aws_db_subnet_group" "main" {
   name       = "${var.project_name}-db-subnet-group"
-  subnet_ids = aws_subnet.private[*].id
+  # Public subnets for Learner Lab (allows DB initialization from local machine)
+  subnet_ids = aws_subnet.public[*].id
 
   tags = {
     Name = "${var.project_name}-db-subnet-group"
@@ -32,7 +33,7 @@ resource "aws_db_instance" "main" {
   # Networking
   db_subnet_group_name   = aws_db_subnet_group.main.name
   vpc_security_group_ids = [aws_security_group.rds.id]
-  publicly_accessible    = false
+  publicly_accessible    = true  # Required for Learner Lab DB initialization
 
   # Single-AZ (Free Tier, budget-optimized)
   multi_az = false

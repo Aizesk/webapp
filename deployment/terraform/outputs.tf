@@ -1,14 +1,32 @@
 # ===========================================
 # OUTPUTS
 # ===========================================
+# Key information displayed after terraform apply
 
+# ---- Access URLs ----
+output "frontend_url" {
+  description = "Frontend URL (CloudFront default domain)"
+  value       = "https://${aws_cloudfront_distribution.frontend.domain_name}"
+}
+
+output "api_url" {
+  description = "API URL (ALB HTTP endpoint)"
+  value       = "http://${aws_lb.main.dns_name}"
+}
+
+# ---- Infrastructure Details ----
 output "vpc_id" {
   description = "VPC ID"
   value       = aws_vpc.main.id
 }
 
+output "aws_region" {
+  description = "AWS region"
+  value       = var.aws_region
+}
+
 output "alb_dns_name" {
-  description = "ALB DNS name (use for API subdomain CNAME)"
+  description = "ALB DNS name"
   value       = aws_lb.main.dns_name
 }
 
@@ -18,7 +36,7 @@ output "cloudfront_distribution_domain" {
 }
 
 output "cloudfront_distribution_id" {
-  description = "CloudFront distribution ID (for cache invalidation in CI/CD)"
+  description = "CloudFront distribution ID (for cache invalidation)"
   value       = aws_cloudfront_distribution.frontend.id
 }
 
@@ -40,14 +58,4 @@ output "ecr_repository_urls" {
 output "ecs_cluster_name" {
   description = "ECS cluster name"
   value       = aws_ecs_cluster.main.name
-}
-
-output "ses_domain_identity_arn" {
-  description = "SES domain identity ARN"
-  value       = aws_ses_domain_identity.main.arn
-}
-
-output "nameservers_for_route53" {
-  description = "Nameservers to configure in your domain registrar"
-  value       = aws_route53_zone.main.name_servers
 }

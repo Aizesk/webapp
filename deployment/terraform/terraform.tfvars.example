@@ -3,8 +3,13 @@
 # ===========================================
 # DO NOT commit terraform.tfvars to git!
 
-aws_region  = "eu-west-1"
-environment = "prod"
+# AWS Academy Learner Lab
+aws_account_id = "123456789012"  # From AWS Details > Account ID
+aws_region     = "us-east-1"     # Check your Learner Lab region
+environment    = "prod"
+
+# Availability Zones (must match region)
+availability_zones = ["us-east-1a", "us-east-1b"]
 
 # Database
 db_username = "aizesk"
@@ -27,8 +32,3 @@ stripe_price_enterprise_annual    = "price_..."
 # Shopify
 shopify_client_id     = ""
 shopify_client_secret = ""
-
-# Domain
-domain_name   = "aizesk.com"
-api_subdomain = "api"
-app_subdomain = "app"

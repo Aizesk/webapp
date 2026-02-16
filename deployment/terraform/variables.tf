@@ -3,10 +3,15 @@
 # ===========================================
 
 # ---- General ----
+variable "aws_account_id" {
+  description = "AWS Account ID (from Learner Lab: AWS Details > Account ID)"
+  type        = string
+}
+
 variable "aws_region" {
   description = "AWS region for deployment"
   type        = string
-  default     = "eu-west-1"
+  default     = "us-east-1"
 }
 
 variable "environment" {
@@ -29,9 +34,9 @@ variable "vpc_cidr" {
 }
 
 variable "availability_zones" {
-  description = "Availability zones"
+  description = "Availability zones (must match aws_region)"
   type        = list(string)
-  default     = ["eu-west-1a", "eu-west-1b"]
+  default     = ["us-east-1a", "us-east-1b"]
 }
 
 # ---- Database ----
@@ -65,25 +70,6 @@ variable "service_memory" {
   description = "Memory in MB for each Fargate task"
   type        = number
   default     = 512
-}
-
-# ---- Domain ----
-variable "domain_name" {
-  description = "Root domain name"
-  type        = string
-  default     = "aizesk.com"
-}
-
-variable "api_subdomain" {
-  description = "API subdomain"
-  type        = string
-  default     = "api"
-}
-
-variable "app_subdomain" {
-  description = "App subdomain for frontend"
-  type        = string
-  default     = "app"
 }
 
 # ---- Secrets (passed via terraform.tfvars or env vars) ----
