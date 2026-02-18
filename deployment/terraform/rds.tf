@@ -73,12 +73,6 @@ resource "aws_db_parameter_group" "main" {
     value = "utf8mb4_unicode_ci"
   }
 
-  parameter {
-    name  = "default_authentication_plugin"
-    value = "mysql_native_password"
-    apply_method = "pending-reboot"
-  }
-
   tags = {
     Name = "${var.project_name}-mysql-params"
   }

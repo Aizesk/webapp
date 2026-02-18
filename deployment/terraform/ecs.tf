@@ -3,6 +3,7 @@
 # ===========================================
 # 7 microservices on ECS Fargate with minimal resources
 # Adapted for AWS Academy Learner Lab (uses LabRole)
+# No Service Discovery (not available in Learner Lab)
 
 # ---- ECS Cluster ----
 resource "aws_ecs_cluster" "main" {
@@ -21,7 +22,6 @@ resource "aws_ecs_cluster" "main" {
 # ---- IAM Role: AWS Academy LabRole ----
 # Learner Lab provides a pre-configured LabRole with broad permissions.
 # Custom IAM roles cannot be created in Learner Lab environments.
-# LabRole includes: ECS, ECR, S3, RDS, SSM, CloudWatch, VPC, ALB, CloudFront
 locals {
   lab_role_arn = "arn:aws:iam::${var.aws_account_id}:role/LabRole"
 }
@@ -35,34 +35,6 @@ resource "aws_cloudwatch_log_group" "services" {
 
   tags = {
     Service = each.key
-  }
-}
-
-# ---- ECS Service Discovery (Cloud Map) ----
-resource "aws_service_discovery_private_dns_namespace" "main" {
-  name        = "${var.project_name}.local"
-  description = "Service discovery for ${var.project_name} microservices"
-  vpc         = aws_vpc.main.id
-}
-
-resource "aws_service_discovery_service" "services" {
-  for_each = var.microservices
-
-  name = each.key
-
-  dns_config {
-    namespace_id = aws_service_discovery_private_dns_namespace.main.id
-
-    dns_records {
-      ttl  = 10
-      type = "A"
-    }
-
-    routing_policy = "MULTIVALUE"
-  }
-
-  health_check_custom_config {
-    failure_threshold = 1
   }
 }
 
@@ -111,40 +83,40 @@ resource "aws_ecs_task_definition" "services" {
         },
         {
           name  = "CORS_ALLOWED_ORIGINS"
-          value = "https://${aws_cloudfront_distribution.frontend.domain_name},http://${aws_lb.main.dns_name}"
+          value = "http://${aws_s3_bucket_website_configuration.frontend.website_endpoint},http://${aws_lb.main.dns_name}"
         },
-        # Service discovery URLs
+        # Inter-service communication via ALB (no Service Discovery in Learner Lab)
         {
           name  = "AUTH_SERVICE_URL"
-          value = "http://auth-service.${var.project_name}.local:8081"
+          value = "http://${aws_lb.main.dns_name}"
         },
         {
           name  = "USER_SERVICE_URL"
-          value = "http://user-service.${var.project_name}.local:8082"
+          value = "http://${aws_lb.main.dns_name}"
         },
         {
           name  = "TRANSACTION_SERVICE_URL"
-          value = "http://transaction-service.${var.project_name}.local:8083"
+          value = "http://${aws_lb.main.dns_name}"
         },
         {
           name  = "SUBSCRIPTION_SERVICE_URL"
-          value = "http://subscription-service.${var.project_name}.local:8084"
+          value = "http://${aws_lb.main.dns_name}"
         },
         {
           name  = "PLATFORM_CONNECTION_SERVICE_URL"
-          value = "http://platform-connection-service.${var.project_name}.local:8085"
+          value = "http://${aws_lb.main.dns_name}"
         },
         {
           name  = "NOTIFICATION_SERVICE_URL"
-          value = "http://notification-service.${var.project_name}.local:8086"
+          value = "http://${aws_lb.main.dns_name}"
         },
         {
           name  = "REPORTING_SERVICE_URL"
-          value = "http://reporting-service.${var.project_name}.local:8087"
+          value = "http://${aws_lb.main.dns_name}"
         },
         {
           name  = "FRONTEND_URL"
-          value = "https://${aws_cloudfront_distribution.frontend.domain_name}"
+          value = "http://${aws_s3_bucket_website_configuration.frontend.website_endpoint}"
         },
       ]
 
@@ -209,16 +181,10 @@ resource "aws_ecs_service" "services" {
     container_port   = each.value.port
   }
 
-  service_registries {
-    registry_arn = aws_service_discovery_service.services[each.key].arn
-  }
-
   health_check_grace_period_seconds = 180
 
-  deployment_configuration {
-    maximum_percent         = 200
-    minimum_healthy_percent = 100
-  }
+  deployment_maximum_percent         = 200
+  deployment_minimum_healthy_percent = 100
 
   lifecycle {
     ignore_changes = [desired_count]

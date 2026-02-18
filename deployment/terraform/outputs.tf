@@ -5,8 +5,8 @@
 
 # ---- Access URLs ----
 output "frontend_url" {
-  description = "Frontend URL (CloudFront default domain)"
-  value       = "https://${aws_cloudfront_distribution.frontend.domain_name}"
+  description = "Frontend URL (S3 static website)"
+  value       = "http://${aws_s3_bucket_website_configuration.frontend.website_endpoint}"
 }
 
 output "api_url" {
@@ -30,19 +30,14 @@ output "alb_dns_name" {
   value       = aws_lb.main.dns_name
 }
 
-output "cloudfront_distribution_domain" {
-  description = "CloudFront distribution domain name"
-  value       = aws_cloudfront_distribution.frontend.domain_name
-}
-
-output "cloudfront_distribution_id" {
-  description = "CloudFront distribution ID (for cache invalidation)"
-  value       = aws_cloudfront_distribution.frontend.id
-}
-
 output "s3_frontend_bucket" {
   description = "S3 bucket for frontend assets"
   value       = aws_s3_bucket.frontend.bucket
+}
+
+output "s3_website_endpoint" {
+  description = "S3 website endpoint"
+  value       = aws_s3_bucket_website_configuration.frontend.website_endpoint
 }
 
 output "rds_endpoint" {

@@ -1,0 +1,2842 @@
+﻿
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # aws_cloudfront_distribution.frontend will be created
+  + resource "aws_cloudfront_distribution" "frontend" {
+      + arn                             = (known after apply)
+      + caller_reference                = (known after apply)
+      + comment                         = "aizesk frontend"
+      + continuous_deployment_policy_id = (known after apply)
+      + default_root_object             = "index.html"
+      + domain_name                     = (known after apply)
+      + enabled                         = true
+      + etag                            = (known after apply)
+      + hosted_zone_id                  = (known after apply)
+      + http_version                    = "http2"
+      + id                              = (known after apply)
+      + in_progress_validation_batches  = (known after apply)
+      + is_ipv6_enabled                 = true
+      + last_modified_time              = (known after apply)
+      + price_class                     = "PriceClass_100"
+      + retain_on_delete                = false
+      + staging                         = false
+      + status                          = (known after apply)
+      + tags                            = {
+          + "Name" = "aizesk-frontend-cdn"
+        }
+      + tags_all                        = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-frontend-cdn"
+          + "Project"     = "aizesk"
+        }
+      + trusted_key_groups              = (known after apply)
+      + trusted_signers                 = (known after apply)
+      + wait_for_deployment             = true
+
+      + custom_error_response {
+          + error_code         = 403
+          + response_code      = 200
+          + response_page_path = "/index.html"
+        }
+      + custom_error_response {
+          + error_code         = 404
+          + response_code      = 200
+          + response_page_path = "/index.html"
+        }
+
+      + default_cache_behavior {
+          + allowed_methods        = [
+              + "GET",
+              + "HEAD",
+              + "OPTIONS",
+            ]
+          + cached_methods         = [
+              + "GET",
+              + "HEAD",
+            ]
+          + compress               = true
+          + default_ttl            = 86400
+          + max_ttl                = 31536000
+          + min_ttl                = 0
+          + target_origin_id       = "s3-frontend"
+          + trusted_key_groups     = (known after apply)
+          + trusted_signers        = (known after apply)
+          + viewer_protocol_policy = "redirect-to-https"
+
+          + forwarded_values {
+              + headers                 = (known after apply)
+              + query_string            = false
+              + query_string_cache_keys = (known after apply)
+
+              + cookies {
+                  + forward           = "none"
+                  + whitelisted_names = (known after apply)
+                }
+            }
+
+          + grpc_config (known after apply)
+        }
+
+      + origin {
+          + connection_attempts      = 3
+          + connection_timeout       = 10
+          + domain_name              = (known after apply)
+          + origin_access_control_id = (known after apply)
+          + origin_id                = "s3-frontend"
+            # (1 unchanged attribute hidden)
+        }
+
+      + restrictions {
+          + geo_restriction {
+              + locations        = (known after apply)
+              + restriction_type = "none"
+            }
+        }
+
+      + viewer_certificate {
+          + cloudfront_default_certificate = true
+          + minimum_protocol_version       = "TLSv1"
+        }
+    }
+
+  # aws_cloudfront_origin_access_control.frontend will be created
+  + resource "aws_cloudfront_origin_access_control" "frontend" {
+      + arn                               = (known after apply)
+      + description                       = "OAC for aizesk frontend S3 bucket"
+      + etag                              = (known after apply)
+      + id                                = (known after apply)
+      + name                              = "aizesk-frontend-oac"
+      + origin_access_control_origin_type = "s3"
+      + signing_behavior                  = "always"
+      + signing_protocol                  = "sigv4"
+    }
+
+  # aws_cloudwatch_log_group.services["auth-service"] will be created
+  + resource "aws_cloudwatch_log_group" "services" {
+      + arn               = (known after apply)
+      + id                = (known after apply)
+      + log_group_class   = (known after apply)
+      + name              = "/ecs/aizesk/auth-service"
+      + name_prefix       = (known after apply)
+      + retention_in_days = 14
+      + skip_destroy      = false
+      + tags              = {
+          + "Service" = "auth-service"
+        }
+      + tags_all          = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+          + "Service"     = "auth-service"
+        }
+    }
+
+  # aws_cloudwatch_log_group.services["notification-service"] will be created
+  + resource "aws_cloudwatch_log_group" "services" {
+      + arn               = (known after apply)
+      + id                = (known after apply)
+      + log_group_class   = (known after apply)
+      + name              = "/ecs/aizesk/notification-service"
+      + name_prefix       = (known after apply)
+      + retention_in_days = 14
+      + skip_destroy      = false
+      + tags              = {
+          + "Service" = "notification-service"
+        }
+      + tags_all          = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+          + "Service"     = "notification-service"
+        }
+    }
+
+  # aws_cloudwatch_log_group.services["platform-connection-service"] will be created
+  + resource "aws_cloudwatch_log_group" "services" {
+      + arn               = (known after apply)
+      + id                = (known after apply)
+      + log_group_class   = (known after apply)
+      + name              = "/ecs/aizesk/platform-connection-service"
+      + name_prefix       = (known after apply)
+      + retention_in_days = 14
+      + skip_destroy      = false
+      + tags              = {
+          + "Service" = "platform-connection-service"
+        }
+      + tags_all          = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+          + "Service"     = "platform-connection-service"
+        }
+    }
+
+  # aws_cloudwatch_log_group.services["reporting-service"] will be created
+  + resource "aws_cloudwatch_log_group" "services" {
+      + arn               = (known after apply)
+      + id                = (known after apply)
+      + log_group_class   = (known after apply)
+      + name              = "/ecs/aizesk/reporting-service"
+      + name_prefix       = (known after apply)
+      + retention_in_days = 14
+      + skip_destroy      = false
+      + tags              = {
+          + "Service" = "reporting-service"
+        }
+      + tags_all          = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+          + "Service"     = "reporting-service"
+        }
+    }
+
+  # aws_cloudwatch_log_group.services["subscription-service"] will be created
+  + resource "aws_cloudwatch_log_group" "services" {
+      + arn               = (known after apply)
+      + id                = (known after apply)
+      + log_group_class   = (known after apply)
+      + name              = "/ecs/aizesk/subscription-service"
+      + name_prefix       = (known after apply)
+      + retention_in_days = 14
+      + skip_destroy      = false
+      + tags              = {
+          + "Service" = "subscription-service"
+        }
+      + tags_all          = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+          + "Service"     = "subscription-service"
+        }
+    }
+
+  # aws_cloudwatch_log_group.services["transaction-service"] will be created
+  + resource "aws_cloudwatch_log_group" "services" {
+      + arn               = (known after apply)
+      + id                = (known after apply)
+      + log_group_class   = (known after apply)
+      + name              = "/ecs/aizesk/transaction-service"
+      + name_prefix       = (known after apply)
+      + retention_in_days = 14
+      + skip_destroy      = false
+      + tags              = {
+          + "Service" = "transaction-service"
+        }
+      + tags_all          = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+          + "Service"     = "transaction-service"
+        }
+    }
+
+  # aws_cloudwatch_log_group.services["user-service"] will be created
+  + resource "aws_cloudwatch_log_group" "services" {
+      + arn               = (known after apply)
+      + id                = (known after apply)
+      + log_group_class   = (known after apply)
+      + name              = "/ecs/aizesk/user-service"
+      + name_prefix       = (known after apply)
+      + retention_in_days = 14
+      + skip_destroy      = false
+      + tags              = {
+          + "Service" = "user-service"
+        }
+      + tags_all          = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+          + "Service"     = "user-service"
+        }
+    }
+
+  # aws_db_instance.main will be created
+  + resource "aws_db_instance" "main" {
+      + address                               = (known after apply)
+      + allocated_storage                     = 20
+      + apply_immediately                     = false
+      + arn                                   = (known after apply)
+      + auto_minor_version_upgrade            = true
+      + availability_zone                     = (known after apply)
+      + backup_retention_period               = 7
+      + backup_target                         = (known after apply)
+      + backup_window                         = "03:00-04:00"
+      + ca_cert_identifier                    = (known after apply)
+      + character_set_name                    = (known after apply)
+      + copy_tags_to_snapshot                 = false
+      + database_insights_mode                = (known after apply)
+      + db_name                               = "aizesk"
+      + db_subnet_group_name                  = "aizesk-db-subnet-group"
+      + dedicated_log_volume                  = false
+      + delete_automated_backups              = true
+      + domain_fqdn                           = (known after apply)
+      + endpoint                              = (known after apply)
+      + engine                                = "mysql"
+      + engine_lifecycle_support              = (known after apply)
+      + engine_version                        = "8.0"
+      + engine_version_actual                 = (known after apply)
+      + final_snapshot_identifier             = "aizesk-final-snapshot"
+      + hosted_zone_id                        = (known after apply)
+      + id                                    = (known after apply)
+      + identifier                            = "aizesk-db"
+      + identifier_prefix                     = (known after apply)
+      + instance_class                        = "db.t4g.micro"
+      + iops                                  = (known after apply)
+      + kms_key_id                            = (known after apply)
+      + latest_restorable_time                = (known after apply)
+      + license_model                         = (known after apply)
+      + listener_endpoint                     = (known after apply)
+      + maintenance_window                    = "mon:04:00-mon:05:00"
+      + master_user_secret                    = (known after apply)
+      + master_user_secret_kms_key_id         = (known after apply)
+      + max_allocated_storage                 = 20
+      + monitoring_interval                   = 0
+      + monitoring_role_arn                   = (known after apply)
+      + multi_az                              = false
+      + nchar_character_set_name              = (known after apply)
+      + network_type                          = (known after apply)
+      + option_group_name                     = (known after apply)
+      + parameter_group_name                  = "aizesk-mysql-params"
+      + password                              = (sensitive value)
+      + password_wo                           = (write-only attribute)
+      + performance_insights_enabled          = true
+      + performance_insights_kms_key_id       = (known after apply)
+      + performance_insights_retention_period = (known after apply)
+      + port                                  = 3306
+      + publicly_accessible                   = true
+      + replica_mode                          = (known after apply)
+      + replicas                              = (known after apply)
+      + resource_id                           = (known after apply)
+      + skip_final_snapshot                   = true
+      + snapshot_identifier                   = (known after apply)
+      + status                                = (known after apply)
+      + storage_throughput                    = (known after apply)
+      + storage_type                          = "gp3"
+      + tags                                  = {
+          + "Name" = "aizesk-rds"
+        }
+      + tags_all                              = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-rds"
+          + "Project"     = "aizesk"
+        }
+      + timezone                              = (known after apply)
+      + username                              = (sensitive value)
+      + vpc_security_group_ids                = (known after apply)
+    }
+
+  # aws_db_parameter_group.main will be created
+  + resource "aws_db_parameter_group" "main" {
+      + arn          = (known after apply)
+      + description  = "Managed by Terraform"
+      + family       = "mysql8.0"
+      + id           = (known after apply)
+      + name         = "aizesk-mysql-params"
+      + name_prefix  = (known after apply)
+      + skip_destroy = false
+      + tags         = {
+          + "Name" = "aizesk-mysql-params"
+        }
+      + tags_all     = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-mysql-params"
+          + "Project"     = "aizesk"
+        }
+
+      + parameter {
+          + apply_method = "immediate"
+          + name         = "character_set_server"
+          + value        = "utf8mb4"
+        }
+      + parameter {
+          + apply_method = "immediate"
+          + name         = "collation_server"
+          + value        = "utf8mb4_unicode_ci"
+        }
+      + parameter {
+          + apply_method = "pending-reboot"
+          + name         = "default_authentication_plugin"
+          + value        = "mysql_native_password"
+        }
+    }
+
+  # aws_db_subnet_group.main will be created
+  + resource "aws_db_subnet_group" "main" {
+      + arn                     = (known after apply)
+      + description             = "Managed by Terraform"
+      + id                      = (known after apply)
+      + name                    = "aizesk-db-subnet-group"
+      + name_prefix             = (known after apply)
+      + subnet_ids              = (known after apply)
+      + supported_network_types = (known after apply)
+      + tags                    = {
+          + "Name" = "aizesk-db-subnet-group"
+        }
+      + tags_all                = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-db-subnet-group"
+          + "Project"     = "aizesk"
+        }
+      + vpc_id                  = (known after apply)
+    }
+
+  # aws_ecr_lifecycle_policy.services["auth-service"] will be created
+  + resource "aws_ecr_lifecycle_policy" "services" {
+      + id          = (known after apply)
+      + policy      = jsonencode(
+            {
+              + rules = [
+                  + {
+                      + action       = {
+                          + type = "expire"
+                        }
+                      + description  = "Keep only last 5 images"
+                      + rulePriority = 1
+                      + selection    = {
+                          + countNumber = 5
+                          + countType   = "imageCountMoreThan"
+                          + tagStatus   = "any"
+                        }
+                    },
+                ]
+            }
+        )
+      + registry_id = (known after apply)
+      + repository  = "aizesk/auth-service"
+    }
+
+  # aws_ecr_lifecycle_policy.services["notification-service"] will be created
+  + resource "aws_ecr_lifecycle_policy" "services" {
+      + id          = (known after apply)
+      + policy      = jsonencode(
+            {
+              + rules = [
+                  + {
+                      + action       = {
+                          + type = "expire"
+                        }
+                      + description  = "Keep only last 5 images"
+                      + rulePriority = 1
+                      + selection    = {
+                          + countNumber = 5
+                          + countType   = "imageCountMoreThan"
+                          + tagStatus   = "any"
+                        }
+                    },
+                ]
+            }
+        )
+      + registry_id = (known after apply)
+      + repository  = "aizesk/notification-service"
+    }
+
+  # aws_ecr_lifecycle_policy.services["platform-connection-service"] will be created
+  + resource "aws_ecr_lifecycle_policy" "services" {
+      + id          = (known after apply)
+      + policy      = jsonencode(
+            {
+              + rules = [
+                  + {
+                      + action       = {
+                          + type = "expire"
+                        }
+                      + description  = "Keep only last 5 images"
+                      + rulePriority = 1
+                      + selection    = {
+                          + countNumber = 5
+                          + countType   = "imageCountMoreThan"
+                          + tagStatus   = "any"
+                        }
+                    },
+                ]
+            }
+        )
+      + registry_id = (known after apply)
+      + repository  = "aizesk/platform-connection-service"
+    }
+
+  # aws_ecr_lifecycle_policy.services["reporting-service"] will be created
+  + resource "aws_ecr_lifecycle_policy" "services" {
+      + id          = (known after apply)
+      + policy      = jsonencode(
+            {
+              + rules = [
+                  + {
+                      + action       = {
+                          + type = "expire"
+                        }
+                      + description  = "Keep only last 5 images"
+                      + rulePriority = 1
+                      + selection    = {
+                          + countNumber = 5
+                          + countType   = "imageCountMoreThan"
+                          + tagStatus   = "any"
+                        }
+                    },
+                ]
+            }
+        )
+      + registry_id = (known after apply)
+      + repository  = "aizesk/reporting-service"
+    }
+
+  # aws_ecr_lifecycle_policy.services["subscription-service"] will be created
+  + resource "aws_ecr_lifecycle_policy" "services" {
+      + id          = (known after apply)
+      + policy      = jsonencode(
+            {
+              + rules = [
+                  + {
+                      + action       = {
+                          + type = "expire"
+                        }
+                      + description  = "Keep only last 5 images"
+                      + rulePriority = 1
+                      + selection    = {
+                          + countNumber = 5
+                          + countType   = "imageCountMoreThan"
+                          + tagStatus   = "any"
+                        }
+                    },
+                ]
+            }
+        )
+      + registry_id = (known after apply)
+      + repository  = "aizesk/subscription-service"
+    }
+
+  # aws_ecr_lifecycle_policy.services["transaction-service"] will be created
+  + resource "aws_ecr_lifecycle_policy" "services" {
+      + id          = (known after apply)
+      + policy      = jsonencode(
+            {
+              + rules = [
+                  + {
+                      + action       = {
+                          + type = "expire"
+                        }
+                      + description  = "Keep only last 5 images"
+                      + rulePriority = 1
+                      + selection    = {
+                          + countNumber = 5
+                          + countType   = "imageCountMoreThan"
+                          + tagStatus   = "any"
+                        }
+                    },
+                ]
+            }
+        )
+      + registry_id = (known after apply)
+      + repository  = "aizesk/transaction-service"
+    }
+
+  # aws_ecr_lifecycle_policy.services["user-service"] will be created
+  + resource "aws_ecr_lifecycle_policy" "services" {
+      + id          = (known after apply)
+      + policy      = jsonencode(
+            {
+              + rules = [
+                  + {
+                      + action       = {
+                          + type = "expire"
+                        }
+                      + description  = "Keep only last 5 images"
+                      + rulePriority = 1
+                      + selection    = {
+                          + countNumber = 5
+                          + countType   = "imageCountMoreThan"
+                          + tagStatus   = "any"
+                        }
+                    },
+                ]
+            }
+        )
+      + registry_id = (known after apply)
+      + repository  = "aizesk/user-service"
+    }
+
+  # aws_ecr_repository.services["auth-service"] will be created
+  + resource "aws_ecr_repository" "services" {
+      + arn                  = (known after apply)
+      + force_delete         = true
+      + id                   = (known after apply)
+      + image_tag_mutability = "MUTABLE"
+      + name                 = "aizesk/auth-service"
+      + registry_id          = (known after apply)
+      + repository_url       = (known after apply)
+      + tags                 = {
+          + "Name"    = "aizesk-auth-service"
+          + "Service" = "auth-service"
+        }
+      + tags_all             = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-auth-service"
+          + "Project"     = "aizesk"
+          + "Service"     = "auth-service"
+        }
+
+      + image_scanning_configuration {
+          + scan_on_push = true
+        }
+    }
+
+  # aws_ecr_repository.services["notification-service"] will be created
+  + resource "aws_ecr_repository" "services" {
+      + arn                  = (known after apply)
+      + force_delete         = true
+      + id                   = (known after apply)
+      + image_tag_mutability = "MUTABLE"
+      + name                 = "aizesk/notification-service"
+      + registry_id          = (known after apply)
+      + repository_url       = (known after apply)
+      + tags                 = {
+          + "Name"    = "aizesk-notification-service"
+          + "Service" = "notification-service"
+        }
+      + tags_all             = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-notification-service"
+          + "Project"     = "aizesk"
+          + "Service"     = "notification-service"
+        }
+
+      + image_scanning_configuration {
+          + scan_on_push = true
+        }
+    }
+
+  # aws_ecr_repository.services["platform-connection-service"] will be created
+  + resource "aws_ecr_repository" "services" {
+      + arn                  = (known after apply)
+      + force_delete         = true
+      + id                   = (known after apply)
+      + image_tag_mutability = "MUTABLE"
+      + name                 = "aizesk/platform-connection-service"
+      + registry_id          = (known after apply)
+      + repository_url       = (known after apply)
+      + tags                 = {
+          + "Name"    = "aizesk-platform-connection-service"
+          + "Service" = "platform-connection-service"
+        }
+      + tags_all             = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-platform-connection-service"
+          + "Project"     = "aizesk"
+          + "Service"     = "platform-connection-service"
+        }
+
+      + image_scanning_configuration {
+          + scan_on_push = true
+        }
+    }
+
+  # aws_ecr_repository.services["reporting-service"] will be created
+  + resource "aws_ecr_repository" "services" {
+      + arn                  = (known after apply)
+      + force_delete         = true
+      + id                   = (known after apply)
+      + image_tag_mutability = "MUTABLE"
+      + name                 = "aizesk/reporting-service"
+      + registry_id          = (known after apply)
+      + repository_url       = (known after apply)
+      + tags                 = {
+          + "Name"    = "aizesk-reporting-service"
+          + "Service" = "reporting-service"
+        }
+      + tags_all             = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-reporting-service"
+          + "Project"     = "aizesk"
+          + "Service"     = "reporting-service"
+        }
+
+      + image_scanning_configuration {
+          + scan_on_push = true
+        }
+    }
+
+  # aws_ecr_repository.services["subscription-service"] will be created
+  + resource "aws_ecr_repository" "services" {
+      + arn                  = (known after apply)
+      + force_delete         = true
+      + id                   = (known after apply)
+      + image_tag_mutability = "MUTABLE"
+      + name                 = "aizesk/subscription-service"
+      + registry_id          = (known after apply)
+      + repository_url       = (known after apply)
+      + tags                 = {
+          + "Name"    = "aizesk-subscription-service"
+          + "Service" = "subscription-service"
+        }
+      + tags_all             = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-subscription-service"
+          + "Project"     = "aizesk"
+          + "Service"     = "subscription-service"
+        }
+
+      + image_scanning_configuration {
+          + scan_on_push = true
+        }
+    }
+
+  # aws_ecr_repository.services["transaction-service"] will be created
+  + resource "aws_ecr_repository" "services" {
+      + arn                  = (known after apply)
+      + force_delete         = true
+      + id                   = (known after apply)
+      + image_tag_mutability = "MUTABLE"
+      + name                 = "aizesk/transaction-service"
+      + registry_id          = (known after apply)
+      + repository_url       = (known after apply)
+      + tags                 = {
+          + "Name"    = "aizesk-transaction-service"
+          + "Service" = "transaction-service"
+        }
+      + tags_all             = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-transaction-service"
+          + "Project"     = "aizesk"
+          + "Service"     = "transaction-service"
+        }
+
+      + image_scanning_configuration {
+          + scan_on_push = true
+        }
+    }
+
+  # aws_ecr_repository.services["user-service"] will be created
+  + resource "aws_ecr_repository" "services" {
+      + arn                  = (known after apply)
+      + force_delete         = true
+      + id                   = (known after apply)
+      + image_tag_mutability = "MUTABLE"
+      + name                 = "aizesk/user-service"
+      + registry_id          = (known after apply)
+      + repository_url       = (known after apply)
+      + tags                 = {
+          + "Name"    = "aizesk-user-service"
+          + "Service" = "user-service"
+        }
+      + tags_all             = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-user-service"
+          + "Project"     = "aizesk"
+          + "Service"     = "user-service"
+        }
+
+      + image_scanning_configuration {
+          + scan_on_push = true
+        }
+    }
+
+  # aws_ecs_cluster.main will be created
+  + resource "aws_ecs_cluster" "main" {
+      + arn      = (known after apply)
+      + id       = (known after apply)
+      + name     = "aizesk-cluster"
+      + tags     = {
+          + "Name" = "aizesk-cluster"
+        }
+      + tags_all = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-cluster"
+          + "Project"     = "aizesk"
+        }
+
+      + setting {
+          + name  = "containerInsights"
+          + value = "disabled"
+        }
+    }
+
+  # aws_ecs_service.notification_service will be created
+  + resource "aws_ecs_service" "notification_service" {
+      + availability_zone_rebalancing      = "DISABLED"
+      + cluster                            = (known after apply)
+      + deployment_maximum_percent         = 200
+      + deployment_minimum_healthy_percent = 100
+      + desired_count                      = 1
+      + enable_ecs_managed_tags            = false
+      + enable_execute_command             = false
+      + health_check_grace_period_seconds  = 180
+      + iam_role                           = (known after apply)
+      + id                                 = (known after apply)
+      + launch_type                        = "FARGATE"
+      + name                               = "notification-service"
+      + platform_version                   = (known after apply)
+      + scheduling_strategy                = "REPLICA"
+      + tags                               = {
+          + "Service" = "notification-service"
+        }
+      + tags_all                           = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+          + "Service"     = "notification-service"
+        }
+      + task_definition                    = (known after apply)
+      + triggers                           = (known after apply)
+      + wait_for_steady_state              = false
+
+      + load_balancer {
+          + container_name   = "notification-service"
+          + container_port   = 8086
+          + target_group_arn = (known after apply)
+            # (1 unchanged attribute hidden)
+        }
+
+      + network_configuration {
+          + assign_public_ip = true
+          + security_groups  = (known after apply)
+          + subnets          = (known after apply)
+        }
+
+      + service_registries {
+          + registry_arn = (known after apply)
+        }
+    }
+
+  # aws_ecs_service.platform_connection_service will be created
+  + resource "aws_ecs_service" "platform_connection_service" {
+      + availability_zone_rebalancing      = "DISABLED"
+      + cluster                            = (known after apply)
+      + deployment_maximum_percent         = 200
+      + deployment_minimum_healthy_percent = 100
+      + desired_count                      = 1
+      + enable_ecs_managed_tags            = false
+      + enable_execute_command             = false
+      + health_check_grace_period_seconds  = 180
+      + iam_role                           = (known after apply)
+      + id                                 = (known after apply)
+      + launch_type                        = "FARGATE"
+      + name                               = "platform-connection-service"
+      + platform_version                   = (known after apply)
+      + scheduling_strategy                = "REPLICA"
+      + tags                               = {
+          + "Service" = "platform-connection-service"
+        }
+      + tags_all                           = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+          + "Service"     = "platform-connection-service"
+        }
+      + task_definition                    = (known after apply)
+      + triggers                           = (known after apply)
+      + wait_for_steady_state              = false
+
+      + load_balancer {
+          + container_name   = "platform-connection-service"
+          + container_port   = 8085
+          + target_group_arn = (known after apply)
+            # (1 unchanged attribute hidden)
+        }
+
+      + network_configuration {
+          + assign_public_ip = true
+          + security_groups  = (known after apply)
+          + subnets          = (known after apply)
+        }
+
+      + service_registries {
+          + registry_arn = (known after apply)
+        }
+    }
+
+  # aws_ecs_service.services["auth-service"] will be created
+  + resource "aws_ecs_service" "services" {
+      + availability_zone_rebalancing      = "DISABLED"
+      + cluster                            = (known after apply)
+      + deployment_maximum_percent         = 200
+      + deployment_minimum_healthy_percent = 100
+      + desired_count                      = 1
+      + enable_ecs_managed_tags            = false
+      + enable_execute_command             = false
+      + health_check_grace_period_seconds  = 180
+      + iam_role                           = (known after apply)
+      + id                                 = (known after apply)
+      + launch_type                        = "FARGATE"
+      + name                               = "auth-service"
+      + platform_version                   = (known after apply)
+      + scheduling_strategy                = "REPLICA"
+      + tags                               = {
+          + "Service" = "auth-service"
+        }
+      + tags_all                           = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+          + "Service"     = "auth-service"
+        }
+      + task_definition                    = (known after apply)
+      + triggers                           = (known after apply)
+      + wait_for_steady_state              = false
+
+      + load_balancer {
+          + container_name   = "auth-service"
+          + container_port   = 8081
+          + target_group_arn = (known after apply)
+            # (1 unchanged attribute hidden)
+        }
+
+      + network_configuration {
+          + assign_public_ip = true
+          + security_groups  = (known after apply)
+          + subnets          = (known after apply)
+        }
+
+      + service_registries {
+          + registry_arn = (known after apply)
+        }
+    }
+
+  # aws_ecs_service.services["reporting-service"] will be created
+  + resource "aws_ecs_service" "services" {
+      + availability_zone_rebalancing      = "DISABLED"
+      + cluster                            = (known after apply)
+      + deployment_maximum_percent         = 200
+      + deployment_minimum_healthy_percent = 100
+      + desired_count                      = 1
+      + enable_ecs_managed_tags            = false
+      + enable_execute_command             = false
+      + health_check_grace_period_seconds  = 180
+      + iam_role                           = (known after apply)
+      + id                                 = (known after apply)
+      + launch_type                        = "FARGATE"
+      + name                               = "reporting-service"
+      + platform_version                   = (known after apply)
+      + scheduling_strategy                = "REPLICA"
+      + tags                               = {
+          + "Service" = "reporting-service"
+        }
+      + tags_all                           = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+          + "Service"     = "reporting-service"
+        }
+      + task_definition                    = (known after apply)
+      + triggers                           = (known after apply)
+      + wait_for_steady_state              = false
+
+      + load_balancer {
+          + container_name   = "reporting-service"
+          + container_port   = 8087
+          + target_group_arn = (known after apply)
+            # (1 unchanged attribute hidden)
+        }
+
+      + network_configuration {
+          + assign_public_ip = true
+          + security_groups  = (known after apply)
+          + subnets          = (known after apply)
+        }
+
+      + service_registries {
+          + registry_arn = (known after apply)
+        }
+    }
+
+  # aws_ecs_service.services["transaction-service"] will be created
+  + resource "aws_ecs_service" "services" {
+      + availability_zone_rebalancing      = "DISABLED"
+      + cluster                            = (known after apply)
+      + deployment_maximum_percent         = 200
+      + deployment_minimum_healthy_percent = 100
+      + desired_count                      = 1
+      + enable_ecs_managed_tags            = false
+      + enable_execute_command             = false
+      + health_check_grace_period_seconds  = 180
+      + iam_role                           = (known after apply)
+      + id                                 = (known after apply)
+      + launch_type                        = "FARGATE"
+      + name                               = "transaction-service"
+      + platform_version                   = (known after apply)
+      + scheduling_strategy                = "REPLICA"
+      + tags                               = {
+          + "Service" = "transaction-service"
+        }
+      + tags_all                           = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+          + "Service"     = "transaction-service"
+        }
+      + task_definition                    = (known after apply)
+      + triggers                           = (known after apply)
+      + wait_for_steady_state              = false
+
+      + load_balancer {
+          + container_name   = "transaction-service"
+          + container_port   = 8083
+          + target_group_arn = (known after apply)
+            # (1 unchanged attribute hidden)
+        }
+
+      + network_configuration {
+          + assign_public_ip = true
+          + security_groups  = (known after apply)
+          + subnets          = (known after apply)
+        }
+
+      + service_registries {
+          + registry_arn = (known after apply)
+        }
+    }
+
+  # aws_ecs_service.services["user-service"] will be created
+  + resource "aws_ecs_service" "services" {
+      + availability_zone_rebalancing      = "DISABLED"
+      + cluster                            = (known after apply)
+      + deployment_maximum_percent         = 200
+      + deployment_minimum_healthy_percent = 100
+      + desired_count                      = 1
+      + enable_ecs_managed_tags            = false
+      + enable_execute_command             = false
+      + health_check_grace_period_seconds  = 180
+      + iam_role                           = (known after apply)
+      + id                                 = (known after apply)
+      + launch_type                        = "FARGATE"
+      + name                               = "user-service"
+      + platform_version                   = (known after apply)
+      + scheduling_strategy                = "REPLICA"
+      + tags                               = {
+          + "Service" = "user-service"
+        }
+      + tags_all                           = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+          + "Service"     = "user-service"
+        }
+      + task_definition                    = (known after apply)
+      + triggers                           = (known after apply)
+      + wait_for_steady_state              = false
+
+      + load_balancer {
+          + container_name   = "user-service"
+          + container_port   = 8082
+          + target_group_arn = (known after apply)
+            # (1 unchanged attribute hidden)
+        }
+
+      + network_configuration {
+          + assign_public_ip = true
+          + security_groups  = (known after apply)
+          + subnets          = (known after apply)
+        }
+
+      + service_registries {
+          + registry_arn = (known after apply)
+        }
+    }
+
+  # aws_ecs_service.subscription_service will be created
+  + resource "aws_ecs_service" "subscription_service" {
+      + availability_zone_rebalancing      = "DISABLED"
+      + cluster                            = (known after apply)
+      + deployment_maximum_percent         = 200
+      + deployment_minimum_healthy_percent = 100
+      + desired_count                      = 1
+      + enable_ecs_managed_tags            = false
+      + enable_execute_command             = false
+      + health_check_grace_period_seconds  = 180
+      + iam_role                           = (known after apply)
+      + id                                 = (known after apply)
+      + launch_type                        = "FARGATE"
+      + name                               = "subscription-service"
+      + platform_version                   = (known after apply)
+      + scheduling_strategy                = "REPLICA"
+      + tags                               = {
+          + "Service" = "subscription-service"
+        }
+      + tags_all                           = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+          + "Service"     = "subscription-service"
+        }
+      + task_definition                    = (known after apply)
+      + triggers                           = (known after apply)
+      + wait_for_steady_state              = false
+
+      + load_balancer {
+          + container_name   = "subscription-service"
+          + container_port   = 8084
+          + target_group_arn = (known after apply)
+            # (1 unchanged attribute hidden)
+        }
+
+      + network_configuration {
+          + assign_public_ip = true
+          + security_groups  = (known after apply)
+          + subnets          = (known after apply)
+        }
+
+      + service_registries {
+          + registry_arn = (known after apply)
+        }
+    }
+
+  # aws_ecs_task_definition.notification_service will be created
+  + resource "aws_ecs_task_definition" "notification_service" {
+      + arn                      = (known after apply)
+      + arn_without_revision     = (known after apply)
+      + container_definitions    = (known after apply)
+      + cpu                      = "256"
+      + enable_fault_injection   = (known after apply)
+      + execution_role_arn       = "arn:aws:iam::946693320543:role/LabRole"
+      + family                   = "aizesk-notification-service"
+      + id                       = (known after apply)
+      + memory                   = "512"
+      + network_mode             = "awsvpc"
+      + requires_compatibilities = [
+          + "FARGATE",
+        ]
+      + revision                 = (known after apply)
+      + skip_destroy             = false
+      + tags                     = {
+          + "Service" = "notification-service"
+        }
+      + tags_all                 = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+          + "Service"     = "notification-service"
+        }
+      + task_role_arn            = "arn:aws:iam::946693320543:role/LabRole"
+      + track_latest             = false
+    }
+
+  # aws_ecs_task_definition.platform_connection_service will be created
+  + resource "aws_ecs_task_definition" "platform_connection_service" {
+      + arn                      = (known after apply)
+      + arn_without_revision     = (known after apply)
+      + container_definitions    = (known after apply)
+      + cpu                      = "256"
+      + enable_fault_injection   = (known after apply)
+      + execution_role_arn       = "arn:aws:iam::946693320543:role/LabRole"
+      + family                   = "aizesk-platform-connection-service"
+      + id                       = (known after apply)
+      + memory                   = "512"
+      + network_mode             = "awsvpc"
+      + requires_compatibilities = [
+          + "FARGATE",
+        ]
+      + revision                 = (known after apply)
+      + skip_destroy             = false
+      + tags                     = {
+          + "Service" = "platform-connection-service"
+        }
+      + tags_all                 = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+          + "Service"     = "platform-connection-service"
+        }
+      + task_role_arn            = "arn:aws:iam::946693320543:role/LabRole"
+      + track_latest             = false
+    }
+
+  # aws_ecs_task_definition.services["auth-service"] will be created
+  + resource "aws_ecs_task_definition" "services" {
+      + arn                      = (known after apply)
+      + arn_without_revision     = (known after apply)
+      + container_definitions    = (known after apply)
+      + cpu                      = "256"
+      + enable_fault_injection   = (known after apply)
+      + execution_role_arn       = "arn:aws:iam::946693320543:role/LabRole"
+      + family                   = "aizesk-auth-service"
+      + id                       = (known after apply)
+      + memory                   = "512"
+      + network_mode             = "awsvpc"
+      + requires_compatibilities = [
+          + "FARGATE",
+        ]
+      + revision                 = (known after apply)
+      + skip_destroy             = false
+      + tags                     = {
+          + "Service" = "auth-service"
+        }
+      + tags_all                 = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+          + "Service"     = "auth-service"
+        }
+      + task_role_arn            = "arn:aws:iam::946693320543:role/LabRole"
+      + track_latest             = false
+    }
+
+  # aws_ecs_task_definition.services["reporting-service"] will be created
+  + resource "aws_ecs_task_definition" "services" {
+      + arn                      = (known after apply)
+      + arn_without_revision     = (known after apply)
+      + container_definitions    = (known after apply)
+      + cpu                      = "256"
+      + enable_fault_injection   = (known after apply)
+      + execution_role_arn       = "arn:aws:iam::946693320543:role/LabRole"
+      + family                   = "aizesk-reporting-service"
+      + id                       = (known after apply)
+      + memory                   = "512"
+      + network_mode             = "awsvpc"
+      + requires_compatibilities = [
+          + "FARGATE",
+        ]
+      + revision                 = (known after apply)
+      + skip_destroy             = false
+      + tags                     = {
+          + "Service" = "reporting-service"
+        }
+      + tags_all                 = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+          + "Service"     = "reporting-service"
+        }
+      + task_role_arn            = "arn:aws:iam::946693320543:role/LabRole"
+      + track_latest             = false
+    }
+
+  # aws_ecs_task_definition.services["transaction-service"] will be created
+  + resource "aws_ecs_task_definition" "services" {
+      + arn                      = (known after apply)
+      + arn_without_revision     = (known after apply)
+      + container_definitions    = (known after apply)
+      + cpu                      = "256"
+      + enable_fault_injection   = (known after apply)
+      + execution_role_arn       = "arn:aws:iam::946693320543:role/LabRole"
+      + family                   = "aizesk-transaction-service"
+      + id                       = (known after apply)
+      + memory                   = "512"
+      + network_mode             = "awsvpc"
+      + requires_compatibilities = [
+          + "FARGATE",
+        ]
+      + revision                 = (known after apply)
+      + skip_destroy             = false
+      + tags                     = {
+          + "Service" = "transaction-service"
+        }
+      + tags_all                 = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+          + "Service"     = "transaction-service"
+        }
+      + task_role_arn            = "arn:aws:iam::946693320543:role/LabRole"
+      + track_latest             = false
+    }
+
+  # aws_ecs_task_definition.services["user-service"] will be created
+  + resource "aws_ecs_task_definition" "services" {
+      + arn                      = (known after apply)
+      + arn_without_revision     = (known after apply)
+      + container_definitions    = (known after apply)
+      + cpu                      = "256"
+      + enable_fault_injection   = (known after apply)
+      + execution_role_arn       = "arn:aws:iam::946693320543:role/LabRole"
+      + family                   = "aizesk-user-service"
+      + id                       = (known after apply)
+      + memory                   = "512"
+      + network_mode             = "awsvpc"
+      + requires_compatibilities = [
+          + "FARGATE",
+        ]
+      + revision                 = (known after apply)
+      + skip_destroy             = false
+      + tags                     = {
+          + "Service" = "user-service"
+        }
+      + tags_all                 = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+          + "Service"     = "user-service"
+        }
+      + task_role_arn            = "arn:aws:iam::946693320543:role/LabRole"
+      + track_latest             = false
+    }
+
+  # aws_ecs_task_definition.subscription_service will be created
+  + resource "aws_ecs_task_definition" "subscription_service" {
+      + arn                      = (known after apply)
+      + arn_without_revision     = (known after apply)
+      + container_definitions    = (known after apply)
+      + cpu                      = "256"
+      + enable_fault_injection   = (known after apply)
+      + execution_role_arn       = "arn:aws:iam::946693320543:role/LabRole"
+      + family                   = "aizesk-subscription-service"
+      + id                       = (known after apply)
+      + memory                   = "512"
+      + network_mode             = "awsvpc"
+      + requires_compatibilities = [
+          + "FARGATE",
+        ]
+      + revision                 = (known after apply)
+      + skip_destroy             = false
+      + tags                     = {
+          + "Service" = "subscription-service"
+        }
+      + tags_all                 = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+          + "Service"     = "subscription-service"
+        }
+      + task_role_arn            = "arn:aws:iam::946693320543:role/LabRole"
+      + track_latest             = false
+    }
+
+  # aws_internet_gateway.main will be created
+  + resource "aws_internet_gateway" "main" {
+      + arn      = (known after apply)
+      + id       = (known after apply)
+      + owner_id = (known after apply)
+      + tags     = {
+          + "Name" = "aizesk-igw"
+        }
+      + tags_all = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-igw"
+          + "Project"     = "aizesk"
+        }
+      + vpc_id   = (known after apply)
+    }
+
+  # aws_lb.main will be created
+  + resource "aws_lb" "main" {
+      + arn                                                          = (known after apply)
+      + arn_suffix                                                   = (known after apply)
+      + client_keep_alive                                            = 3600
+      + desync_mitigation_mode                                       = "defensive"
+      + dns_name                                                     = (known after apply)
+      + drop_invalid_header_fields                                   = false
+      + enable_deletion_protection                                   = false
+      + enable_http2                                                 = true
+      + enable_tls_version_and_cipher_suite_headers                  = false
+      + enable_waf_fail_open                                         = false
+      + enable_xff_client_port                                       = false
+      + enable_zonal_shift                                           = false
+      + enforce_security_group_inbound_rules_on_private_link_traffic = (known after apply)
+      + id                                                           = (known after apply)
+      + idle_timeout                                                 = 60
+      + internal                                                     = false
+      + ip_address_type                                              = (known after apply)
+      + load_balancer_type                                           = "application"
+      + name                                                         = "aizesk-alb"
+      + name_prefix                                                  = (known after apply)
+      + preserve_host_header                                         = false
+      + security_groups                                              = (known after apply)
+      + subnets                                                      = (known after apply)
+      + tags                                                         = {
+          + "Name" = "aizesk-alb"
+        }
+      + tags_all                                                     = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-alb"
+          + "Project"     = "aizesk"
+        }
+      + vpc_id                                                       = (known after apply)
+      + xff_header_processing_mode                                   = "append"
+      + zone_id                                                      = (known after apply)
+
+      + subnet_mapping (known after apply)
+    }
+
+  # aws_lb_listener.http will be created
+  + resource "aws_lb_listener" "http" {
+      + arn                                                                   = (known after apply)
+      + id                                                                    = (known after apply)
+      + load_balancer_arn                                                     = (known after apply)
+      + port                                                                  = 80
+      + protocol                                                              = "HTTP"
+      + routing_http_request_x_amzn_mtls_clientcert_header_name               = (known after apply)
+      + routing_http_request_x_amzn_mtls_clientcert_issuer_header_name        = (known after apply)
+      + routing_http_request_x_amzn_mtls_clientcert_leaf_header_name          = (known after apply)
+      + routing_http_request_x_amzn_mtls_clientcert_serial_number_header_name = (known after apply)
+      + routing_http_request_x_amzn_mtls_clientcert_subject_header_name       = (known after apply)
+      + routing_http_request_x_amzn_mtls_clientcert_validity_header_name      = (known after apply)
+      + routing_http_request_x_amzn_tls_cipher_suite_header_name              = (known after apply)
+      + routing_http_request_x_amzn_tls_version_header_name                   = (known after apply)
+      + routing_http_response_access_control_allow_credentials_header_value   = (known after apply)
+      + routing_http_response_access_control_allow_headers_header_value       = (known after apply)
+      + routing_http_response_access_control_allow_methods_header_value       = (known after apply)
+      + routing_http_response_access_control_allow_origin_header_value        = (known after apply)
+      + routing_http_response_access_control_expose_headers_header_value      = (known after apply)
+      + routing_http_response_access_control_max_age_header_value             = (known after apply)
+      + routing_http_response_content_security_policy_header_value            = (known after apply)
+      + routing_http_response_server_enabled                                  = (known after apply)
+      + routing_http_response_strict_transport_security_header_value          = (known after apply)
+      + routing_http_response_x_content_type_options_header_value             = (known after apply)
+      + routing_http_response_x_frame_options_header_value                    = (known after apply)
+      + ssl_policy                                                            = (known after apply)
+      + tags_all                                                              = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+        }
+      + tcp_idle_timeout_seconds                                              = (known after apply)
+
+      + default_action {
+          + order = (known after apply)
+          + type  = "fixed-response"
+
+          + fixed_response {
+              + content_type = "application/json"
+              + message_body = jsonencode(
+                    {
+                      + error = "Not Found"
+                    }
+                )
+              + status_code  = "404"
+            }
+        }
+
+      + mutual_authentication (known after apply)
+    }
+
+  # aws_lb_listener_rule.services["auth-service"] will be created
+  + resource "aws_lb_listener_rule" "services" {
+      + arn          = (known after apply)
+      + id           = (known after apply)
+      + listener_arn = (known after apply)
+      + priority     = 100
+      + tags_all     = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+        }
+
+      + action {
+          + order            = (known after apply)
+          + target_group_arn = (known after apply)
+          + type             = "forward"
+        }
+
+      + condition {
+          + path_pattern {
+              + values = [
+                  + "/api/v1/auth/*",
+                ]
+            }
+        }
+    }
+
+  # aws_lb_listener_rule.services["notification-service"] will be created
+  + resource "aws_lb_listener_rule" "services" {
+      + arn          = (known after apply)
+      + id           = (known after apply)
+      + listener_arn = (known after apply)
+      + priority     = 600
+      + tags_all     = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+        }
+
+      + action {
+          + order            = (known after apply)
+          + target_group_arn = (known after apply)
+          + type             = "forward"
+        }
+
+      + condition {
+          + path_pattern {
+              + values = [
+                  + "/api/v1/notifications/*",
+                  + "/ws/*",
+                ]
+            }
+        }
+    }
+
+  # aws_lb_listener_rule.services["platform-connection-service"] will be created
+  + resource "aws_lb_listener_rule" "services" {
+      + arn          = (known after apply)
+      + id           = (known after apply)
+      + listener_arn = (known after apply)
+      + priority     = 500
+      + tags_all     = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+        }
+
+      + action {
+          + order            = (known after apply)
+          + target_group_arn = (known after apply)
+          + type             = "forward"
+        }
+
+      + condition {
+          + path_pattern {
+              + values = [
+                  + "/api/v1/platforms/*",
+                ]
+            }
+        }
+    }
+
+  # aws_lb_listener_rule.services["reporting-service"] will be created
+  + resource "aws_lb_listener_rule" "services" {
+      + arn          = (known after apply)
+      + id           = (known after apply)
+      + listener_arn = (known after apply)
+      + priority     = 700
+      + tags_all     = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+        }
+
+      + action {
+          + order            = (known after apply)
+          + target_group_arn = (known after apply)
+          + type             = "forward"
+        }
+
+      + condition {
+          + path_pattern {
+              + values = [
+                  + "/api/v1/reports/*",
+                ]
+            }
+        }
+    }
+
+  # aws_lb_listener_rule.services["subscription-service"] will be created
+  + resource "aws_lb_listener_rule" "services" {
+      + arn          = (known after apply)
+      + id           = (known after apply)
+      + listener_arn = (known after apply)
+      + priority     = 400
+      + tags_all     = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+        }
+
+      + action {
+          + order            = (known after apply)
+          + target_group_arn = (known after apply)
+          + type             = "forward"
+        }
+
+      + condition {
+          + path_pattern {
+              + values = [
+                  + "/api/v1/subscriptions/*",
+                ]
+            }
+        }
+    }
+
+  # aws_lb_listener_rule.services["transaction-service"] will be created
+  + resource "aws_lb_listener_rule" "services" {
+      + arn          = (known after apply)
+      + id           = (known after apply)
+      + listener_arn = (known after apply)
+      + priority     = 300
+      + tags_all     = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+        }
+
+      + action {
+          + order            = (known after apply)
+          + target_group_arn = (known after apply)
+          + type             = "forward"
+        }
+
+      + condition {
+          + path_pattern {
+              + values = [
+                  + "/api/v1/transactions/*",
+                ]
+            }
+        }
+    }
+
+  # aws_lb_listener_rule.services["user-service"] will be created
+  + resource "aws_lb_listener_rule" "services" {
+      + arn          = (known after apply)
+      + id           = (known after apply)
+      + listener_arn = (known after apply)
+      + priority     = 200
+      + tags_all     = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+        }
+
+      + action {
+          + order            = (known after apply)
+          + target_group_arn = (known after apply)
+          + type             = "forward"
+        }
+
+      + condition {
+          + path_pattern {
+              + values = [
+                  + "/api/v1/users/*",
+                ]
+            }
+        }
+    }
+
+  # aws_lb_target_group.services["auth-service"] will be created
+  + resource "aws_lb_target_group" "services" {
+      + arn                                = (known after apply)
+      + arn_suffix                         = (known after apply)
+      + connection_termination             = (known after apply)
+      + deregistration_delay               = "300"
+      + id                                 = (known after apply)
+      + ip_address_type                    = (known after apply)
+      + lambda_multi_value_headers_enabled = false
+      + load_balancer_arns                 = (known after apply)
+      + load_balancing_algorithm_type      = (known after apply)
+      + load_balancing_anomaly_mitigation  = (known after apply)
+      + load_balancing_cross_zone_enabled  = (known after apply)
+      + name                               = "aizesk-auth"
+      + name_prefix                        = (known after apply)
+      + port                               = 8081
+      + preserve_client_ip                 = (known after apply)
+      + protocol                           = "HTTP"
+      + protocol_version                   = (known after apply)
+      + proxy_protocol_v2                  = false
+      + slow_start                         = 120
+      + tags                               = {
+          + "Name"    = "aizesk-auth-service-tg"
+          + "Service" = "auth-service"
+        }
+      + tags_all                           = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-auth-service-tg"
+          + "Project"     = "aizesk"
+          + "Service"     = "auth-service"
+        }
+      + target_type                        = "ip"
+      + vpc_id                             = (known after apply)
+
+      + health_check {
+          + enabled             = true
+          + healthy_threshold   = 2
+          + interval            = 30
+          + matcher             = "200"
+          + path                = "/actuator/health"
+          + port                = "traffic-port"
+          + protocol            = "HTTP"
+          + timeout             = 10
+          + unhealthy_threshold = 3
+        }
+
+      + stickiness (known after apply)
+
+      + target_failover (known after apply)
+
+      + target_group_health (known after apply)
+
+      + target_health_state (known after apply)
+    }
+
+  # aws_lb_target_group.services["notification-service"] will be created
+  + resource "aws_lb_target_group" "services" {
+      + arn                                = (known after apply)
+      + arn_suffix                         = (known after apply)
+      + connection_termination             = (known after apply)
+      + deregistration_delay               = "300"
+      + id                                 = (known after apply)
+      + ip_address_type                    = (known after apply)
+      + lambda_multi_value_headers_enabled = false
+      + load_balancer_arns                 = (known after apply)
+      + load_balancing_algorithm_type      = (known after apply)
+      + load_balancing_anomaly_mitigation  = (known after apply)
+      + load_balancing_cross_zone_enabled  = (known after apply)
+      + name                               = "aizesk-notification"
+      + name_prefix                        = (known after apply)
+      + port                               = 8086
+      + preserve_client_ip                 = (known after apply)
+      + protocol                           = "HTTP"
+      + protocol_version                   = (known after apply)
+      + proxy_protocol_v2                  = false
+      + slow_start                         = 120
+      + tags                               = {
+          + "Name"    = "aizesk-notification-service-tg"
+          + "Service" = "notification-service"
+        }
+      + tags_all                           = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-notification-service-tg"
+          + "Project"     = "aizesk"
+          + "Service"     = "notification-service"
+        }
+      + target_type                        = "ip"
+      + vpc_id                             = (known after apply)
+
+      + health_check {
+          + enabled             = true
+          + healthy_threshold   = 2
+          + interval            = 30
+          + matcher             = "200"
+          + path                = "/actuator/health"
+          + port                = "traffic-port"
+          + protocol            = "HTTP"
+          + timeout             = 10
+          + unhealthy_threshold = 3
+        }
+
+      + stickiness (known after apply)
+
+      + target_failover (known after apply)
+
+      + target_group_health (known after apply)
+
+      + target_health_state (known after apply)
+    }
+
+  # aws_lb_target_group.services["platform-connection-service"] will be created
+  + resource "aws_lb_target_group" "services" {
+      + arn                                = (known after apply)
+      + arn_suffix                         = (known after apply)
+      + connection_termination             = (known after apply)
+      + deregistration_delay               = "300"
+      + id                                 = (known after apply)
+      + ip_address_type                    = (known after apply)
+      + lambda_multi_value_headers_enabled = false
+      + load_balancer_arns                 = (known after apply)
+      + load_balancing_algorithm_type      = (known after apply)
+      + load_balancing_anomaly_mitigation  = (known after apply)
+      + load_balancing_cross_zone_enabled  = (known after apply)
+      + name                               = "aizesk-platform-connection"
+      + name_prefix                        = (known after apply)
+      + port                               = 8085
+      + preserve_client_ip                 = (known after apply)
+      + protocol                           = "HTTP"
+      + protocol_version                   = (known after apply)
+      + proxy_protocol_v2                  = false
+      + slow_start                         = 120
+      + tags                               = {
+          + "Name"    = "aizesk-platform-connection-service-tg"
+          + "Service" = "platform-connection-service"
+        }
+      + tags_all                           = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-platform-connection-service-tg"
+          + "Project"     = "aizesk"
+          + "Service"     = "platform-connection-service"
+        }
+      + target_type                        = "ip"
+      + vpc_id                             = (known after apply)
+
+      + health_check {
+          + enabled             = true
+          + healthy_threshold   = 2
+          + interval            = 30
+          + matcher             = "200"
+          + path                = "/actuator/health"
+          + port                = "traffic-port"
+          + protocol            = "HTTP"
+          + timeout             = 10
+          + unhealthy_threshold = 3
+        }
+
+      + stickiness (known after apply)
+
+      + target_failover (known after apply)
+
+      + target_group_health (known after apply)
+
+      + target_health_state (known after apply)
+    }
+
+  # aws_lb_target_group.services["reporting-service"] will be created
+  + resource "aws_lb_target_group" "services" {
+      + arn                                = (known after apply)
+      + arn_suffix                         = (known after apply)
+      + connection_termination             = (known after apply)
+      + deregistration_delay               = "300"
+      + id                                 = (known after apply)
+      + ip_address_type                    = (known after apply)
+      + lambda_multi_value_headers_enabled = false
+      + load_balancer_arns                 = (known after apply)
+      + load_balancing_algorithm_type      = (known after apply)
+      + load_balancing_anomaly_mitigation  = (known after apply)
+      + load_balancing_cross_zone_enabled  = (known after apply)
+      + name                               = "aizesk-reporting"
+      + name_prefix                        = (known after apply)
+      + port                               = 8087
+      + preserve_client_ip                 = (known after apply)
+      + protocol                           = "HTTP"
+      + protocol_version                   = (known after apply)
+      + proxy_protocol_v2                  = false
+      + slow_start                         = 120
+      + tags                               = {
+          + "Name"    = "aizesk-reporting-service-tg"
+          + "Service" = "reporting-service"
+        }
+      + tags_all                           = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-reporting-service-tg"
+          + "Project"     = "aizesk"
+          + "Service"     = "reporting-service"
+        }
+      + target_type                        = "ip"
+      + vpc_id                             = (known after apply)
+
+      + health_check {
+          + enabled             = true
+          + healthy_threshold   = 2
+          + interval            = 30
+          + matcher             = "200"
+          + path                = "/actuator/health"
+          + port                = "traffic-port"
+          + protocol            = "HTTP"
+          + timeout             = 10
+          + unhealthy_threshold = 3
+        }
+
+      + stickiness (known after apply)
+
+      + target_failover (known after apply)
+
+      + target_group_health (known after apply)
+
+      + target_health_state (known after apply)
+    }
+
+  # aws_lb_target_group.services["subscription-service"] will be created
+  + resource "aws_lb_target_group" "services" {
+      + arn                                = (known after apply)
+      + arn_suffix                         = (known after apply)
+      + connection_termination             = (known after apply)
+      + deregistration_delay               = "300"
+      + id                                 = (known after apply)
+      + ip_address_type                    = (known after apply)
+      + lambda_multi_value_headers_enabled = false
+      + load_balancer_arns                 = (known after apply)
+      + load_balancing_algorithm_type      = (known after apply)
+      + load_balancing_anomaly_mitigation  = (known after apply)
+      + load_balancing_cross_zone_enabled  = (known after apply)
+      + name                               = "aizesk-subscription"
+      + name_prefix                        = (known after apply)
+      + port                               = 8084
+      + preserve_client_ip                 = (known after apply)
+      + protocol                           = "HTTP"
+      + protocol_version                   = (known after apply)
+      + proxy_protocol_v2                  = false
+      + slow_start                         = 120
+      + tags                               = {
+          + "Name"    = "aizesk-subscription-service-tg"
+          + "Service" = "subscription-service"
+        }
+      + tags_all                           = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-subscription-service-tg"
+          + "Project"     = "aizesk"
+          + "Service"     = "subscription-service"
+        }
+      + target_type                        = "ip"
+      + vpc_id                             = (known after apply)
+
+      + health_check {
+          + enabled             = true
+          + healthy_threshold   = 2
+          + interval            = 30
+          + matcher             = "200"
+          + path                = "/actuator/health"
+          + port                = "traffic-port"
+          + protocol            = "HTTP"
+          + timeout             = 10
+          + unhealthy_threshold = 3
+        }
+
+      + stickiness (known after apply)
+
+      + target_failover (known after apply)
+
+      + target_group_health (known after apply)
+
+      + target_health_state (known after apply)
+    }
+
+  # aws_lb_target_group.services["transaction-service"] will be created
+  + resource "aws_lb_target_group" "services" {
+      + arn                                = (known after apply)
+      + arn_suffix                         = (known after apply)
+      + connection_termination             = (known after apply)
+      + deregistration_delay               = "300"
+      + id                                 = (known after apply)
+      + ip_address_type                    = (known after apply)
+      + lambda_multi_value_headers_enabled = false
+      + load_balancer_arns                 = (known after apply)
+      + load_balancing_algorithm_type      = (known after apply)
+      + load_balancing_anomaly_mitigation  = (known after apply)
+      + load_balancing_cross_zone_enabled  = (known after apply)
+      + name                               = "aizesk-transaction"
+      + name_prefix                        = (known after apply)
+      + port                               = 8083
+      + preserve_client_ip                 = (known after apply)
+      + protocol                           = "HTTP"
+      + protocol_version                   = (known after apply)
+      + proxy_protocol_v2                  = false
+      + slow_start                         = 120
+      + tags                               = {
+          + "Name"    = "aizesk-transaction-service-tg"
+          + "Service" = "transaction-service"
+        }
+      + tags_all                           = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-transaction-service-tg"
+          + "Project"     = "aizesk"
+          + "Service"     = "transaction-service"
+        }
+      + target_type                        = "ip"
+      + vpc_id                             = (known after apply)
+
+      + health_check {
+          + enabled             = true
+          + healthy_threshold   = 2
+          + interval            = 30
+          + matcher             = "200"
+          + path                = "/actuator/health"
+          + port                = "traffic-port"
+          + protocol            = "HTTP"
+          + timeout             = 10
+          + unhealthy_threshold = 3
+        }
+
+      + stickiness (known after apply)
+
+      + target_failover (known after apply)
+
+      + target_group_health (known after apply)
+
+      + target_health_state (known after apply)
+    }
+
+  # aws_lb_target_group.services["user-service"] will be created
+  + resource "aws_lb_target_group" "services" {
+      + arn                                = (known after apply)
+      + arn_suffix                         = (known after apply)
+      + connection_termination             = (known after apply)
+      + deregistration_delay               = "300"
+      + id                                 = (known after apply)
+      + ip_address_type                    = (known after apply)
+      + lambda_multi_value_headers_enabled = false
+      + load_balancer_arns                 = (known after apply)
+      + load_balancing_algorithm_type      = (known after apply)
+      + load_balancing_anomaly_mitigation  = (known after apply)
+      + load_balancing_cross_zone_enabled  = (known after apply)
+      + name                               = "aizesk-user"
+      + name_prefix                        = (known after apply)
+      + port                               = 8082
+      + preserve_client_ip                 = (known after apply)
+      + protocol                           = "HTTP"
+      + protocol_version                   = (known after apply)
+      + proxy_protocol_v2                  = false
+      + slow_start                         = 120
+      + tags                               = {
+          + "Name"    = "aizesk-user-service-tg"
+          + "Service" = "user-service"
+        }
+      + tags_all                           = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-user-service-tg"
+          + "Project"     = "aizesk"
+          + "Service"     = "user-service"
+        }
+      + target_type                        = "ip"
+      + vpc_id                             = (known after apply)
+
+      + health_check {
+          + enabled             = true
+          + healthy_threshold   = 2
+          + interval            = 30
+          + matcher             = "200"
+          + path                = "/actuator/health"
+          + port                = "traffic-port"
+          + protocol            = "HTTP"
+          + timeout             = 10
+          + unhealthy_threshold = 3
+        }
+
+      + stickiness (known after apply)
+
+      + target_failover (known after apply)
+
+      + target_group_health (known after apply)
+
+      + target_health_state (known after apply)
+    }
+
+  # aws_route_table.public will be created
+  + resource "aws_route_table" "public" {
+      + arn              = (known after apply)
+      + id               = (known after apply)
+      + owner_id         = (known after apply)
+      + propagating_vgws = (known after apply)
+      + route            = [
+          + {
+              + cidr_block                 = "0.0.0.0/0"
+              + gateway_id                 = (known after apply)
+                # (11 unchanged attributes hidden)
+            },
+        ]
+      + tags             = {
+          + "Name" = "aizesk-public-rt"
+        }
+      + tags_all         = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-public-rt"
+          + "Project"     = "aizesk"
+        }
+      + vpc_id           = (known after apply)
+    }
+
+  # aws_route_table_association.public[0] will be created
+  + resource "aws_route_table_association" "public" {
+      + id             = (known after apply)
+      + route_table_id = (known after apply)
+      + subnet_id      = (known after apply)
+    }
+
+  # aws_route_table_association.public[1] will be created
+  + resource "aws_route_table_association" "public" {
+      + id             = (known after apply)
+      + route_table_id = (known after apply)
+      + subnet_id      = (known after apply)
+    }
+
+  # aws_s3_bucket.frontend will be created
+  + resource "aws_s3_bucket" "frontend" {
+      + acceleration_status         = (known after apply)
+      + acl                         = (known after apply)
+      + arn                         = (known after apply)
+      + bucket                      = "aizesk-frontend-prod"
+      + bucket_domain_name          = (known after apply)
+      + bucket_prefix               = (known after apply)
+      + bucket_regional_domain_name = (known after apply)
+      + force_destroy               = true
+      + hosted_zone_id              = (known after apply)
+      + id                          = (known after apply)
+      + object_lock_enabled         = (known after apply)
+      + policy                      = (known after apply)
+      + region                      = (known after apply)
+      + request_payer               = (known after apply)
+      + tags                        = {
+          + "Name" = "aizesk-frontend"
+        }
+      + tags_all                    = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-frontend"
+          + "Project"     = "aizesk"
+        }
+      + website_domain              = (known after apply)
+      + website_endpoint            = (known after apply)
+
+      + cors_rule (known after apply)
+
+      + grant (known after apply)
+
+      + lifecycle_rule (known after apply)
+
+      + logging (known after apply)
+
+      + object_lock_configuration (known after apply)
+
+      + replication_configuration (known after apply)
+
+      + server_side_encryption_configuration (known after apply)
+
+      + versioning (known after apply)
+
+      + website (known after apply)
+    }
+
+  # aws_s3_bucket_policy.frontend will be created
+  + resource "aws_s3_bucket_policy" "frontend" {
+      + bucket = (known after apply)
+      + id     = (known after apply)
+      + policy = (known after apply)
+    }
+
+  # aws_s3_bucket_public_access_block.frontend will be created
+  + resource "aws_s3_bucket_public_access_block" "frontend" {
+      + block_public_acls       = true
+      + block_public_policy     = true
+      + bucket                  = (known after apply)
+      + id                      = (known after apply)
+      + ignore_public_acls      = true
+      + restrict_public_buckets = true
+    }
+
+  # aws_s3_bucket_versioning.frontend will be created
+  + resource "aws_s3_bucket_versioning" "frontend" {
+      + bucket = (known after apply)
+      + id     = (known after apply)
+
+      + versioning_configuration {
+          + mfa_delete = (known after apply)
+          + status     = "Disabled"
+        }
+    }
+
+  # aws_security_group.alb will be created
+  + resource "aws_security_group" "alb" {
+      + arn                    = (known after apply)
+      + description            = "Security group for Application Load Balancer"
+      + egress                 = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + from_port        = 0
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "-1"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 0
+                # (1 unchanged attribute hidden)
+            },
+        ]
+      + id                     = (known after apply)
+      + ingress                = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + description      = "HTTP from internet"
+              + from_port        = 80
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 80
+            },
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + description      = "HTTPS from internet"
+              + from_port        = 443
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 443
+            },
+        ]
+      + name                   = (known after apply)
+      + name_prefix            = "aizesk-alb-"
+      + owner_id               = (known after apply)
+      + revoke_rules_on_delete = false
+      + tags                   = {
+          + "Name" = "aizesk-alb-sg"
+        }
+      + tags_all               = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-alb-sg"
+          + "Project"     = "aizesk"
+        }
+      + vpc_id                 = (known after apply)
+    }
+
+  # aws_security_group.ecs_tasks will be created
+  + resource "aws_security_group" "ecs_tasks" {
+      + arn                    = (known after apply)
+      + description            = "Security group for ECS Fargate tasks"
+      + egress                 = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + from_port        = 0
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "-1"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 0
+                # (1 unchanged attribute hidden)
+            },
+        ]
+      + id                     = (known after apply)
+      + ingress                = [
+          + {
+              + cidr_blocks      = []
+              + description      = "Inter-service communication"
+              + from_port        = 8081
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = []
+              + self             = true
+              + to_port          = 8087
+            },
+          + {
+              + cidr_blocks      = []
+              + description      = "Traffic from ALB"
+              + from_port        = 8081
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = (known after apply)
+              + self             = false
+              + to_port          = 8087
+            },
+        ]
+      + name                   = (known after apply)
+      + name_prefix            = "aizesk-ecs-"
+      + owner_id               = (known after apply)
+      + revoke_rules_on_delete = false
+      + tags                   = {
+          + "Name" = "aizesk-ecs-sg"
+        }
+      + tags_all               = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-ecs-sg"
+          + "Project"     = "aizesk"
+        }
+      + vpc_id                 = (known after apply)
+    }
+
+  # aws_security_group.rds will be created
+  + resource "aws_security_group" "rds" {
+      + arn                    = (known after apply)
+      + description            = "Security group for RDS MySQL"
+      + egress                 = (known after apply)
+      + id                     = (known after apply)
+      + ingress                = [
+          + {
+              + cidr_blocks      = []
+              + description      = "MySQL from ECS tasks"
+              + from_port        = 3306
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = (known after apply)
+              + self             = false
+              + to_port          = 3306
+            },
+        ]
+      + name                   = (known after apply)
+      + name_prefix            = "aizesk-rds-"
+      + owner_id               = (known after apply)
+      + revoke_rules_on_delete = false
+      + tags                   = {
+          + "Name" = "aizesk-rds-sg"
+        }
+      + tags_all               = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-rds-sg"
+          + "Project"     = "aizesk"
+        }
+      + vpc_id                 = (known after apply)
+    }
+
+  # aws_service_discovery_private_dns_namespace.main will be created
+  + resource "aws_service_discovery_private_dns_namespace" "main" {
+      + arn         = (known after apply)
+      + description = "Service discovery for aizesk microservices"
+      + hosted_zone = (known after apply)
+      + id          = (known after apply)
+      + name        = "aizesk.local"
+      + tags_all    = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+        }
+      + vpc         = (known after apply)
+    }
+
+  # aws_service_discovery_service.services["auth-service"] will be created
+  + resource "aws_service_discovery_service" "services" {
+      + arn           = (known after apply)
+      + force_destroy = false
+      + id            = (known after apply)
+      + name          = "auth-service"
+      + namespace_id  = (known after apply)
+      + tags_all      = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+        }
+      + type          = (known after apply)
+
+      + dns_config {
+          + namespace_id   = (known after apply)
+          + routing_policy = "MULTIVALUE"
+
+          + dns_records {
+              + ttl  = 10
+              + type = "A"
+            }
+        }
+
+      + health_check_custom_config {
+          + failure_threshold = 1
+        }
+    }
+
+  # aws_service_discovery_service.services["notification-service"] will be created
+  + resource "aws_service_discovery_service" "services" {
+      + arn           = (known after apply)
+      + force_destroy = false
+      + id            = (known after apply)
+      + name          = "notification-service"
+      + namespace_id  = (known after apply)
+      + tags_all      = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+        }
+      + type          = (known after apply)
+
+      + dns_config {
+          + namespace_id   = (known after apply)
+          + routing_policy = "MULTIVALUE"
+
+          + dns_records {
+              + ttl  = 10
+              + type = "A"
+            }
+        }
+
+      + health_check_custom_config {
+          + failure_threshold = 1
+        }
+    }
+
+  # aws_service_discovery_service.services["platform-connection-service"] will be created
+  + resource "aws_service_discovery_service" "services" {
+      + arn           = (known after apply)
+      + force_destroy = false
+      + id            = (known after apply)
+      + name          = "platform-connection-service"
+      + namespace_id  = (known after apply)
+      + tags_all      = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+        }
+      + type          = (known after apply)
+
+      + dns_config {
+          + namespace_id   = (known after apply)
+          + routing_policy = "MULTIVALUE"
+
+          + dns_records {
+              + ttl  = 10
+              + type = "A"
+            }
+        }
+
+      + health_check_custom_config {
+          + failure_threshold = 1
+        }
+    }
+
+  # aws_service_discovery_service.services["reporting-service"] will be created
+  + resource "aws_service_discovery_service" "services" {
+      + arn           = (known after apply)
+      + force_destroy = false
+      + id            = (known after apply)
+      + name          = "reporting-service"
+      + namespace_id  = (known after apply)
+      + tags_all      = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+        }
+      + type          = (known after apply)
+
+      + dns_config {
+          + namespace_id   = (known after apply)
+          + routing_policy = "MULTIVALUE"
+
+          + dns_records {
+              + ttl  = 10
+              + type = "A"
+            }
+        }
+
+      + health_check_custom_config {
+          + failure_threshold = 1
+        }
+    }
+
+  # aws_service_discovery_service.services["subscription-service"] will be created
+  + resource "aws_service_discovery_service" "services" {
+      + arn           = (known after apply)
+      + force_destroy = false
+      + id            = (known after apply)
+      + name          = "subscription-service"
+      + namespace_id  = (known after apply)
+      + tags_all      = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+        }
+      + type          = (known after apply)
+
+      + dns_config {
+          + namespace_id   = (known after apply)
+          + routing_policy = "MULTIVALUE"
+
+          + dns_records {
+              + ttl  = 10
+              + type = "A"
+            }
+        }
+
+      + health_check_custom_config {
+          + failure_threshold = 1
+        }
+    }
+
+  # aws_service_discovery_service.services["transaction-service"] will be created
+  + resource "aws_service_discovery_service" "services" {
+      + arn           = (known after apply)
+      + force_destroy = false
+      + id            = (known after apply)
+      + name          = "transaction-service"
+      + namespace_id  = (known after apply)
+      + tags_all      = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+        }
+      + type          = (known after apply)
+
+      + dns_config {
+          + namespace_id   = (known after apply)
+          + routing_policy = "MULTIVALUE"
+
+          + dns_records {
+              + ttl  = 10
+              + type = "A"
+            }
+        }
+
+      + health_check_custom_config {
+          + failure_threshold = 1
+        }
+    }
+
+  # aws_service_discovery_service.services["user-service"] will be created
+  + resource "aws_service_discovery_service" "services" {
+      + arn           = (known after apply)
+      + force_destroy = false
+      + id            = (known after apply)
+      + name          = "user-service"
+      + namespace_id  = (known after apply)
+      + tags_all      = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Project"     = "aizesk"
+        }
+      + type          = (known after apply)
+
+      + dns_config {
+          + namespace_id   = (known after apply)
+          + routing_policy = "MULTIVALUE"
+
+          + dns_records {
+              + ttl  = 10
+              + type = "A"
+            }
+        }
+
+      + health_check_custom_config {
+          + failure_threshold = 1
+        }
+    }
+
+  # aws_ssm_parameter.db_password will be created
+  + resource "aws_ssm_parameter" "db_password" {
+      + arn            = (known after apply)
+      + data_type      = (known after apply)
+      + has_value_wo   = (known after apply)
+      + id             = (known after apply)
+      + insecure_value = (known after apply)
+      + key_id         = (known after apply)
+      + name           = "/aizesk/database/password"
+      + tags           = {
+          + "Name" = "aizesk-db-password"
+        }
+      + tags_all       = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-db-password"
+          + "Project"     = "aizesk"
+        }
+      + tier           = (known after apply)
+      + type           = "SecureString"
+      + value          = (sensitive value)
+      + value_wo       = (write-only attribute)
+      + version        = (known after apply)
+    }
+
+  # aws_ssm_parameter.db_username will be created
+  + resource "aws_ssm_parameter" "db_username" {
+      + arn            = (known after apply)
+      + data_type      = (known after apply)
+      + has_value_wo   = (known after apply)
+      + id             = (known after apply)
+      + insecure_value = (known after apply)
+      + key_id         = (known after apply)
+      + name           = "/aizesk/database/username"
+      + tags           = {
+          + "Name" = "aizesk-db-username"
+        }
+      + tags_all       = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-db-username"
+          + "Project"     = "aizesk"
+        }
+      + tier           = (known after apply)
+      + type           = "SecureString"
+      + value          = (sensitive value)
+      + value_wo       = (write-only attribute)
+      + version        = (known after apply)
+    }
+
+  # aws_ssm_parameter.jwt_secret will be created
+  + resource "aws_ssm_parameter" "jwt_secret" {
+      + arn            = (known after apply)
+      + data_type      = (known after apply)
+      + has_value_wo   = (known after apply)
+      + id             = (known after apply)
+      + insecure_value = (known after apply)
+      + key_id         = (known after apply)
+      + name           = "/aizesk/auth/jwt-secret"
+      + tags           = {
+          + "Name" = "aizesk-jwt-secret"
+        }
+      + tags_all       = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-jwt-secret"
+          + "Project"     = "aizesk"
+        }
+      + tier           = (known after apply)
+      + type           = "SecureString"
+      + value          = (sensitive value)
+      + value_wo       = (write-only attribute)
+      + version        = (known after apply)
+    }
+
+  # aws_ssm_parameter.shopify_client_id will be created
+  + resource "aws_ssm_parameter" "shopify_client_id" {
+      + arn            = (known after apply)
+      + data_type      = (known after apply)
+      + has_value_wo   = (known after apply)
+      + id             = (known after apply)
+      + insecure_value = (known after apply)
+      + key_id         = (known after apply)
+      + name           = "/aizesk/shopify/client-id"
+      + tags           = {
+          + "Name" = "aizesk-shopify-client-id"
+        }
+      + tags_all       = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-shopify-client-id"
+          + "Project"     = "aizesk"
+        }
+      + tier           = (known after apply)
+      + type           = "SecureString"
+      + value          = (sensitive value)
+      + value_wo       = (write-only attribute)
+      + version        = (known after apply)
+    }
+
+  # aws_ssm_parameter.shopify_client_secret will be created
+  + resource "aws_ssm_parameter" "shopify_client_secret" {
+      + arn            = (known after apply)
+      + data_type      = (known after apply)
+      + has_value_wo   = (known after apply)
+      + id             = (known after apply)
+      + insecure_value = (known after apply)
+      + key_id         = (known after apply)
+      + name           = "/aizesk/shopify/client-secret"
+      + tags           = {
+          + "Name" = "aizesk-shopify-client-secret"
+        }
+      + tags_all       = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-shopify-client-secret"
+          + "Project"     = "aizesk"
+        }
+      + tier           = (known after apply)
+      + type           = "SecureString"
+      + value          = (sensitive value)
+      + value_wo       = (write-only attribute)
+      + version        = (known after apply)
+    }
+
+  # aws_ssm_parameter.stripe_api_key will be created
+  + resource "aws_ssm_parameter" "stripe_api_key" {
+      + arn            = (known after apply)
+      + data_type      = (known after apply)
+      + has_value_wo   = (known after apply)
+      + id             = (known after apply)
+      + insecure_value = (known after apply)
+      + key_id         = (known after apply)
+      + name           = "/aizesk/stripe/api-key"
+      + tags           = {
+          + "Name" = "aizesk-stripe-api-key"
+        }
+      + tags_all       = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-stripe-api-key"
+          + "Project"     = "aizesk"
+        }
+      + tier           = (known after apply)
+      + type           = "SecureString"
+      + value          = (sensitive value)
+      + value_wo       = (write-only attribute)
+      + version        = (known after apply)
+    }
+
+  # aws_ssm_parameter.stripe_webhook_secret will be created
+  + resource "aws_ssm_parameter" "stripe_webhook_secret" {
+      + arn            = (known after apply)
+      + data_type      = (known after apply)
+      + has_value_wo   = (known after apply)
+      + id             = (known after apply)
+      + insecure_value = (known after apply)
+      + key_id         = (known after apply)
+      + name           = "/aizesk/stripe/webhook-secret"
+      + tags           = {
+          + "Name" = "aizesk-stripe-webhook-secret"
+        }
+      + tags_all       = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-stripe-webhook-secret"
+          + "Project"     = "aizesk"
+        }
+      + tier           = (known after apply)
+      + type           = "SecureString"
+      + value          = (sensitive value)
+      + value_wo       = (write-only attribute)
+      + version        = (known after apply)
+    }
+
+  # aws_subnet.private[0] will be created
+  + resource "aws_subnet" "private" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "us-east-1a"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.10.0/24"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = false
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Name" = "aizesk-private-us-east-1a"
+          + "Type" = "private"
+        }
+      + tags_all                                       = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-private-us-east-1a"
+          + "Project"     = "aizesk"
+          + "Type"        = "private"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
+  # aws_subnet.private[1] will be created
+  + resource "aws_subnet" "private" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "us-east-1b"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.11.0/24"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = false
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Name" = "aizesk-private-us-east-1b"
+          + "Type" = "private"
+        }
+      + tags_all                                       = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-private-us-east-1b"
+          + "Project"     = "aizesk"
+          + "Type"        = "private"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
+  # aws_subnet.public[0] will be created
+  + resource "aws_subnet" "public" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "us-east-1a"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.0.0/24"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = true
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Name" = "aizesk-public-us-east-1a"
+          + "Type" = "public"
+        }
+      + tags_all                                       = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-public-us-east-1a"
+          + "Project"     = "aizesk"
+          + "Type"        = "public"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
+  # aws_subnet.public[1] will be created
+  + resource "aws_subnet" "public" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "us-east-1b"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.1.0/24"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = true
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Name" = "aizesk-public-us-east-1b"
+          + "Type" = "public"
+        }
+      + tags_all                                       = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-public-us-east-1b"
+          + "Project"     = "aizesk"
+          + "Type"        = "public"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
+  # aws_vpc.main will be created
+  + resource "aws_vpc" "main" {
+      + arn                                  = (known after apply)
+      + cidr_block                           = "10.0.0.0/16"
+      + default_network_acl_id               = (known after apply)
+      + default_route_table_id               = (known after apply)
+      + default_security_group_id            = (known after apply)
+      + dhcp_options_id                      = (known after apply)
+      + enable_dns_hostnames                 = true
+      + enable_dns_support                   = true
+      + enable_network_address_usage_metrics = (known after apply)
+      + id                                   = (known after apply)
+      + instance_tenancy                     = "default"
+      + ipv6_association_id                  = (known after apply)
+      + ipv6_cidr_block                      = (known after apply)
+      + ipv6_cidr_block_network_border_group = (known after apply)
+      + main_route_table_id                  = (known after apply)
+      + owner_id                             = (known after apply)
+      + tags                                 = {
+          + "Name" = "aizesk-vpc"
+        }
+      + tags_all                             = {
+          + "Environment" = "prod"
+          + "ManagedBy"   = "terraform"
+          + "Name"        = "aizesk-vpc"
+          + "Project"     = "aizesk"
+        }
+    }
+
+Plan: 88 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + alb_dns_name                   = (known after apply)
+  + api_url                        = (known after apply)
+  + aws_region                     = "us-east-1"
+  + cloudfront_distribution_domain = (known after apply)
+  + cloudfront_distribution_id     = (known after apply)
+  + ecr_repository_urls            = {
+      + auth-service                = (known after apply)
+      + notification-service        = (known after apply)
+      + platform-connection-service = (known after apply)
+      + reporting-service           = (known after apply)
+      + subscription-service        = (known after apply)
+      + transaction-service         = (known after apply)
+      + user-service                = (known after apply)
+    }
+  + ecs_cluster_name               = "aizesk-cluster"
+  + frontend_url                   = (known after apply)
+  + rds_endpoint                   = (known after apply)
+  + s3_frontend_bucket             = "aizesk-frontend-prod"
+  + vpc_id                         = (known after apply)
+
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+
+Note: You didn't use the -out option to save this plan, so Terraform can't
+guarantee to take exactly these actions if you run "terraform apply" now.
