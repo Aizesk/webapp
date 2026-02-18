@@ -55,6 +55,9 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "ssl": true
+          },
           "configurations": {
             "production": {
               "buildTarget": "frontend:build:production"

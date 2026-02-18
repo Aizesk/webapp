@@ -1,9 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnInit, signal, computed } from '@angular/core';
 import { NgClass } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { TopNavbarComponent } from '../../shared/components/top-navbar/top-navbar.component';
 import { MAIN_NAV_ITEMS } from '../../shared/models/navigation.model';
-import { PlatformConnectionService, PlatformCardView } from '../../core/services/platform-connection.service';
+import {
+  PlatformConnectionService,
+  PlatformCardView,
+} from '../../core/services/platform-connection.service';
 
 @Component({
   selector: 'app-platform-connections-page',
@@ -24,7 +28,6 @@ export class PlatformConnectionsPageComponent implements OnInit {
   // Shopify domain dialog
   protected readonly showShopifyDialog = signal(false);
   protected readonly shopDomain = signal('');
-  protected readonly pendingPlatformType = signal<string | null>(null);
 
   // Action feedback
   protected readonly actionLoading = signal<string | null>(null);
@@ -35,14 +38,18 @@ export class PlatformConnectionsPageComponent implements OnInit {
   protected readonly syncingPlatform;
 
   // Computed values for sidebar (Angular templates don't support arrow fn)
-  protected readonly connectedCount = computed(() =>
-    this.platforms().filter(p => p.connected).length
+  protected readonly connectedCount = computed(
+    () => this.platforms().filter((p) => p.connected).length,
   );
   protected readonly totalOrders = computed(() =>
-    this.platforms().reduce((sum, p) => sum + p.totalOrdersSynced, 0)
+    this.platforms().reduce((sum, p) => sum + p.totalOrdersSynced, 0),
   );
 
-  constructor(private readonly platformService: PlatformConnectionService) {
+  constructor(
+    private readonly platformService: PlatformConnectionService,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+  ) {
     this.platforms = this.platformService.platforms;
     this.loading = this.platformService.loading;
     this.error = this.platformService.error;
@@ -50,15 +57,56 @@ export class PlatformConnectionsPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.handleOAuthReturn();
     this.platformService.loadPlatforms();
+  }
+
+  /**
+   * Check if we're returning from an OAuth flow (eBay, etc.).
+   * eBay redirects here with ?code=...&state=... query params.
+   * We capture them, send to backend, and clean the URL.
+   */
+  private handleOAuthReturn(): void {
+    const params = this.route.snapshot.queryParams;
+
+    // Handle successful OAuth return with code + state
+    if (params['code'] && params['state']) {
+      this.actionLoading.set('OAUTH');
+      this.platformService.handleOAuthCallback(params['code'], params['state']).subscribe({
+        next: () => {
+          this.actionLoading.set(null);
+          this.showFeedback('¡Plataforma conectada correctamente!');
+          this.platformService.loadPlatforms();
+          // Clean query params from URL
+          this.router.navigate([], { relativeTo: this.route, queryParams: {} });
+        },
+        error: (err) => {
+          this.actionLoading.set(null);
+          this.showFeedback('Error al conectar: ' + (err.error?.message || err.message));
+          this.router.navigate([], { relativeTo: this.route, queryParams: {} });
+        },
+      });
+      return;
+    }
+
+    // Handle connected=platform (from backend GET callback redirect)
+    if (params['connected']) {
+      this.showFeedback(`¡${params['connected']} conectado correctamente!`);
+      this.router.navigate([], { relativeTo: this.route, queryParams: {} });
+      return;
+    }
+
+    // Handle error param
+    if (params['error']) {
+      this.showFeedback('Error OAuth: ' + params['error']);
+      this.router.navigate([], { relativeTo: this.route, queryParams: {} });
+    }
   }
 
   // ==================== Actions ====================
 
   protected handleConnect(platform: PlatformCardView): void {
     if (platform.type === 'SHOPIFY') {
-      // Shopify needs shop domain first
-      this.pendingPlatformType.set(platform.type);
       this.shopDomain.set('');
       this.showShopifyDialog.set(true);
       return;
@@ -77,7 +125,6 @@ export class PlatformConnectionsPageComponent implements OnInit {
 
   protected cancelShopifyDialog(): void {
     this.showShopifyDialog.set(false);
-    this.pendingPlatformType.set(null);
     this.shopDomain.set('');
   }
 
@@ -105,14 +152,14 @@ export class PlatformConnectionsPageComponent implements OnInit {
       next: (result) => {
         this.syncResult.set({
           type: platform.type,
-          message: `✅ ${result.ordersFound} pedidos encontrados, ${result.ordersCreated} nuevos`
+          message: `✅ ${result.ordersFound} pedidos encontrados, ${result.ordersCreated} nuevos`,
         });
         setTimeout(() => this.syncResult.set(null), 5000);
       },
       error: (err) => {
         this.syncResult.set({
           type: platform.type,
-          message: '❌ Error al sincronizar'
+          message: '❌ Error al sincronizar',
         });
         setTimeout(() => this.syncResult.set(null), 5000);
       },
@@ -126,22 +173,34 @@ export class PlatformConnectionsPageComponent implements OnInit {
 
   protected getStatusClass(status: string): string {
     switch (status) {
-      case 'CONNECTED': return 'conectado';
-      case 'PENDING': return 'pendiente';
-      case 'DISCONNECTED': return 'no-conectado';
-      case 'ERROR': case 'EXPIRED': return 'error';
-      default: return 'no-conectado';
+      case 'CONNECTED':
+        return 'conectado';
+      case 'PENDING':
+        return 'pendiente';
+      case 'DISCONNECTED':
+        return 'no-conectado';
+      case 'ERROR':
+      case 'EXPIRED':
+        return 'error';
+      default:
+        return 'no-conectado';
     }
   }
 
   protected getStatusLabel(status: string): string {
     switch (status) {
-      case 'CONNECTED': return 'Conectado';
-      case 'PENDING': return 'Conectando…';
-      case 'DISCONNECTED': return 'No conectado';
-      case 'ERROR': return 'Error';
-      case 'EXPIRED': return 'Token expirado';
-      default: return 'No conectado';
+      case 'CONNECTED':
+        return 'Conectado';
+      case 'PENDING':
+        return 'Conectando…';
+      case 'DISCONNECTED':
+        return 'No conectado';
+      case 'ERROR':
+        return 'Error';
+      case 'EXPIRED':
+        return 'Token expirado';
+      default:
+        return 'No conectado';
     }
   }
 
