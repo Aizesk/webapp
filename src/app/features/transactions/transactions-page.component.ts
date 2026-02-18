@@ -58,6 +58,7 @@ const ORIGIN_OPTIONS: { id: TransactionOrigin | 'ALL'; label: string; icon: stri
   { id: 'ALL', label: 'Todos', icon: 'language' },
   { id: 'AMAZON', label: 'Amazon', icon: 'shopping_cart' },
   { id: 'SHOPIFY', label: 'Shopify', icon: 'storefront' },
+  { id: 'EBAY', label: 'eBay', icon: 'local_offer' },
   { id: 'MANUAL', label: 'Manual', icon: 'edit_note' },
   { id: 'STRIPE', label: 'Stripe', icon: 'credit_card' },
   { id: 'PAYPAL', label: 'PayPal', icon: 'account_balance_wallet' }

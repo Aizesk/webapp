@@ -1,7 +1,7 @@
 /**
  * Transaction Origin Enum - matches backend TransactionOrigin.java
  */
-export type TransactionOrigin = 'MANUAL' | 'AMAZON' | 'SHOPIFY' | 'STRIPE' | 'PAYPAL' | 'BANK_SYNC' | 'OTHER';
+export type TransactionOrigin = 'MANUAL' | 'AMAZON' | 'SHOPIFY' | 'EBAY' | 'ETSY' | 'WOOCOMMERCE' | 'STRIPE' | 'PAYPAL' | 'BANK_SYNC' | 'OTHER';
 
 /**
  * Transaction Type Enum

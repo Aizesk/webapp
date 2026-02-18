@@ -78,6 +78,14 @@ export class ReportsPageComponent implements OnInit {
       accentColor: '#96BF48',
       accentColorLight: 'rgba(150, 191, 72, 0.1)',
     },
+    {
+      id: 'EBAY',
+      name: 'Reporte eBay Marketplace',
+      description: 'Subastas, listados, comisiones y ventas netas.',
+      icon: 'local_offer',
+      accentColor: '#0064D2',
+      accentColorLight: 'rgba(0, 100, 210, 0.1)',
+    },
   ];
 
   // Combined for backward compatibility
