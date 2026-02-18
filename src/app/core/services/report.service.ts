@@ -4,7 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { tap, catchError, map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
-export type ReportType = 'GLOBAL' | 'AMAZON' | 'SHOPIFY' | 'MANUAL';
+export type ReportType = 'GLOBAL' | 'AMAZON' | 'SHOPIFY' | 'EBAY' | 'MANUAL';
 export type ReportFormat = 'PDF' | 'EXCEL' | 'CSV';
 export type ReportStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
 

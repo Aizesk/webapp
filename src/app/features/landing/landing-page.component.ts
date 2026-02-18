@@ -41,6 +41,13 @@ export class LandingPageComponent implements OnInit, OnDestroy {
       color: '#FF9900',
       description: 'Importa ventas de afiliados, FBA y KDP',
     },
+    {
+      id: 'ebay',
+      name: 'eBay',
+      icon: '🏷️',
+      color: '#0064D2',
+      description: 'Gestiona tus subastas y ventas directas',
+    },
   ];
 
   protected readonly securityFeatures = [
