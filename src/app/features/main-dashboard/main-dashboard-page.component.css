@@ -949,8 +949,8 @@
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   border-radius: 10px;
-  background: var(--accent);
-  color: #fff;
+  background: var(--accent-primary);
+  color: #ffffff;
   font-weight: 600;
   font-size: 0.875rem;
   text-decoration: none;
@@ -959,6 +959,7 @@
 
 .quick-action-btn:hover {
   transform: translateY(-2px);
+  background: var(--accent-primary-hover);
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
