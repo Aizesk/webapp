@@ -435,11 +435,14 @@ cmd_status() {
 
   echo ""
   echo -e "${BOLD}URLs:${NC}"
-  local frontend_url api_url
+  local frontend_url api_url https_api_url
   frontend_url=$(tf_output frontend_url 2>/dev/null || echo "pending")
   api_url=$(tf_output api_url 2>/dev/null || echo "pending")
-  echo "  Frontend: $frontend_url"
-  echo "  API:      $api_url"
+  https_api_url=$(tf_output https_api_url 2>/dev/null || echo "pending")
+  
+  echo "  Frontend:    $frontend_url"
+  echo "  ALB (HTTP):  $api_url"
+  echo "  Proxy (HTTPS): $https_api_url"
   echo ""
 }
 
