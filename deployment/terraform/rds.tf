@@ -52,7 +52,7 @@ resource "aws_db_instance" "main" {
   delete_automated_backups  = true
 
   # Performance Insights (free for db.t4g.micro)
-  performance_insights_enabled = true
+  performance_insights_enabled = false
 
   tags = {
     Name = "${var.project_name}-rds"

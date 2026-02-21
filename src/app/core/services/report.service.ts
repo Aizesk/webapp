@@ -39,7 +39,7 @@ export interface MonthlyPreference {
 
 @Injectable({ providedIn: 'root' })
 export class ReportService {
-  private readonly apiUrl = `${environment.apiUrls.reporting.replace('/api/v1/reports', '')}/api/reports`;
+  private readonly apiUrl = environment.apiUrls.reporting;
 
   private readonly _reports = signal<ReportResponse[]>([]);
   private readonly _loading = signal<boolean>(false);
@@ -51,7 +51,7 @@ export class ReportService {
   readonly generating = this._generating.asReadonly();
   readonly error = this._error.asReadonly();
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly http: HttpClient) { }
 
   generateReport(request: GenerateReportRequest): Observable<ReportResponse> {
     this._generating.set(true);
@@ -149,7 +149,7 @@ export class ReportService {
         };
         const extension = extensionMap[report.format] || report.format.toLowerCase();
         const filename = `${report.typeDisplayName.replace(/\s+/g, '_')}_${report.dateRangeDisplay.replace(/\s+/g, '_')}.${extension}`;
-        
+
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
@@ -164,10 +164,10 @@ export class ReportService {
   private handleError(error: HttpErrorResponse, operation: string): Observable<never> {
     this._loading.set(false);
     this._generating.set(false);
-    
+
     const message = error.error?.message || error.message || `Error ${operation} report`;
     this._error.set(message);
-    
+
     return throwError(() => new Error(message));
   }
 }

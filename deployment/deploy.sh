@@ -327,11 +327,10 @@ cmd_frontend() {
 
   cd "$TF_DIR"
 
-  local alb_dns s3_bucket cf_id cf_domain
+  local alb_dns s3_bucket frontend_url
   alb_dns=$(tf_output alb_dns_name)
   s3_bucket=$(tf_output s3_frontend_bucket)
-  cf_id=$(tf_output cloudfront_distribution_id)
-  cf_domain=$(tf_output cloudfront_distribution_domain)
+  frontend_url=$(tf_output frontend_url)
 
   cd "$WEBAPP_DIR"
 
@@ -352,7 +351,7 @@ export const environment = {
     platforms: \`\${API_BASE}/api/v1/platforms\`,
     notifications: \`\${API_BASE}/api/v1/notifications\`,
   },
-  notificationsWs: \`ws://\${alb_dns}/ws/notifications\`,
+  notificationsWs: \`ws://${alb_dns}/ws/notifications\`,
 };
 EOF
 
@@ -390,15 +389,9 @@ EOF
       --cache-control "no-cache" 2>/dev/null || true
   done
 
-  # Invalidate CloudFront
-  log_info "Invalidating CloudFront cache..."
-  aws cloudfront create-invalidation \
-    --distribution-id "$cf_id" \
-    --paths "/index.html" "/*.json" >/dev/null
-
   echo ""
   log_ok "Frontend deployed!"
-  echo -e "   URL: ${BOLD}https://$cf_domain${NC}"
+  echo -e "   URL: ${BOLD}$frontend_url${NC}"
 }
 
 # ============================================================

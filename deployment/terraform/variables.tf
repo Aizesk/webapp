@@ -63,13 +63,13 @@ variable "db_name" {
 variable "service_cpu" {
   description = "CPU units for each Fargate task (256 = 0.25 vCPU)"
   type        = number
-  default     = 256
+  default     = 512
 }
 
 variable "service_memory" {
   description = "Memory in MB for each Fargate task"
   type        = number
-  default     = 512
+  default     = 1024
 }
 
 # ---- Secrets (passed via terraform.tfvars or env vars) ----
@@ -144,43 +144,43 @@ variable "microservices" {
     auth-service = {
       port         = 8081
       health_path  = "/actuator/health"
-      path_pattern = ["/api/v1/auth/*"]
+      path_pattern = ["/api/v1/auth", "/api/v1/auth/*"]
       priority     = 100
     }
     user-service = {
       port         = 8082
       health_path  = "/actuator/health"
-      path_pattern = ["/api/v1/users/*"]
+      path_pattern = ["/api/v1/users", "/api/v1/users/*", "/api/v1/users/internal/*"]
       priority     = 200
     }
     transaction-service = {
       port         = 8083
       health_path  = "/actuator/health"
-      path_pattern = ["/api/v1/transactions/*"]
+      path_pattern = ["/api/v1/transactions", "/api/v1/transactions/*", "/internal/transactions/*"]
       priority     = 300
     }
     subscription-service = {
       port         = 8084
       health_path  = "/actuator/health"
-      path_pattern = ["/api/v1/subscriptions/*"]
+      path_pattern = ["/api/v1/subscriptions", "/api/v1/subscriptions/*", "/api/v1/subscriptions/internal/*"]
       priority     = 400
     }
     platform-connection-service = {
       port         = 8085
       health_path  = "/actuator/health"
-      path_pattern = ["/api/v1/platforms/*"]
+      path_pattern = ["/api/v1/platforms", "/api/v1/platforms/*", "/api/v1/platforms/internal/*"]
       priority     = 500
     }
     notification-service = {
       port         = 8086
       health_path  = "/actuator/health"
-      path_pattern = ["/api/v1/notifications/*", "/ws/*"]
+      path_pattern = ["/api/v1/notifications", "/api/v1/notifications/*", "/api/internal/v1/notifications/*", "/ws/*"]
       priority     = 600
     }
     reporting-service = {
       port         = 8087
       health_path  = "/actuator/health"
-      path_pattern = ["/api/v1/reports/*"]
+      path_pattern = ["/api/v1/reports", "/api/v1/reports/*"]
       priority     = 700
     }
   }

@@ -118,6 +118,10 @@ resource "aws_ecs_task_definition" "services" {
           name  = "FRONTEND_URL"
           value = "http://${aws_s3_bucket_website_configuration.frontend.website_endpoint}"
         },
+        {
+          name  = "CORS_ALLOWED_ORIGINS"
+          value = "http://localhost:4200,https://app.aizesk.com,https://www.aizesk.com,http://${aws_s3_bucket_website_configuration.frontend.website_endpoint},http://${aws_lb.main.dns_name}"
+        },
       ]
 
       secrets = [
@@ -181,7 +185,7 @@ resource "aws_ecs_service" "services" {
     container_port   = each.value.port
   }
 
-  health_check_grace_period_seconds = 180
+  health_check_grace_period_seconds = 300
 
   deployment_maximum_percent         = 200
   deployment_minimum_healthy_percent = 100
