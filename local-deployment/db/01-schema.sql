@@ -315,6 +315,29 @@ CREATE TABLE IF NOT EXISTS in_app_notification_metadata (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
+-- REPORTING-SERVICE TABLES (Synchronized with JPA entities)
+-- =====================================================
+
+-- TABLE: report_executions (matches ReportExecutionEntity.java)
+CREATE TABLE IF NOT EXISTS report_executions (
+    id BINARY(16) PRIMARY KEY,
+    user_id BINARY(16) NOT NULL,
+    type VARCHAR(20) NOT NULL,
+    format VARCHAR(10) NOT NULL,
+    status VARCHAR(20) NOT NULL,
+    start_date DATE,
+    end_date DATE,
+    requested_at DATETIME NOT NULL,
+    completed_at DATETIME,
+    file_url VARCHAR(512),
+    error_message VARCHAR(1024),
+    
+    INDEX idx_reports_user_id (user_id),
+    INDEX idx_reports_status (status),
+    INDEX idx_reports_requested_at (requested_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
 -- VERIFICATION
 -- =====================================================
 
