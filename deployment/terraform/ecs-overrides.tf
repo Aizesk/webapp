@@ -31,7 +31,7 @@ resource "aws_ecs_task_definition" "subscription_service" {
       environment = [
         { name = "SPRING_PROFILES_ACTIVE", value = "prod" },
         { name = "SPRING_DATASOURCE_URL", value = "jdbc:mysql://${aws_db_instance.main.endpoint}/${var.db_name}?useSSL=true&requireSSL=true&allowPublicKeyRetrieval=true" },
-        { name = "CORS_ALLOWED_ORIGINS", value = "http://localhost:4200,https://app.aizesk.com,https://www.aizesk.com,http://${aws_s3_bucket_website_configuration.frontend.website_endpoint},http://${aws_lb.main.dns_name}" },
+        { name = "CORS_ALLOWED_ORIGINS", value = "http://localhost:4200,https://app.aizesk.com,https://www.aizesk.com,http://${aws_s3_bucket_website_configuration.frontend.website_endpoint},http://${aws_lb.main.dns_name},${aws_apigatewayv2_api.alb_proxy.api_endpoint}" },
         { name = "AUTH_SERVICE_URL", value = "http://${aws_lb.main.dns_name}" },
         { name = "USER_SERVICE_URL", value = "http://${aws_lb.main.dns_name}" },
         { name = "NOTIFICATION_SERVICE_URL", value = "http://${aws_lb.main.dns_name}" },
@@ -170,7 +170,7 @@ resource "aws_ecs_task_definition" "notification_service" {
       environment = [
         { name = "SPRING_PROFILES_ACTIVE", value = "prod" },
         { name = "SPRING_DATASOURCE_URL", value = "jdbc:mysql://${aws_db_instance.main.endpoint}/${var.db_name}?useSSL=true&requireSSL=true&allowPublicKeyRetrieval=true" },
-        { name = "CORS_ALLOWED_ORIGINS", value = "http://localhost:4200,https://app.aizesk.com,https://www.aizesk.com,http://${aws_s3_bucket_website_configuration.frontend.website_endpoint},http://${aws_lb.main.dns_name}" },
+        { name = "CORS_ALLOWED_ORIGINS", value = "http://localhost:4200,https://app.aizesk.com,https://www.aizesk.com,http://${aws_s3_bucket_website_configuration.frontend.website_endpoint},http://${aws_lb.main.dns_name},${aws_apigatewayv2_api.alb_proxy.api_endpoint}" },
         { name = "AUTH_SERVICE_URL", value = "http://${aws_lb.main.dns_name}" },
         { name = "USER_SERVICE_URL", value = "http://${aws_lb.main.dns_name}" },
         # SES not available in Learner Lab — emails are logged, not sent
@@ -339,7 +339,7 @@ resource "aws_ecs_task_definition" "auth_service" {
       environment = [
         { name = "SPRING_PROFILES_ACTIVE", value = "prod" },
         { name = "SPRING_DATASOURCE_URL", value = "jdbc:mysql://${aws_db_instance.main.endpoint}/${var.db_name}?useSSL=true&requireSSL=true&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&useUnicode=true&connectionCollation=utf8mb4_unicode_ci" },
-        { name = "CORS_ALLOWED_ORIGINS", value = "http://localhost:4200,https://app.aizesk.com,https://www.aizesk.com,http://${aws_s3_bucket_website_configuration.frontend.website_endpoint},http://${aws_lb.main.dns_name}" },
+        { name = "CORS_ALLOWED_ORIGINS", value = "http://localhost:4200,https://app.aizesk.com,https://www.aizesk.com,http://${aws_s3_bucket_website_configuration.frontend.website_endpoint},http://${aws_lb.main.dns_name},${aws_apigatewayv2_api.alb_proxy.api_endpoint}" },
         { name = "FRONTEND_URL", value = "http://${aws_s3_bucket_website_configuration.frontend.website_endpoint}" },
         { name = "USER_SERVICE_URL", value = "http://${aws_lb.main.dns_name}" },
         { name = "SUBSCRIPTION_SERVICE_URL", value = "http://${aws_lb.main.dns_name}" },

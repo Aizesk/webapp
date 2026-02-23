@@ -54,3 +54,9 @@ output "ecs_cluster_name" {
   description = "ECS cluster name"
   value       = aws_ecs_cluster.main.name
 }
+
+output "google_client_id" {
+  description = "Google OAuth client ID"
+  value       = var.google_client_id
+  sensitive   = true
+}

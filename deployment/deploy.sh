@@ -327,10 +327,11 @@ cmd_frontend() {
 
   cd "$TF_DIR"
 
-  local alb_dns s3_bucket frontend_url
+  local alb_dns s3_bucket frontend_url google_client_id
   alb_dns=$(tf_output alb_dns_name)
   s3_bucket=$(tf_output s3_frontend_bucket)
   frontend_url=$(tf_output frontend_url)
+  google_client_id=$(tf_output google_client_id)
 
   cd "$WEBAPP_DIR"
 
@@ -352,6 +353,7 @@ export const environment = {
     notifications: \`\${API_BASE}/api/v1/notifications\`,
   },
   notificationsWs: \`ws://${alb_dns}/ws/notifications\`,
+  googleClientId: '${google_client_id}',
 };
 EOF
 
