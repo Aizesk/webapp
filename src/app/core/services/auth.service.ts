@@ -2,7 +2,7 @@ import { Injectable, signal, computed, inject, Injector } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, throwError, of } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
+import { tap, catchError, switchMap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { LoginCredentials } from '../../shared/models/login-credentials.model';
 import { SignUpRequest } from '../../shared/models/sign-up-request.model';
@@ -108,6 +108,36 @@ export class AuthService {
         this.logout();
         return throwError(() => err);
       }),
+    );
+  }
+
+  /**
+   * Initializes the authentication state by validating the stored token.
+   * This is called on app startup to avoid 'ghost' sessions.
+   */
+  initialize(): Observable<boolean> {
+    const token = this.getAccessToken();
+    if (!token) {
+      this.clearStorage();
+      this._isAuthenticated.set(false);
+      this._currentUser.set(null);
+      return of(false);
+    }
+
+    // Call validation endpoint
+    return this.http.post<{ valid: boolean }>(`${this.apiUrl}/validate`, {}).pipe(
+      tap((response) => {
+        if (!response.valid) {
+          this.logout();
+        } else {
+          this._isAuthenticated.set(true);
+        }
+      }),
+      switchMap(response => of(response.valid)),
+      catchError(() => {
+        this.logout();
+        return of(false);
+      })
     );
   }
 

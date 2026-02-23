@@ -445,28 +445,7 @@ INSERT IGNORE INTO platform_connections (
     NOW() - INTERVAL 10 DAY
 );
 
--- Conexión en error para Demo User
-INSERT IGNORE INTO platform_connections (
-    id, user_id, platform_type, status,
-    platform_account_id, platform_account_name,
-    access_token, refresh_token, token_expires_at,
-    last_sync_at, total_orders_synced, last_error,
-    created_at
-) VALUES (
-    'conn-0004-0000-0000-000000000004',
-    'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
-    'WALLAPOP',
-    'ERROR',
-    'walla_demo_001',
-    'Demo Wallapop',
-    NULL,
-    NULL,
-    NULL,
-    NOW() - INTERVAL 3 DAY,
-    12,
-    'Token expired. Please reconnect your account.',
-    NOW() - INTERVAL 20 DAY
-);
+
 
 -- =====================================================
 -- PLATFORM-CONNECTION-SERVICE: LOGS DE SINCRONIZACIÓN
@@ -587,19 +566,7 @@ INSERT IGNORE INTO in_app_notifications (
     id, user_id, title, message, type, status, priority,
     read_at, action_url, created_at, expires_at
 ) VALUES 
-(
-    'inapp-0001-0000-0000-000000000001',
-    'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
-    'Conexión con Wallapop fallida',
-    'Tu conexión con Wallapop ha expirado. Por favor, reconecta tu cuenta.',
-    'WARNING',
-    'UNREAD',
-    'HIGH',
-    NULL,
-    '/settings/connections',
-    NOW() - INTERVAL 3 DAY,
-    NOW() + INTERVAL 7 DAY
-),
+
 (
     'inapp-0002-0000-0000-000000000002',
     'b2c3d4e5-f6a7-8901-bcde-f12345678901',

@@ -50,7 +50,7 @@ export class HomePageComponent implements OnInit {
     if (user?.fullName) {
       return user.fullName.split(' ')[0]; // First name only
     }
-    return 'Usuario';
+    return '';
   });
 
   protected readonly currentHour = new Date().getHours();
