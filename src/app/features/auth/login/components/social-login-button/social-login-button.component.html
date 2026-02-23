@@ -1,22 +1,21 @@
-<button
-  type="button"
-  class="social-button"
-  [disabled]="provider.disabled"
-  (click)="onClick()"
->
+@if (provider.id === 'google') {
+<div id="google-button-container" class="google-btn-wrapper"></div>
+} @else {
+<button type="button" class="social-button" [disabled]="provider.disabled" (click)="onClick()">
   <span class="icon" aria-hidden="true">
     @switch (provider.icon) {
-      @case ('google') {
-        <span class="google-icon">
-          <span class="google-accent google-accent--red"></span>
-          <span class="google-accent google-accent--yellow"></span>
-          <span class="google-accent google-accent--green"></span>
-        </span>
-      }
-      @default {
-        <span class="generic-icon">{{ provider.label.charAt(0) }}</span>
-      }
+    @case ('google') {
+    <span class="google-icon">
+      <span class="google-accent google-accent--red"></span>
+      <span class="google-accent google-accent--yellow"></span>
+      <span class="google-accent google-accent--green"></span>
+    </span>
+    }
+    @default {
+    <span class="generic-icon">{{ provider.label.charAt(0) }}</span>
+    }
     }
   </span>
   <span>{{ provider.label }}</span>
 </button>
+}

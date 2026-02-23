@@ -1,39 +1,28 @@
 <article class="login-card">
-  <app-login-header
-    [brandName]="brandName"
-    [brandInitials]="brandInitials"
-    [title]="title"
-    [description]="description"
-  />
+  <app-login-header [brandName]="brandName" [brandInitials]="brandInitials" [title]="title"
+    [description]="description" />
 
   @if (providers.length) {
-    <div class="providers">
-      @for (provider of providers; track provider.id) {
-        <app-social-login-button
-          [provider]="provider"
-          (selectProvider)="onProviderSelected($event)"
-        />
-      }
-    </div>
+  <div class="providers">
+    @for (provider of providers; track provider.id) {
+    <app-social-login-button [provider]="provider" (selectProvider)="onProviderSelected($event)"
+      (googleCredential)="onGoogleCredential($event)" />
+    }
+  </div>
   }
 
   <app-login-divider label="o" />
 
   @if (errorMessage) {
-    <div class="error-banner">
-      <span class="material-symbols-rounded" aria-hidden="true">error</span>
-      <span>{{ errorMessage }}</span>
-    </div>
+  <div class="error-banner">
+    <span class="material-symbols-rounded" aria-hidden="true">error</span>
+    <span>{{ errorMessage }}</span>
+  </div>
   }
 
-  <app-login-form
-    [rememberLabel]="rememberLabel"
-    [forgotPasswordLabel]="forgotPasswordLabel"
-    [submitLabel]="submitLabel"
-    [isLoading]="isLoading"
-    (submitCredentials)="onCredentialsSubmitted($event)"
-    (forgotPassword)="onForgotPassword()"
-  />
+  <app-login-form [rememberLabel]="rememberLabel" [forgotPasswordLabel]="forgotPasswordLabel"
+    [submitLabel]="submitLabel" [isLoading]="isLoading" (submitCredentials)="onCredentialsSubmitted($event)"
+    (forgotPassword)="onForgotPassword()" />
 
   <div class="back-home-action">
     <app-button variant="soft" size="sm" (click)="onBackHome()">Inicio</app-button>

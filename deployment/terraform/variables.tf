@@ -124,8 +124,15 @@ variable "shopify_client_id" {
   default     = ""
 }
 
-variable "shopify_client_secret" {
-  description = "Shopify OAuth client secret"
+variable "google_client_id" {
+  description = "Google OAuth client ID"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "google_client_secret" {
+  description = "Google OAuth client secret"
   type        = string
   sensitive   = true
   default     = ""

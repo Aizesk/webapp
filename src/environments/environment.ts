@@ -9,5 +9,6 @@ export const environment = {
     platforms: 'http://localhost:8085/api/v1/platforms',
     notifications: 'http://localhost:8086/api/v1/notifications'
   },
-  notificationsWs: 'ws://localhost:8086/ws/notifications'
+  notificationsWs: 'ws://localhost:8086/ws/notifications',
+  googleClientId: '765392548979-hg2npq98sdd30c2jossmc0nh7uoj0jmh.apps.googleusercontent.com'
 };

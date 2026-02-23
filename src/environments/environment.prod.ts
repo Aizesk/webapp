@@ -13,4 +13,5 @@ export const environment = {
     notifications: `${API_BASE}/api/v1/notifications`,
   },
   notificationsWs: `ws://aizesk-alb-2029671806.us-east-1.elb.amazonaws.com/ws/notifications`,
+  googleClientId: 'REPLACE_WITH_GOOGLE_CLIENT_ID',
 };

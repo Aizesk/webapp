@@ -188,8 +188,8 @@ export class AuthService {
   /**
    * OAuth login with external provider.
    */
-  oauthLogin(provider: string, token: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/oauth/${provider}`, { token }).pipe(
+  oauthLogin(provider: string, idToken: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/oauth/${provider}`, { idToken }).pipe(
       tap((response) => this.handleAuthSuccess(response, true)),
       catchError(this.handleError),
     );
