@@ -453,7 +453,7 @@ INSERT IGNORE INTO platform_connections (
 
 INSERT IGNORE INTO sync_logs (
     id, connection_id, user_id, sync_type, status,
-    orders_fetched, orders_created, orders_updated,
+    orders_found, orders_created, orders_updated,
     error_message, started_at, completed_at, duration_ms
 ) VALUES 
 (
