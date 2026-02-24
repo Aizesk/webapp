@@ -43,7 +43,7 @@ locals {
   # Services that use the generic ECS configuration (no extra secrets)
   generic_services = {
     for k, v in var.microservices : k => v
-    if !contains(["subscription-service", "platform-connection-service", "notification-service"], k)
+    if !contains(["auth-service", "subscription-service", "platform-connection-service", "notification-service"], k)
   }
 }
 

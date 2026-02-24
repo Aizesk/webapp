@@ -39,6 +39,22 @@ export class LoginPageComponent {
     this.isLoading.set(false);
   }
 
+  protected onGoogleCredential(idToken: string): void {
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    this.authService.oauthLogin('google', idToken).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.router.navigate(['/inicio']);
+      },
+      error: (err: Error) => {
+        this.isLoading.set(false);
+        this.errorMessage.set(err.message || 'Error en la autenticación con Google');
+      }
+    });
+  }
+
   protected onCredentialsSubmitted(credentials: LoginCredentials): void {
     this.isLoading.set(true);
     this.errorMessage.set(null);

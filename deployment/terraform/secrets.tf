@@ -74,3 +74,23 @@ resource "aws_ssm_parameter" "shopify_client_secret" {
     Name = "${var.project_name}-shopify-client-secret"
   }
 }
+
+resource "aws_ssm_parameter" "google_client_id" {
+  name  = "/${var.project_name}/auth/google-client-id"
+  type  = "String"
+  value = var.google_client_id
+
+  tags = {
+    Name = "${var.project_name}-google-client-id"
+  }
+}
+
+resource "aws_ssm_parameter" "google_client_secret" {
+  name  = "/${var.project_name}/auth/google-client-secret"
+  type  = "String"
+  value = var.google_client_secret
+
+  tags = {
+    Name = "${var.project_name}-google-client-secret"
+  }
+}

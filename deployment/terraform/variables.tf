@@ -131,6 +131,20 @@ variable "shopify_client_secret" {
   default     = ""
 }
 
+variable "google_client_id" {
+  description = "Google OAuth client ID"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "google_client_secret" {
+  description = "Google OAuth client secret"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
 # ---- Microservices Configuration ----
 variable "microservices" {
   description = "Map of microservices with their configurations"

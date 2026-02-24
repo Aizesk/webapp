@@ -31,7 +31,7 @@ resource "aws_ecs_task_definition" "subscription_service" {
       environment = [
         { name = "SPRING_PROFILES_ACTIVE", value = "prod" },
         { name = "SPRING_DATASOURCE_URL", value = "jdbc:mysql://${aws_db_instance.main.endpoint}/${var.db_name}?useSSL=true&requireSSL=true&allowPublicKeyRetrieval=true" },
-        { name = "CORS_ALLOWED_ORIGINS", value = "http://localhost:4200,https://app.aizesk.com,https://www.aizesk.com,http://${aws_s3_bucket_website_configuration.frontend.website_endpoint},http://${aws_lb.main.dns_name}" },
+        { name = "CORS_ALLOWED_ORIGINS", value = "http://localhost:4200,https://app.aizesk.com,https://www.aizesk.com,http://${aws_s3_bucket_website_configuration.frontend.website_endpoint},http://${aws_lb.main.dns_name},${aws_apigatewayv2_api.alb_proxy.api_endpoint}" },
         { name = "AUTH_SERVICE_URL", value = "http://${aws_lb.main.dns_name}" },
         { name = "USER_SERVICE_URL", value = "http://${aws_lb.main.dns_name}" },
         { name = "NOTIFICATION_SERVICE_URL", value = "http://${aws_lb.main.dns_name}" },
@@ -170,7 +170,7 @@ resource "aws_ecs_task_definition" "notification_service" {
       environment = [
         { name = "SPRING_PROFILES_ACTIVE", value = "prod" },
         { name = "SPRING_DATASOURCE_URL", value = "jdbc:mysql://${aws_db_instance.main.endpoint}/${var.db_name}?useSSL=true&requireSSL=true&allowPublicKeyRetrieval=true" },
-        { name = "CORS_ALLOWED_ORIGINS", value = "http://localhost:4200,https://app.aizesk.com,https://www.aizesk.com,http://${aws_s3_bucket_website_configuration.frontend.website_endpoint},http://${aws_lb.main.dns_name}" },
+        { name = "CORS_ALLOWED_ORIGINS", value = "http://localhost:4200,https://app.aizesk.com,https://www.aizesk.com,http://${aws_s3_bucket_website_configuration.frontend.website_endpoint},http://${aws_lb.main.dns_name},${aws_apigatewayv2_api.alb_proxy.api_endpoint}" },
         { name = "AUTH_SERVICE_URL", value = "http://${aws_lb.main.dns_name}" },
         { name = "USER_SERVICE_URL", value = "http://${aws_lb.main.dns_name}" },
         # SES not available in Learner Lab — emails are logged, not sent
@@ -307,6 +307,107 @@ resource "aws_ecs_service" "notification_service" {
   depends_on = [aws_lb_listener.http, aws_db_instance.main]
 
   tags = { Service = "notification-service" }
+
+  lifecycle {
+    ignore_changes = [desired_count]
+  }
+}
+
+# ---- Auth Service: Google secrets ----
+resource "aws_ecs_task_definition" "auth_service" {
+  family                   = "${var.project_name}-auth-service"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = var.service_cpu
+  memory                   = var.service_memory
+  execution_role_arn       = local.lab_role_arn
+  task_role_arn            = local.lab_role_arn
+
+  container_definitions = jsonencode([
+    {
+      name      = "auth-service"
+      image     = "${aws_ecr_repository.services["auth-service"].repository_url}:latest"
+      essential = true
+
+      portMappings = [
+        {
+          containerPort = 8081
+          protocol      = "tcp"
+        }
+      ]
+
+      environment = [
+        { name = "SPRING_PROFILES_ACTIVE", value = "prod" },
+        { name = "SPRING_DATASOURCE_URL", value = "jdbc:mysql://${aws_db_instance.main.endpoint}/${var.db_name}?useSSL=true&requireSSL=true&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&useUnicode=true&connectionCollation=utf8mb4_unicode_ci" },
+        { name = "CORS_ALLOWED_ORIGINS", value = "http://localhost:4200,https://app.aizesk.com,https://www.aizesk.com,http://${aws_s3_bucket_website_configuration.frontend.website_endpoint},http://${aws_lb.main.dns_name},${aws_apigatewayv2_api.alb_proxy.api_endpoint}" },
+        { name = "FRONTEND_URL", value = "http://${aws_s3_bucket_website_configuration.frontend.website_endpoint}" },
+        { name = "USER_SERVICE_URL", value = "http://${aws_lb.main.dns_name}" },
+        { name = "SUBSCRIPTION_SERVICE_URL", value = "http://${aws_lb.main.dns_name}" },
+        { name = "PLATFORM_CONNECTION_SERVICE_URL", value = "http://${aws_lb.main.dns_name}" },
+        { name = "NOTIFICATION_SERVICE_URL", value = "http://${aws_lb.main.dns_name}" },
+        { name = "REPORTING_SERVICE_URL", value = "http://${aws_lb.main.dns_name}" },
+        { name = "TRANSACTION_SERVICE_URL", value = "http://${aws_lb.main.dns_name}" },
+      ]
+
+      secrets = [
+        { name = "SPRING_DATASOURCE_USERNAME", valueFrom = aws_ssm_parameter.db_username.arn },
+        { name = "SPRING_DATASOURCE_PASSWORD", valueFrom = aws_ssm_parameter.db_password.arn },
+        { name = "JWT_SECRET", valueFrom = aws_ssm_parameter.jwt_secret.arn },
+        { name = "GOOGLE_CLIENT_ID", valueFrom = aws_ssm_parameter.google_client_id.arn },
+        { name = "GOOGLE_CLIENT_SECRET", valueFrom = aws_ssm_parameter.google_client_secret.arn },
+      ]
+
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.services["auth-service"].name
+          "awslogs-region"        = var.aws_region
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
+
+      healthCheck = {
+        command     = ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8081/actuator/health || exit 1"]
+        interval    = 30
+        timeout     = 10
+        retries     = 3
+        startPeriod = 120
+      }
+    }
+  ])
+
+  tags = {
+    Service = "auth-service"
+  }
+}
+
+resource "aws_ecs_service" "auth_service" {
+  name            = "auth-service"
+  cluster         = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.auth_service.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = aws_subnet.public[*].id
+    security_groups  = [aws_security_group.ecs_tasks.id]
+    assign_public_ip = true
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.services["auth-service"].arn
+    container_name   = "auth-service"
+    container_port   = 8081
+  }
+
+  health_check_grace_period_seconds = 300
+
+  deployment_maximum_percent         = 200
+  deployment_minimum_healthy_percent = 100
+
+  depends_on = [aws_lb_listener.http, aws_db_instance.main]
+
+  tags = { Service = "auth-service" }
 
   lifecycle {
     ignore_changes = [desired_count]

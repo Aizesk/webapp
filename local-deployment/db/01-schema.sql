@@ -220,9 +220,10 @@ CREATE TABLE IF NOT EXISTS sync_logs (
     user_id VARCHAR(36) NOT NULL,
     sync_type VARCHAR(50) COMMENT 'FULL, INCREMENTAL, MANUAL',
     status VARCHAR(50) COMMENT 'STARTED, COMPLETED, FAILED',
-    orders_fetched INT DEFAULT 0,
+    orders_found INT DEFAULT 0,
     orders_created INT DEFAULT 0,
     orders_updated INT DEFAULT 0,
+    orders_failed INT DEFAULT 0,
     error_message VARCHAR(1000),
     started_at DATETIME NOT NULL,
     completed_at DATETIME,
@@ -249,6 +250,9 @@ CREATE TABLE IF NOT EXISTS transactions (
     category VARCHAR(100) COMMENT 'Categoría de la transacción',
     origin VARCHAR(50) NOT NULL COMMENT 'MANUAL, AMAZON, SHOPIFY, EBAY, ETSY, WOOCOMMERCE, OTHER',
     transaction_date DATETIME NOT NULL COMMENT 'Fecha de la transacción',
+    platform_order_id VARCHAR(255) COMMENT 'ID de la orden en la plataforma',
+    customer_name VARCHAR(255) COMMENT 'Nombre del cliente',
+    customer_email VARCHAR(255) COMMENT 'Emails del cliente',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Fecha de creación del registro',
     updated_at DATETIME ON UPDATE CURRENT_TIMESTAMP COMMENT 'Fecha de última actualización',
     
@@ -256,7 +260,8 @@ CREATE TABLE IF NOT EXISTS transactions (
     INDEX idx_transactions_type (type),
     INDEX idx_transactions_category (category),
     INDEX idx_transactions_origin (origin),
-    INDEX idx_transactions_date (transaction_date)
+    INDEX idx_transactions_date (transaction_date),
+    UNIQUE KEY uk_user_platform_order (user_id, platform_order_id, origin)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================

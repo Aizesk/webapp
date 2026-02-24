@@ -37,6 +37,11 @@ export class LoginCardComponent {
   @Output() credentialsSubmitted = new EventEmitter<LoginCredentials>();
   @Output() forgotPassword = new EventEmitter<void>();
   @Output() backHome = new EventEmitter<void>();
+  @Output() googleCredential = new EventEmitter<string>();
+
+  protected onGoogleCredential(credential: string): void {
+    this.googleCredential.emit(credential);
+  }
 
   protected onProviderSelected(provider: AuthProvider): void {
     this.providerSelected.emit(provider);
