@@ -261,12 +261,27 @@ export class MainDashboardPageComponent {
       // Build platform breakdown
       const platformBreakdown = this.buildPlatformBreakdown(channelRevenue, totalIncome);
 
-      // Calculate Y-axis ticks
+      // Calculate Y-axis ticks with dynamic scaling
       const maxValue = Math.max(
         ...monthlyData.map(p => Math.max(p.income, p.expense)),
         1
       );
-      const yAxisMax = Math.ceil(maxValue / 5000) * 5000;
+      
+      // Determine divisor based on magnitude of data
+      let divisor = 1;
+      if (maxValue >= 100000) {
+        divisor = 50000;
+      } else if (maxValue >= 10000) {
+        divisor = 5000;
+      } else if (maxValue >= 1000) {
+        divisor = 250;
+      } else if (maxValue >= 100) {
+        divisor = 25;
+      } else {
+        divisor = 10;
+      }
+      
+      const yAxisMax = Math.ceil(maxValue / divisor) * divisor;
       const yAxisTicks = this.generateYAxisTicks(yAxisMax, 5);
 
       // Build donut chart data for platform distribution

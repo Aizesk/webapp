@@ -590,51 +590,31 @@ export class DashboardService {
   // ==================== DEFAULT DATA GENERATORS ====================
 
   private generateDefaultWeeklyIncome(totalIncome: number): readonly WeeklyIncomePoint[] {
-    const months = ['Ene 2026', 'Dic 2025', 'Nov 2025', 'Oct 2025', 'Sep 2025', 'Ago 2025'];
-    const baseAmount = totalIncome > 0 ? totalIncome / 6 : 8000;
-    const distributions = [1.0, 0.92, 0.88, 0.95, 0.85, 0.90];
-
-    return months.map((label, i) => ({
-      label,
-      amount: Math.round(baseAmount * distributions[i])
-    }));
+    // Return empty array - no mock data
+    return [];
   }
 
   private generateDefaultMonthlyData(
     totalIncome: number,
     totalExpenses: number
   ): readonly MonthlyIncomeVsExpensePoint[] {
-    const months = ['Ago', 'Sep', 'Oct', 'Nov', 'Dic', 'Ene'];
-    const baseIncome = totalIncome > 0 ? totalIncome / 6 : 8000;
-    const baseExpense = totalExpenses > 0 ? totalExpenses / 6 : 250;
-    const incomeDistributions = [0.85, 0.90, 0.95, 0.88, 0.92, 1.0];
-    const expenseDistributions = [0.60, 1.20, 0.80, 1.40, 0.90, 1.10];
-
-    return months.map((label, i) => ({
-      label,
-      income: Math.round(baseIncome * incomeDistributions[i]),
-      expense: Math.round(baseExpense * expenseDistributions[i])
-    }));
+    // Return empty array - no mock data
+    return [];
   }
 
   private generateDefaultTransactions(): readonly TransactionItem[] {
-    return [
-      {
-        title: 'Sin transacciones recientes',
-        description: 'Conecta una plataforma',
-        amount: 0,
-        positive: true,
-        timestamp: 'Ahora'
-      }
-    ];
+    // Return empty array - no mock data
+    return [];
   }
 
   private generateDefaultAccounts(): readonly ConnectedAccount[] {
-    return [{ name: 'Sin cuentas', status: 'Pendiente', statusColor: 'warning' }];
+    // Return empty array - no mock data
+    return [];
   }
 
   private generateDefaultChannelRevenue(): readonly ChannelRevenueShare[] {
-    return [{ channel: 'Sin datos', amount: 0, percentage: 100, color: '#94a3b8' }];
+    // Return empty array - no mock data
+    return [];
   }
 
   private generateDefaultReconciliation(): readonly ReconciliationStatus[] {
