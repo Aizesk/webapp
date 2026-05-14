@@ -2,7 +2,17 @@ import { ChangeDetectionStrategy, Component, inject, computed, OnInit } from '@a
 import { Router, RouterLink } from '@angular/router';
 import { TopNavbarComponent } from '../../shared/components/top-navbar/top-navbar.component';
 import { AuthService } from '../../core/services/auth.service';
+import { NotificationService } from '../../core/services/notification.service';
 import { MAIN_NAV_ITEMS } from '../../shared/models/navigation.model';
+import { InAppNotification, NotificationType } from '../../shared/models/notifications.model';
+import {
+  NOTIFICATION_STATUS,
+  NOTIFICATION_TYPE,
+  NOTIFICATION_LABELS,
+  NOTIFICATION_ROUTES,
+  getNotificationIconForType,
+  getRelativeTimeString
+} from '../constants/notifications.constants';
 
 interface QuickAction {
   readonly id: string;
@@ -11,16 +21,6 @@ interface QuickAction {
   readonly icon: string;
   readonly route: string;
   readonly variant: 'primary' | 'secondary' | 'outline';
-}
-
-interface Notification {
-  readonly id: string;
-  readonly title: string;
-  readonly message: string;
-  readonly icon: string;
-  readonly type: 'info' | 'success' | 'warning';
-  readonly timestamp: string;
-  readonly read: boolean;
 }
 
 @Component({
@@ -34,8 +34,15 @@ interface Notification {
 export class HomePageComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
+  private readonly notificationService = inject(NotificationService);
 
   protected readonly navItems = MAIN_NAV_ITEMS;
+
+  // Expose constants for template
+  protected readonly STATUS = NOTIFICATION_STATUS;
+  protected readonly TYPE = NOTIFICATION_TYPE;
+  protected readonly LABELS = NOTIFICATION_LABELS;
+  protected readonly ROUTES = NOTIFICATION_ROUTES;
 
   // Get user name from AuthService
   protected readonly userName = computed(() => {
@@ -43,7 +50,7 @@ export class HomePageComponent implements OnInit {
     if (user?.fullName) {
       return user.fullName.split(' ')[0]; // First name only
     }
-    return 'Usuario';
+    return '';
   });
 
   protected readonly currentHour = new Date().getHours();
@@ -81,53 +88,26 @@ export class HomePageComponent implements OnInit {
     },
   ];
 
-  // Mock notifications - will be replaced with real data
-  protected readonly notifications: readonly Notification[] = [
-    {
-      id: '1',
-      title: 'Sincronización completada',
-      message: 'Shopify: Se importaron 12 nuevos pedidos',
-      icon: 'check_circle',
-      type: 'success',
-      timestamp: 'Hace 2 horas',
-      read: false,
-    },
-    {
-      id: '2',
-      title: 'Reporte mensual disponible',
-      message: 'Tu resumen de ventas de diciembre 2025 está listo',
-      icon: 'description',
-      type: 'info',
-      timestamp: 'Hace 1 día',
-      read: false,
-    },
-    {
-      id: '3',
-      title: 'Reconexión requerida',
-      message: 'Tu cuenta de Amazon Seller necesita volver a autorizarse',
-      icon: 'warning',
-      type: 'warning',
-      timestamp: 'Hace 3 días',
-      read: true,
-    },
-  ];
+  // Use real notifications from NotificationService
+  protected readonly notifications = this.notificationService.recentNotifications;
 
   ngOnInit(): void {
-    // Future: Load real notifications from service
+    // Notifications are loaded via NotificationService WebSocket connection
   }
 
   protected navigateTo(route: string): void {
     this.router.navigate([route]);
   }
 
-  protected getNotificationIcon(type: Notification['type']): string {
-    switch (type) {
-      case 'success':
-        return 'check_circle';
-      case 'warning':
-        return 'warning';
-      default:
-        return 'info';
-    }
+  protected getNotificationIcon(type: NotificationType): string {
+    return getNotificationIconForType(type);
+  }
+
+  protected getRelativeTime(dateString: string): string {
+    return getRelativeTimeString(dateString);
+  }
+
+  protected isUnread(notification: InAppNotification): boolean {
+    return notification.status === NOTIFICATION_STATUS.UNREAD;
   }
 }

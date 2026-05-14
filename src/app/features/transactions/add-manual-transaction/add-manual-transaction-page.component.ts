@@ -1,14 +1,39 @@
-import { CurrencyPipe, NgFor, NgIf } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, signal, computed } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TransactionService } from '../../../core/services/transaction.service';
-import { AuthService } from '../../../core/services/auth.service';
+import { TransactionApiRequest, TransactionType } from '../../../shared/models/transaction-api.model';
+import { TopNavbarComponent } from '../../../shared/components/top-navbar/top-navbar.component';
+import { MAIN_NAV_ITEMS } from '../../../shared/models/navigation.model';
+
+const EXPENSE_CATEGORIES = [
+  { value: 'Costos de Inventario', icon: 'inventory' },
+  { value: 'Envíos y Logística', icon: 'local_shipping' },
+  { value: 'Publicidad', icon: 'campaign' },
+  { value: 'Comisiones', icon: 'percent' },
+  { value: 'Herramientas', icon: 'build' },
+  { value: 'Otros Gastos', icon: 'category' }
+];
+
+const INCOME_CATEGORIES = [
+  { value: 'Venta de Productos', icon: 'shopping_bag' },
+  { value: 'Ingreso por Publicidad', icon: 'campaign' },
+  { value: 'Servicios', icon: 'handyman' },
+  { value: 'Devoluciones Recibidas', icon: 'assignment_return' },
+  { value: 'Otros Ingresos', icon: 'category' }
+];
+
+const CURRENCIES = [
+  { code: 'EUR', symbol: '€' },
+  { code: 'USD', symbol: '$' },
+  { code: 'GBP', symbol: '£' }
+];
 
 @Component({
   selector: 'app-add-manual-transaction-page',
   standalone: true,
-  imports: [ReactiveFormsModule, NgIf, NgFor, CurrencyPipe],
+  imports: [CommonModule, ReactiveFormsModule, TopNavbarComponent],
   templateUrl: './add-manual-transaction-page.component.html',
   styleUrls: ['./add-manual-transaction-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -17,40 +42,33 @@ export class AddManualTransactionPageComponent {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly transactionService = inject(TransactionService);
-  private readonly authService = inject(AuthService);
   private readonly now = new Date();
+
+  protected readonly navItems = MAIN_NAV_ITEMS;
+  protected readonly currencies = CURRENCIES;
 
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  protected readonly selectedType = signal<TransactionType>('INCOME');
 
-  protected readonly platformOptions = ['Amazon', 'Shopify', 'Directo'];
-  protected readonly categoryOptions = ['Venta de Productos', 'Ingreso por Publicidad', 'Servicios', 'Otros'];
-  protected readonly statusOptions = ['Recibido', 'Pagado', 'Procesando', 'Completado', 'Pendiente', 'Enviado'];
-  protected readonly paymentMethodOptions = ['Transferencia bancaria', 'Tarjeta de crédito', 'PayPal', 'Efectivo'];
-  protected readonly timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  // Dynamic categories based on type
+  protected readonly categories = computed(() => 
+    this.selectedType() === 'INCOME' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES
+  );
 
   protected readonly form = this.fb.nonNullable.group({
-    description: ['', [Validators.required, Validators.maxLength(140)]],
-    platform: [this.platformOptions[0] ?? '', Validators.required],
-    category: [this.categoryOptions[0] ?? '', Validators.required],
-    status: [this.statusOptions[0] ?? 'Recibido', Validators.required],
     amount: [0, [Validators.required, Validators.min(0.01)]],
-    fee: [0, [Validators.min(0)]],
-    paymentMethod: [this.paymentMethodOptions[0] ?? '', Validators.required],
-    reference: ['', [Validators.required, Validators.maxLength(50)]],
+    currency: ['EUR', Validators.required],
+    concept: ['', [Validators.required, Validators.maxLength(255)]],
+    category: ['Venta de Productos', Validators.required],
     date: [this.now.toISOString().substring(0, 10), Validators.required],
-    time: [this.now.toISOString().substring(11, 16), Validators.required],
-    customerName: ['', [Validators.required, Validators.maxLength(80)]],
-    customerEmail: ['', [Validators.required, Validators.email, Validators.maxLength(120)]],
-    customerId: ['', [Validators.required, Validators.maxLength(40)]],
-    notes: ['']
+    time: [this.now.toISOString().substring(11, 16), Validators.required]
   });
 
-  protected get netAmount(): number {
-    const { amount, fee } = this.form.getRawValue();
-    const parsedAmount = Number(amount) || 0;
-    const parsedFee = Number(fee) || 0;
-    return Math.max(parsedAmount - parsedFee, 0);
+  protected setType(type: TransactionType): void {
+    this.selectedType.set(type);
+    const firstCategory = this.categories()[0]?.value ?? '';
+    this.form.get('category')?.setValue(firstCategory);
   }
 
   protected handleCancel(): void {
@@ -59,12 +77,7 @@ export class AddManualTransactionPageComponent {
 
   protected handleSubmit(): void {
     this.form.markAllAsTouched();
-    if (this.form.invalid) {
-      return;
-    }
-
-    // Prevent double submission
-    if (this.submitting()) {
+    if (this.form.invalid || this.submitting()) {
       return;
     }
 
@@ -72,18 +85,15 @@ export class AddManualTransactionPageComponent {
     this.errorMessage.set(null);
 
     const formValues = this.form.getRawValue();
-    const currentUser = this.authService.currentUser();
-
-    // Build ISO datetime from date + time
     const transactionDate = `${formValues.date}T${formValues.time}:00`;
 
-    const request = {
-      userId: currentUser?.userId || 'demo-user-001',
-      type: 'INCOME' as const,  // Manual transactions are income by default
+    const request: TransactionApiRequest = {
+      type: this.selectedType(),
       amount: formValues.amount,
-      currency: 'EUR',
-      description: formValues.description,
+      currency: formValues.currency,
+      concept: formValues.concept,
       category: formValues.category,
+      origin: 'MANUAL',
       transactionDate: transactionDate
     };
 
@@ -94,7 +104,11 @@ export class AddManualTransactionPageComponent {
       },
       error: (err) => {
         this.submitting.set(false);
-        this.errorMessage.set(err.message || 'Error al guardar la transacción');
+        if (err.status === 403) {
+          this.errorMessage.set('Has alcanzado el límite de transacciones de tu plan. Actualiza tu suscripción para continuar.');
+        } else {
+          this.errorMessage.set(err.error?.message || 'Error al guardar la transacción');
+        }
         console.error('Error creating transaction:', err);
       }
     });

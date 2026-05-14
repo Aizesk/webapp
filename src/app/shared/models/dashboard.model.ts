@@ -37,6 +37,7 @@ export interface TransactionItem {
   readonly amount: number;
   readonly positive: boolean;
   readonly timestamp: string;
+  readonly origin?: string;
 }
 
 export interface ConnectedAccount {
@@ -53,4 +54,16 @@ export interface DashboardSnapshot {
   readonly accounts: readonly ConnectedAccount[];
   readonly channelRevenue: readonly ChannelRevenueShare[];
   readonly reconciliation: readonly ReconciliationStatus[];
+  readonly expensesByCategory?: readonly CategoryExpense[];
+  readonly incomesByCategory?: readonly CategoryExpense[];
+  readonly totalExpenseAmount?: number;
+  readonly totalIncomeAmount?: number;
+}
+
+export interface CategoryExpense {
+  readonly category: string;
+  readonly amount: number;
+  readonly percentage: number;
+  readonly color: string;
+  readonly icon: string;
 }

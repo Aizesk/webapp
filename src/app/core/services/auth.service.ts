@@ -1,46 +1,23 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject, Injector } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, throwError, of } from 'rxjs';
-import { tap, catchError, delay } from 'rxjs/operators';
+import { tap, catchError, switchMap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { LoginCredentials } from '../../shared/models/login-credentials.model';
 import { SignUpRequest } from '../../shared/models/sign-up-request.model';
 import { AuthResponse } from '../../shared/models/auth-response.model';
+import { ActiveSession, ActiveSessionListResponse } from '../../shared/models/session.model';
+import { NOTIFICATION_LIFECYCLE, NotificationLifecycle } from './notification.token';
+import { SESSION_MONITOR, SessionMonitorLifecycle } from './session-monitor.token';
+
+// Re-export session models so existing consumers don't break
+export type { ActiveSession, ActiveSessionListResponse } from '../../shared/models/session.model';
 
 const TOKEN_KEY = 'aizesk_access_token';
 const REFRESH_TOKEN_KEY = 'aizesk_refresh_token';
 const USER_KEY = 'aizesk_user';
 
-// Demo users for development mode
-const DEMO_USERS: Record<string, { password: string; user: AuthResponse }> = {
-  'demo@aizesk.com': {
-    password: 'password123',
-    user: {
-      accessToken: 'demo-access-token-' + Date.now(),
-      refreshToken: 'demo-refresh-token-' + Date.now(),
-      expiresIn: 3600,
-      tokenType: 'Bearer',
-      userId: 'demo-user-001',
-      email: 'demo@aizesk.com',
-      fullName: 'Usuario Demo',
-      roles: ['ROLE_USER']
-    }
-  },
-  'admin@aizesk.com': {
-    password: 'password123',
-    user: {
-      accessToken: 'admin-access-token-' + Date.now(),
-      refreshToken: 'admin-refresh-token-' + Date.now(),
-      expiresIn: 3600,
-      tokenType: 'Bearer',
-      userId: 'admin-user-001',
-      email: 'admin@aizesk.com',
-      fullName: 'Admin Aizesk',
-      roles: ['ROLE_USER', 'ROLE_ADMIN']
-    }
-  }
-};
 
 interface StoredUser {
   userId: string;
@@ -52,6 +29,7 @@ interface StoredUser {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly apiUrl = environment.apiUrls.auth;
+  private readonly injector = inject(Injector);
 
   // Reactive state
   private readonly _isAuthenticated = signal<boolean>(this.hasValidToken());
@@ -63,40 +41,46 @@ export class AuthService {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly router: Router
-  ) {}
+    private readonly router: Router,
+  ) { }
 
   /**
-   * Login with email/password credentials.
-   * In development mode, uses mock authentication to allow testing without backend.
+   * Lazily resolve NotificationService via injection token to avoid circular dependency
+   * (NotificationService injects AuthService, so we can't inject it directly).
    */
-  login(credentials: LoginCredentials): Observable<AuthResponse> {
-    // In development mode, use mock login directly to avoid backend dependency
-    if (!environment.production) {
-      return this.mockLogin(credentials);
-    }
+  private _notificationService?: NotificationLifecycle;
+  private _sessionMonitor?: SessionMonitorLifecycle;
 
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
-      tap(response => this.handleAuthSuccess(response, credentials.rememberSession)),
-      catchError(this.handleError)
-    );
+  private getNotificationService(): NotificationLifecycle | null {
+    if (!this._notificationService) {
+      try {
+        this._notificationService = this.injector.get(NOTIFICATION_LIFECYCLE);
+      } catch {
+        return null;
+      }
+    }
+    return this._notificationService;
+  }
+
+  private getSessionMonitor(): SessionMonitorLifecycle | null {
+    if (!this._sessionMonitor) {
+      try {
+        this._sessionMonitor = this.injector.get(SESSION_MONITOR);
+      } catch {
+        return null;
+      }
+    }
+    return this._sessionMonitor;
   }
 
   /**
-   * Mock login for development when backend is unavailable.
+   * Login with email/password credentials.
    */
-  private mockLogin(credentials: LoginCredentials): Observable<AuthResponse> {
-    const demoUser = DEMO_USERS[credentials.email.toLowerCase()];
-
-    if (demoUser && demoUser.password === credentials.password) {
-      // Simulate network delay
-      return of(demoUser.user).pipe(
-        delay(500),
-        tap(response => this.handleAuthSuccess(response, credentials.rememberSession))
-      );
-    }
-
-    return throwError(() => new Error('Credenciales inválidas. Usa demo@aizesk.com / password123'));
+  login(credentials: LoginCredentials): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
+      tap((response) => this.handleAuthSuccess(response, credentials.rememberSession)),
+      catchError((err) => this.handleError(err)),
+    );
   }
 
   /**
@@ -104,8 +88,8 @@ export class AuthService {
    */
   register(request: SignUpRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, request).pipe(
-      tap(response => this.handleAuthSuccess(response, false)),
-      catchError(this.handleError)
+      tap((response) => this.handleAuthSuccess(response, false)),
+      catchError(this.handleError),
     );
   }
 
@@ -119,21 +103,76 @@ export class AuthService {
     }
 
     return this.http.post<AuthResponse>(`${this.apiUrl}/refresh`, { refreshToken }).pipe(
-      tap(response => this.storeTokens(response)),
-      catchError(err => {
+      tap((response) => this.storeTokens(response)),
+      catchError((err) => {
         this.logout();
         return throwError(() => err);
+      }),
+    );
+  }
+
+  /**
+   * Initializes the authentication state by validating the stored token.
+   * This is called on app startup to avoid 'ghost' sessions.
+   */
+  initialize(): Observable<boolean> {
+    const token = this.getAccessToken();
+    if (!token) {
+      this.clearStorage();
+      this._isAuthenticated.set(false);
+      this._currentUser.set(null);
+      return of(false);
+    }
+
+    // Call validation endpoint
+    return this.http.post<{ valid: boolean }>(`${this.apiUrl}/validate`, {}).pipe(
+      tap((response) => {
+        if (!response.valid) {
+          this.logout();
+        } else {
+          this._isAuthenticated.set(true);
+        }
+      }),
+      switchMap(response => of(response.valid)),
+      catchError(() => {
+        this.logout();
+        return of(false);
       })
     );
   }
 
   /**
    * Logout and clear all stored credentials.
+   * Calls the backend to invalidate the session, then clears local storage.
    */
   logout(): void {
+    const refreshToken = this.getRefreshToken();
+
+    // Call backend logout (fire-and-forget - don't wait for response)
+    if (refreshToken) {
+      this.http
+        .post<{ success: boolean; message: string }>(`${this.apiUrl}/logout`, { refreshToken })
+        .pipe(catchError(() => of({ success: false, message: 'Logout request failed' })))
+        .subscribe({
+          next: (response) => {
+            if (!environment.production) {
+              console.log('Logout response:', response);
+            }
+          },
+        });
+    }
+
+    // Clear local storage immediately (don't wait for backend)
     this.clearStorage();
     this._isAuthenticated.set(false);
     this._currentUser.set(null);
+
+    // Disconnect WebSocket and clear cached notification state
+    this.getNotificationService()?.reset();
+
+    // Stop session monitor
+    this.getSessionMonitor()?.stop();
+
     this.router.navigate(['/login']);
   }
 
@@ -141,19 +180,65 @@ export class AuthService {
    * Request password recovery email.
    */
   requestPasswordRecovery(email: string): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.apiUrl}/recovery-password`, { email }).pipe(
-      catchError(this.handleError)
-    );
+    return this.http
+      .post<{ message: string }>(`${this.apiUrl}/recovery-password`, { email })
+      .pipe(catchError(this.handleError));
   }
 
   /**
    * OAuth login with external provider.
    */
-  oauthLogin(provider: string, token: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/oauth/${provider}`, { token }).pipe(
-      tap(response => this.handleAuthSuccess(response, true)),
-      catchError(this.handleError)
+  oauthLogin(provider: string, idToken: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/oauth/${provider}`, { idToken }).pipe(
+      tap((response) => this.handleAuthSuccess(response, true)),
+      catchError(this.handleError),
     );
+  }
+
+  /**
+   * Change password for authenticated user.
+   */
+  changePassword(
+    currentPassword: string,
+    newPassword: string,
+    confirmPassword: string,
+  ): Observable<void> {
+    return this.http
+      .post<void>(`${this.apiUrl}/change-password`, {
+        currentPassword,
+        newPassword,
+        confirmPassword,
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  // ========== Session Management ==========
+
+  /**
+   * Get all active sessions for the current user.
+   */
+  getActiveSessions(): Observable<ActiveSessionListResponse> {
+    return this.http
+      .get<ActiveSessionListResponse>(`${this.apiUrl}/sessions`)
+      .pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Revoke (close) a specific session by its ID.
+   */
+  revokeSession(sessionId: string): Observable<void> {
+    return this.http
+      .delete<void>(`${this.apiUrl}/sessions/${sessionId}`)
+      .pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Revoke all sessions except the current one.
+   */
+  revokeAllOtherSessions(): Observable<{ revokedCount: number; message: string }> {
+    return this.http
+      .delete<{ revokedCount: number; message: string }>(`${this.apiUrl}/sessions`)
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -188,8 +273,18 @@ export class AuthService {
       userId: response.userId,
       email: response.email,
       fullName: response.fullName,
-      roles: response.roles
+      roles: response.roles,
     });
+
+    // (Re)connect WebSocket for the new user's notifications
+    const notifService = this.getNotificationService();
+    if (notifService) {
+      notifService.reset(); // clear any stale state from previous user
+      notifService.initRealtimeConnection(); // open fresh connection for new user
+    }
+
+    // Start session monitor to detect remote session revocation
+    this.getSessionMonitor()?.start();
   }
 
   private storeTokens(response: AuthResponse, remember: boolean = true): void {
@@ -203,7 +298,7 @@ export class AuthService {
       userId: response.userId,
       email: response.email,
       fullName: response.fullName,
-      roles: response.roles
+      roles: response.roles,
     };
     const storage = remember ? localStorage : sessionStorage;
     storage.setItem(USER_KEY, JSON.stringify(user));

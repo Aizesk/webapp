@@ -1,16 +1,7 @@
 <section class="login-page">
-  <app-login-card
-    class="login-card-wrapper"
-    [brandName]="brandName"
-    [brandInitials]="'A'"
-    [title]="title"
-    [description]="cardDescription"
-    [providers]="socialProviders"
-    [isLoading]="isLoading()"
-    [errorMessage]="errorMessage()"
-    (providerSelected)="onProviderSelected($event)"
-    (credentialsSubmitted)="onCredentialsSubmitted($event)"
-    (forgotPassword)="onForgotPassword()"
-    (backHome)="onBackHome()"
-  />
+  <app-login-card class="login-card-wrapper" [brandName]="brandName" [brandInitials]="'A'" [title]="title"
+    [description]="cardDescription" [providers]="socialProviders" [isLoading]="isLoading()"
+    [errorMessage]="errorMessage()" (providerSelected)="onProviderSelected($event)"
+    (credentialsSubmitted)="onCredentialsSubmitted($event)" (googleCredential)="onGoogleCredential($event)"
+    (forgotPassword)="onForgotPassword()" (backHome)="onBackHome()" />
 </section>

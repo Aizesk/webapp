@@ -1,7 +1,7 @@
 -- =====================================================
 -- AIZESK Platform - Complete Database Schema
--- Version: 2.0.0
--- Description: Schema for all microservices
+-- Version: 2.1.0
+-- Description: Schema for all microservices (synchronized with JPA entities)
 -- =====================================================
 
 -- Use the database
@@ -15,6 +15,7 @@ USE aizesk;
 CREATE TABLE IF NOT EXISTS users (
     id VARCHAR(36) PRIMARY KEY COMMENT 'UUID del usuario',
     email VARCHAR(255) NOT NULL UNIQUE COMMENT 'Email único del usuario',
+    password_hash VARCHAR(255) COMMENT 'Hash de la contraseña (BCrypt)',
     full_name VARCHAR(255) COMMENT 'Nombre del usuario',
     last_name VARCHAR(255) COMMENT 'Apellido del usuario',
     phone VARCHAR(50) COMMENT 'Teléfono de contacto',
@@ -27,8 +28,9 @@ CREATE TABLE IF NOT EXISTS users (
     
     -- User info
     role VARCHAR(50) DEFAULT 'ROLE_USER' COMMENT 'Rol del usuario (ROLE_USER, ROLE_ADMIN)',
-    plan VARCHAR(50) DEFAULT 'FREE' COMMENT 'Plan de suscripción (FREE, PRO, ENTERPRISE)',
     avatar_url VARCHAR(500) COMMENT 'URL del avatar',
+    avatar_data LONGBLOB COMMENT 'Datos binarios de la foto de perfil',
+    avatar_content_type VARCHAR(100) COMMENT 'Tipo MIME de la foto de perfil (image/jpeg, image/png, etc.)',
     
     -- Preferences (embedded)
     pref_billing_alerts TINYINT(1) DEFAULT 1 COMMENT 'Alertas de facturación',
@@ -44,7 +46,6 @@ CREATE TABLE IF NOT EXISTS users (
     -- Indexes
     INDEX idx_users_email (email),
     INDEX idx_users_role (role),
-    INDEX idx_users_plan (plan),
     INDEX idx_users_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -108,11 +109,26 @@ CREATE TABLE IF NOT EXISTS audit_log (
 -- SUBSCRIPTION-SERVICE TABLES
 -- =====================================================
 
--- TABLE: subscriptions
+-- TABLE: subscription_plans (Definición estática de planes)
+CREATE TABLE IF NOT EXISTS subscription_plans (
+    id VARCHAR(50) PRIMARY KEY COMMENT 'ID único del plan (FREE, PROFESSIONAL, ENTERPRISE)',
+    name VARCHAR(100) NOT NULL COMMENT 'Nombre del plan',
+    description VARCHAR(500) COMMENT 'Descripción de lo que incluye',
+    monthly_price DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    annual_price DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    transaction_limit INT DEFAULT -1 COMMENT '-1 para ilimitado',
+    platform_limit INT DEFAULT -1 COMMENT '-1 para ilimitado',
+    features JSON COMMENT 'Lista de funcionalidades en formato JSON',
+    active TINYINT(1) DEFAULT 1,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- TABLE: subscriptions (Instancia de suscripción de un usuario)
 CREATE TABLE IF NOT EXISTS subscriptions (
     id VARCHAR(36) PRIMARY KEY,
-    user_id VARCHAR(36) NOT NULL UNIQUE COMMENT 'Un usuario solo tiene una suscripción',
-    plan_type VARCHAR(50) NOT NULL COMMENT 'FREE, PRO, ENTERPRISE',
+    user_id VARCHAR(36) NOT NULL UNIQUE COMMENT 'Un usuario solo tiene una suscripción activa',
+    plan_id VARCHAR(50) NOT NULL COMMENT 'FK a subscription_plans',
     status VARCHAR(50) NOT NULL COMMENT 'ACTIVE, TRIALING, CANCELLED, PAST_DUE, EXPIRED',
     stripe_customer_id VARCHAR(255) COMMENT 'ID del cliente en Stripe',
     stripe_subscription_id VARCHAR(255) COMMENT 'ID de la suscripción en Stripe',
@@ -127,8 +143,9 @@ CREATE TABLE IF NOT EXISTS subscriptions (
     
     INDEX idx_subscriptions_user_id (user_id),
     INDEX idx_subscriptions_status (status),
-    INDEX idx_subscriptions_plan_type (plan_type),
-    INDEX idx_subscriptions_stripe_customer (stripe_customer_id)
+    INDEX idx_subscriptions_plan_id (plan_id),
+    INDEX idx_subscriptions_stripe_customer (stripe_customer_id),
+    CONSTRAINT fk_subscriptions_plan FOREIGN KEY (plan_id) REFERENCES subscription_plans(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- TABLE: invoices
@@ -181,12 +198,12 @@ CREATE TABLE IF NOT EXISTS platform_connections (
     status VARCHAR(50) COMMENT 'CONNECTED, DISCONNECTED, ERROR, PENDING',
     platform_account_id VARCHAR(255) COMMENT 'ID de la cuenta en la plataforma',
     platform_account_name VARCHAR(255) COMMENT 'Nombre de la cuenta/tienda',
-    access_token VARCHAR(1000) COMMENT 'Token de acceso (encriptado)',
-    refresh_token VARCHAR(1000) COMMENT 'Token de refresco (encriptado)',
+    access_token TEXT COMMENT 'Token de acceso (encriptado)',
+    refresh_token TEXT COMMENT 'Token de refresco (encriptado)',
     token_expires_at DATETIME,
     last_sync_at DATETIME,
     total_orders_synced INT DEFAULT 0,
-    last_error VARCHAR(1000),
+    last_error TEXT,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME ON UPDATE CURRENT_TIMESTAMP,
     
@@ -203,9 +220,10 @@ CREATE TABLE IF NOT EXISTS sync_logs (
     user_id VARCHAR(36) NOT NULL,
     sync_type VARCHAR(50) COMMENT 'FULL, INCREMENTAL, MANUAL',
     status VARCHAR(50) COMMENT 'STARTED, COMPLETED, FAILED',
-    orders_fetched INT DEFAULT 0,
+    orders_found INT DEFAULT 0,
     orders_created INT DEFAULT 0,
     orders_updated INT DEFAULT 0,
+    orders_failed INT DEFAULT 0,
     error_message VARCHAR(1000),
     started_at DATETIME NOT NULL,
     completed_at DATETIME,
@@ -218,75 +236,110 @@ CREATE TABLE IF NOT EXISTS sync_logs (
 
 -- =====================================================
 -- TRANSACTION-SERVICE TABLES
+-- (Synchronized with Transaction.java entity)
 -- =====================================================
 
 -- TABLE: transactions
 CREATE TABLE IF NOT EXISTS transactions (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id VARCHAR(36) NOT NULL,
+    user_id VARCHAR(36) NOT NULL COMMENT 'UUID del usuario propietario',
     type VARCHAR(50) NOT NULL COMMENT 'INCOME, EXPENSE',
-    amount DECIMAL(19, 4) NOT NULL,
-    currency VARCHAR(3) DEFAULT 'EUR',
-    description VARCHAR(500),
-    category VARCHAR(100),
-    transaction_date DATETIME NOT NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME ON UPDATE CURRENT_TIMESTAMP,
-    
-    -- Campos de conexión con plataformas
-    platform_connection_id VARCHAR(36) COMMENT 'ID de la conexión de plataforma',
-    platform_order_id VARCHAR(255) COMMENT 'ID del pedido en la plataforma',
-    platform_type VARCHAR(50) COMMENT 'AMAZON, EBAY, SHOPIFY, etc.',
+    amount DECIMAL(19, 4) NOT NULL COMMENT 'Cantidad de la transacción',
+    currency VARCHAR(3) NOT NULL DEFAULT 'EUR' COMMENT 'Código de moneda ISO 4217',
+    concept VARCHAR(500) NOT NULL COMMENT 'Concepto/descripción de la transacción',
+    category VARCHAR(100) COMMENT 'Categoría de la transacción',
+    origin VARCHAR(50) NOT NULL COMMENT 'MANUAL, AMAZON, SHOPIFY, EBAY, ETSY, WOOCOMMERCE, OTHER',
+    transaction_date DATETIME NOT NULL COMMENT 'Fecha de la transacción',
+    platform_order_id VARCHAR(255) COMMENT 'ID de la orden en la plataforma',
+    customer_name VARCHAR(255) COMMENT 'Nombre del cliente',
+    customer_email VARCHAR(255) COMMENT 'Emails del cliente',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Fecha de creación del registro',
+    updated_at DATETIME ON UPDATE CURRENT_TIMESTAMP COMMENT 'Fecha de última actualización',
     
     INDEX idx_transactions_user_id (user_id),
     INDEX idx_transactions_type (type),
     INDEX idx_transactions_category (category),
+    INDEX idx_transactions_origin (origin),
     INDEX idx_transactions_date (transaction_date),
-    INDEX idx_transactions_platform (platform_connection_id)
+    UNIQUE KEY uk_user_platform_order (user_id, platform_order_id, origin)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
--- NOTIFICATION-SERVICE TABLES
+-- NOTIFICATION-SERVICE TABLES (Synchronized with JPA entities)
 -- =====================================================
 
--- TABLE: email_notifications
+-- TABLE: email_notifications (matches EmailNotificationDocument.java)
 CREATE TABLE IF NOT EXISTS email_notifications (
     id VARCHAR(36) PRIMARY KEY,
     recipient_email VARCHAR(255) NOT NULL,
-    recipient_name VARCHAR(255),
-    notification_type VARCHAR(100) NOT NULL COMMENT 'WELCOME, PASSWORD_RESET, INVOICE, etc.',
-    subject VARCHAR(500),
+    recipient_name VARCHAR(100),
+    type VARCHAR(50) COMMENT 'Notification type: WELCOME, PASSWORD_RESET, etc.',
+    subject VARCHAR(255),
     template_name VARCHAR(100),
-    template_variables JSON COMMENT 'Variables para el template',
-    status VARCHAR(50) DEFAULT 'PENDING' COMMENT 'PENDING, SENT, FAILED, RETRYING',
-    error_message VARCHAR(1000),
+    template_variables TEXT COMMENT 'JSON with template variables',
+    status VARCHAR(20) DEFAULT 'PENDING' COMMENT 'PENDING, SENT, FAILED, RETRYING',
+    error_message VARCHAR(2000),
     retry_count INT DEFAULT 0,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     sent_at DATETIME,
     
-    INDEX idx_email_notifications_recipient (recipient_email),
-    INDEX idx_email_notifications_status (status),
-    INDEX idx_email_notifications_type (notification_type),
-    INDEX idx_email_notifications_created_at (created_at)
+    INDEX idx_email_recipient (recipient_email),
+    INDEX idx_email_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- TABLE: inapp_notifications
-CREATE TABLE IF NOT EXISTS inapp_notifications (
+-- TABLE: in_app_notifications (matches InAppNotificationDocument.java)
+CREATE TABLE IF NOT EXISTS in_app_notifications (
     id VARCHAR(36) PRIMARY KEY,
     user_id VARCHAR(36) NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    message VARCHAR(1000),
-    notification_type VARCHAR(100) COMMENT 'INFO, WARNING, ERROR, SUCCESS',
-    priority VARCHAR(20) DEFAULT 'NORMAL' COMMENT 'LOW, NORMAL, HIGH, URGENT',
-    is_read TINYINT(1) DEFAULT 0,
+    type VARCHAR(50) COMMENT 'Notification type: INFO, WARNING, ERROR, SUCCESS, etc.',
+    status VARCHAR(20) COMMENT 'UNREAD, READ, ARCHIVED',
+    priority VARCHAR(20) COMMENT 'LOW, NORMAL, HIGH, URGENT',
+    title VARCHAR(255),
+    message VARCHAR(2000),
+    action_url VARCHAR(500),
+    created_at DATETIME,
     read_at DATETIME,
-    action_url VARCHAR(500) COMMENT 'URL para acción (opcional)',
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    expires_at DATETIME COMMENT 'Fecha de expiración (opcional)',
+    expires_at DATETIME,
     
-    INDEX idx_inapp_notifications_user_id (user_id),
-    INDEX idx_inapp_notifications_is_read (is_read),
-    INDEX idx_inapp_notifications_created_at (created_at)
+    INDEX idx_inapp_user_id (user_id),
+    INDEX idx_inapp_created_at (created_at),
+    INDEX idx_inapp_expires_at (expires_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- TABLE: in_app_notification_metadata (for @ElementCollection in JPA)
+CREATE TABLE IF NOT EXISTS in_app_notification_metadata (
+    notification_id VARCHAR(36) NOT NULL,
+    meta_key VARCHAR(100) NOT NULL,
+    meta_value VARCHAR(500),
+    
+    PRIMARY KEY (notification_id, meta_key),
+    CONSTRAINT fk_notification_metadata 
+        FOREIGN KEY (notification_id) 
+        REFERENCES in_app_notifications(id) 
+        ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
+-- REPORTING-SERVICE TABLES (Synchronized with JPA entities)
+-- =====================================================
+
+-- TABLE: report_executions (matches ReportExecutionEntity.java)
+CREATE TABLE IF NOT EXISTS report_executions (
+    id BINARY(16) PRIMARY KEY,
+    user_id BINARY(16) NOT NULL,
+    type VARCHAR(20) NOT NULL,
+    format VARCHAR(10) NOT NULL,
+    status VARCHAR(20) NOT NULL,
+    start_date DATE,
+    end_date DATE,
+    requested_at DATETIME NOT NULL,
+    completed_at DATETIME,
+    file_url VARCHAR(512),
+    error_message VARCHAR(1024),
+    
+    INDEX idx_reports_user_id (user_id),
+    INDEX idx_reports_status (status),
+    INDEX idx_reports_requested_at (requested_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================

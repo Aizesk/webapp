@@ -1,42 +1,508 @@
 {
-  // For more information, visit: https://go.microsoft.com/fwlink/?LinkId=733558
   "version": "2.0.0",
   "tasks": [
     {
-      "type": "npm",
-      "script": "start",
+      "label": "Frontend: Start Angular",
+      "type": "shell",
+      "command": "npm start",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "isBackground": true,
       "problemMatcher": {
         "owner": "typescript",
-        "pattern": "$tsc",
+        "pattern": {
+          "regexp": ".",
+          "message": 1
+        },
         "background": {
           "activeOnStart": true,
-          "beginsPattern": {
-            "regexp": "(.*?)"
-          },
-          "endsPattern": {
-            "regexp": "bundle generation complete"
-          }
+          "beginsPattern": ".",
+          "endsPattern": "bundle generation complete|Compiled successfully"
         }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "group": "frontend"
       }
     },
     {
-      "type": "npm",
-      "script": "test",
+      "label": "MS: auth-service (8081)",
+      "type": "shell",
+      "command": "mvn spring-boot:run -DskipTests",
+      "options": {
+        "cwd": "${workspaceFolder}/../auth-service"
+      },
       "isBackground": true,
       "problemMatcher": {
-        "owner": "typescript",
-        "pattern": "$tsc",
+        "owner": "spring-boot",
+        "pattern": {
+          "regexp": ".",
+          "message": 1
+        },
         "background": {
           "activeOnStart": true,
-          "beginsPattern": {
-            "regexp": "(.*?)"
-          },
-          "endsPattern": {
-            "regexp": "bundle generation complete"
-          }
+          "beginsPattern": ".",
+          "endsPattern": "Started .* in .* seconds"
         }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "group": "ms_auth_service"
       }
+    },
+    {
+      "label": "MS: user-service (8082)",
+      "type": "shell",
+      "command": "mvn spring-boot:run -DskipTests",
+      "options": {
+        "cwd": "${workspaceFolder}/../user-service"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "spring-boot",
+        "pattern": {
+          "regexp": ".",
+          "message": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Started .* in .* seconds"
+        }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "group": "ms_user_service"
+      }
+    },
+    {
+      "label": "MS: subscription-service (8084)",
+      "type": "shell",
+      "command": "mvn spring-boot:run -DskipTests",
+      "options": {
+        "cwd": "${workspaceFolder}/../subscription-service"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "spring-boot",
+        "pattern": {
+          "regexp": ".",
+          "message": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Started .* in .* seconds"
+        }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "group": "ms_subscription_service"
+      }
+    },
+    {
+      "label": "MS: transaction-service (8083)",
+      "type": "shell",
+      "command": "mvn spring-boot:run -DskipTests",
+      "options": {
+        "cwd": "${workspaceFolder}/../transaction-service"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "spring-boot",
+        "pattern": {
+          "regexp": ".",
+          "message": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Started .* in .* seconds"
+        }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "group": "ms_transaction_service"
+      }
+    },
+    {
+      "label": "MS: platform-connection-service (8085)",
+      "type": "shell",
+      "command": "mvn spring-boot:run -DskipTests",
+      "options": {
+        "cwd": "${workspaceFolder}/../platform-connection-service"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "spring-boot",
+        "pattern": {
+          "regexp": ".",
+          "message": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Started .* in .* seconds"
+        }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "group": "ms_platform_connection_service"
+      }
+    },
+    {
+      "label": "MS: notification-service (8086)",
+      "type": "shell",
+      "command": "mvn spring-boot:run -DskipTests",
+      "options": {
+        "cwd": "${workspaceFolder}/../notification-service"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "spring-boot",
+        "pattern": {
+          "regexp": ".",
+          "message": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Started .* in .* seconds"
+        }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "group": "ms_notification_service"
+      }
+    },
+    {
+      "label": "MS: reporting-service (8087)",
+      "type": "shell",
+      "command": "mvn spring-boot:run -DskipTests",
+      "options": {
+        "cwd": "${workspaceFolder}/../reporting-service"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "spring-boot",
+        "pattern": {
+          "regexp": ".",
+          "message": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Started .* in .* seconds"
+        }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "group": "ms_reporting_service"
+      }
+    },
+    {
+      "label": "\ud83d\ude80 Start ALL Microservices",
+      "dependsOn": [
+        "MS: auth-service (8081)",
+        "MS: user-service (8082)",
+        "MS: subscription-service (8084)",
+        "MS: transaction-service (8083)",
+        "MS: platform-connection-service (8085)",
+        "MS: notification-service (8086)",
+        "MS: reporting-service (8087)"
+      ],
+      "dependsOrder": "parallel",
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "\ud83d\ude80 Start ALL (Backend + Frontend)",
+      "dependsOn": [
+        "MS: auth-service (8081)",
+        "MS: user-service (8082)",
+        "MS: subscription-service (8084)",
+        "MS: transaction-service (8083)",
+        "MS: platform-connection-service (8085)",
+        "MS: notification-service (8086)",
+        "MS: reporting-service (8087)",
+        "Frontend: Start Angular"
+      ],
+      "dependsOrder": "parallel",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "\ud83d\udc33 Docker: Start Infrastructure",
+      "type": "shell",
+      "command": "./start-deployment-docker.sh infra",
+      "windows": {
+        "command": "powershell -ExecutionPolicy Bypass -File .\\start-deployment-docker.ps1 infra"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/local-deployment"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "\ud83d\udc33 Docker: Start ALL (Infra + Services)",
+      "type": "shell",
+      "command": "./start-deployment-docker.sh all",
+      "windows": {
+        "command": "powershell -ExecutionPolicy Bypass -File .\\start-deployment-docker.ps1 all"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/local-deployment"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "\ud83d\udc33 Docker: Stop ALL",
+      "type": "shell",
+      "command": "./start-deployment-docker.sh stop",
+      "windows": {
+        "command": "powershell -ExecutionPolicy Bypass -File .\\start-deployment-docker.ps1 stop"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/local-deployment"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "\ud83d\udc33 Docker: Pause (Keep Data)",
+      "type": "shell",
+      "command": "docker-compose stop",
+      "options": {
+        "cwd": "${workspaceFolder}/local-deployment"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "\ud83d\udc33 Docker: Resume",
+      "type": "shell",
+      "command": "docker-compose start",
+      "options": {
+        "cwd": "${workspaceFolder}/local-deployment"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "\ud83d\uddc4\ufe0f DB: Connect to MySQL",
+      "type": "shell",
+      "command": "./scripts/db-utils.sh shell",
+      "windows": {
+        "command": "powershell -ExecutionPolicy Bypass -File .\\scripts\\db-utils.ps1 shell"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/local-deployment"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "focus": true
+      }
+    },
+    {
+      "label": "\ud83d\uddc4\ufe0f DB: Reset Database",
+      "type": "shell",
+      "command": "./scripts/db-utils.sh reset",
+      "windows": {
+        "command": "powershell -ExecutionPolicy Bypass -File .\\scripts\\db-utils.ps1 reset"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/local-deployment"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "focus": true
+      }
+    },
+    {
+      "label": "Build: Frontend",
+      "type": "shell",
+      "command": "npm run build",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "build_Frontend"
+      },
+      "group": "build"
+    },
+    {
+      "label": "Build: auth-service",
+      "type": "shell",
+      "command": "mvn clean package -DskipTests",
+      "options": {
+        "cwd": "${workspaceFolder}/../auth-service"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "group": "build_auth_service"
+      },
+      "group": "build"
+    },
+    {
+      "label": "Build: user-service",
+      "type": "shell",
+      "command": "mvn clean package -DskipTests",
+      "options": {
+        "cwd": "${workspaceFolder}/../user-service"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "group": "build_user_service"
+      },
+      "group": "build"
+    },
+    {
+      "label": "Build: subscription-service",
+      "type": "shell",
+      "command": "mvn clean package -DskipTests",
+      "options": {
+        "cwd": "${workspaceFolder}/../subscription-service"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "group": "build_subscription_service"
+      },
+      "group": "build"
+    },
+    {
+      "label": "Build: transaction-service",
+      "type": "shell",
+      "command": "mvn clean package -DskipTests",
+      "options": {
+        "cwd": "${workspaceFolder}/../transaction-service"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "group": "build_transaction_service"
+      },
+      "group": "build"
+    },
+    {
+      "label": "Build: platform-connection-service",
+      "type": "shell",
+      "command": "mvn clean package -DskipTests",
+      "options": {
+        "cwd": "${workspaceFolder}/../platform-connection-service"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "group": "build_platform_connection_service"
+      },
+      "group": "build"
+    },
+    {
+      "label": "Build: notification-service",
+      "type": "shell",
+      "command": "mvn clean package -DskipTests",
+      "options": {
+        "cwd": "${workspaceFolder}/../notification-service"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "group": "build_notification_service"
+      },
+      "group": "build"
+    },
+    {
+      "label": "Build: reporting-service",
+      "type": "shell",
+      "command": "mvn clean package -DskipTests",
+      "options": {
+        "cwd": "${workspaceFolder}/../reporting-service"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "group": "build_reporting_service"
+      },
+      "group": "build"
+    },
+    {
+      "label": "\ud83d\udd28 Build ALL Microservices",
+      "dependsOn": [
+        "Build: auth-service",
+        "Build: user-service",
+        "Build: subscription-service",
+        "Build: transaction-service",
+        "Build: platform-connection-service",
+        "Build: notification-service",
+        "Build: reporting-service"
+      ],
+      "dependsOrder": "parallel",
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "\ud83d\udd28 Build ALL (Backend + Frontend)",
+      "dependsOn": [
+        "Build: auth-service",
+        "Build: user-service",
+        "Build: subscription-service",
+        "Build: transaction-service",
+        "Build: platform-connection-service",
+        "Build: notification-service",
+        "Build: reporting-service",
+        "Build: Frontend"
+      ],
+      "dependsOrder": "parallel",
+      "problemMatcher": [],
+      "group": "build"
     }
   ]
 }

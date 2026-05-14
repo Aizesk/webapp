@@ -5,6 +5,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { map, of, shareReplay, switchMap, tap, catchError } from 'rxjs';
 import { DetailedTransaction } from '../../../shared/models/transactions.model';
 import { TransactionService } from '../../../core/services/transaction.service';
+import { TopNavbarComponent } from '../../../shared/components/top-navbar/top-navbar.component';
+import { MAIN_NAV_ITEMS } from '../../../shared/models/navigation.model';
 
 interface EditTransactionViewModel {
   readonly transactionId: string | null;
@@ -15,7 +17,7 @@ interface EditTransactionViewModel {
 @Component({
   selector: 'app-edit-transaction-page',
   standalone: true,
-  imports: [ReactiveFormsModule, NgIf, NgFor, NgClass, AsyncPipe, DatePipe, CurrencyPipe],
+  imports: [ReactiveFormsModule, NgIf, NgFor, NgClass, AsyncPipe, DatePipe, CurrencyPipe, TopNavbarComponent],
   templateUrl: './edit-transaction-page.component.html',
   styleUrls: ['./edit-transaction-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -26,16 +28,14 @@ export class EditTransactionPageComponent {
   private readonly router = inject(Router);
   private readonly transactionService = inject(TransactionService);
 
-  protected readonly originOptions = ['Terceros', 'Manual'];
-  protected readonly platformOptions = ['Amazon', 'Shopify'];
-  protected readonly statusOptions: DetailedTransaction['status'][] = [
-    'Recibido',
-    'Pagado',
-    'Procesando',
-    'Completado',
-    'Pendiente',
-    'Enviado'
-  ];
+  protected readonly navItems = MAIN_NAV_ITEMS;
+  protected readonly originOptions = ['MANUAL', 'AMAZON', 'SHOPIFY', 'EBAY', 'ETSY', 'WOOCOMMERCE', 'OTHER'];
+  protected readonly platformOptions = ['Amazon', 'Shopify', 'eBay', 'Etsy', 'WooCommerce', 'Other'];
+  protected readonly typeOptions: DetailedTransaction['type'][] = ['INCOME', 'EXPENSE'];
+  protected readonly typeLabels: Record<string, string> = {
+    'INCOME': 'Ingreso',
+    'EXPENSE': 'Gasto'
+  };
   protected readonly categoryOptions = [
     'Venta de Productos',
     'Ingreso por Publicidad',
@@ -44,10 +44,10 @@ export class EditTransactionPageComponent {
   ];
 
   protected readonly form = this.fb.nonNullable.group({
-    description: ['', [Validators.required, Validators.maxLength(120)]],
+    concept: ['', [Validators.required, Validators.maxLength(120)]],
     category: [this.categoryOptions[0] ?? '', Validators.required],
     platform: [this.platformOptions[0] ?? '', Validators.required],
-    status: [this.statusOptions[0] ?? '', Validators.required],
+    type: [this.typeOptions[0] ?? 'INCOME', Validators.required],
     origin: [this.originOptions[0] ?? '', Validators.required],
     amount: [0, [Validators.required, Validators.min(0)]],
     date: ['', Validators.required],
@@ -68,10 +68,10 @@ export class EditTransactionPageComponent {
 
       if (transaction) {
         this.form.patchValue({
-          description: transaction.description,
+          concept: transaction.concept,
           category: transaction.category,
           platform: transaction.platform,
-          status: transaction.status,
+          type: transaction.type,
           origin: transaction.origin,
           amount: transaction.amount,
           date: transaction.date,

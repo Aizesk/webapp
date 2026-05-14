@@ -1,10 +1,5 @@
 <section class="home">
-  <app-top-navbar
-    [navItems]="navItems"
-    brandTagline="Tu control financiero"
-    [notificationCount]="notifications.length"
-  >
-  </app-top-navbar>
+  <app-top-navbar [navItems]="navItems" brandTagline="Tu control financiero"> </app-top-navbar>
 
   <div class="home__content">
     <!-- Welcome Section -->
@@ -29,27 +24,19 @@
 
       <div class="quick-actions__grid">
         @for (action of quickActions; track action.id) {
-          <article
-            class="action-card"
-            [class.action-card--primary]="action.variant === 'primary'"
-            [class.action-card--secondary]="action.variant === 'secondary'"
-            [class.action-card--outline]="action.variant === 'outline'"
-            (click)="navigateTo(action.route)"
-            tabindex="0"
-            role="button"
-            [attr.aria-label]="action.title"
-          >
-            <div class="action-card__icon">
-              <span class="material-symbols-rounded" aria-hidden="true">{{ action.icon }}</span>
-            </div>
-            <div class="action-card__content">
-              <h3 class="action-card__title">{{ action.title }}</h3>
-              <p class="action-card__description">{{ action.description }}</p>
-            </div>
-            <span class="material-symbols-rounded action-card__arrow" aria-hidden="true"
-              >arrow_forward</span
-            >
-          </article>
+        <article class="action-card" [class.action-card--primary]="action.variant === 'primary'"
+          [class.action-card--secondary]="action.variant === 'secondary'"
+          [class.action-card--outline]="action.variant === 'outline'" (click)="navigateTo(action.route)" tabindex="0"
+          role="button" [attr.aria-label]="action.title">
+          <div class="action-card__icon">
+            <span class="material-symbols-rounded" aria-hidden="true">{{ action.icon }}</span>
+          </div>
+          <div class="action-card__content">
+            <h3 class="action-card__title">{{ action.title }}</h3>
+            <p class="action-card__description">{{ action.description }}</p>
+          </div>
+          <span class="material-symbols-rounded action-card__arrow" aria-hidden="true">arrow_forward</span>
+        </article>
         }
       </div>
     </section>
@@ -57,40 +44,38 @@
     <!-- Notifications Section -->
     <section class="notifications-section">
       <header class="section-header">
-        <h2>Notificaciones Recientes</h2>
-        <a routerLink="/notifications" class="section-header__link">Ver todas</a>
+        <h2>{{ LABELS.SECTION_TITLE }}</h2>
+        <a [routerLink]="ROUTES.LIST" class="section-header__link">{{ LABELS.VIEW_ALL }}</a>
       </header>
 
       <div class="notifications-list">
-        @for (notification of notifications; track notification.id) {
-          <article
-            class="notification-card"
-            [class.notification-card--unread]="!notification.read"
-            [class.notification-card--success]="notification.type === 'success'"
-            [class.notification-card--warning]="notification.type === 'warning'"
-            [class.notification-card--info]="notification.type === 'info'"
-          >
-            <div class="notification-card__icon">
-              <span class="material-symbols-rounded" aria-hidden="true">{{
-                notification.icon
+        @for (notification of notifications(); track notification.id) {
+        <article class="notification-card" [class.notification-card--unread]="isUnread(notification)"
+          [class.notification-card--success]="notification.type === TYPE.SUCCESS"
+          [class.notification-card--warning]="notification.type === TYPE.WARNING"
+          [class.notification-card--error]="notification.type === TYPE.ERROR"
+          [class.notification-card--info]="notification.type === TYPE.INFO">
+          <div class="notification-card__icon">
+            <span class="material-symbols-rounded" aria-hidden="true">{{
+              getNotificationIcon(notification.type)
               }}</span>
-            </div>
-            <div class="notification-card__content">
-              <h4 class="notification-card__title">{{ notification.title }}</h4>
-              <p class="notification-card__message">{{ notification.message }}</p>
-              <span class="notification-card__timestamp">{{ notification.timestamp }}</span>
-            </div>
-            @if (!notification.read) {
-              <span class="notification-card__badge"></span>
-            }
-          </article>
+          </div>
+          <div class="notification-card__content">
+            <h4 class="notification-card__title">{{ notification.title }}</h4>
+            <p class="notification-card__message">{{ notification.message }}</p>
+            <span class="notification-card__timestamp">{{ getRelativeTime(notification.createdAt) }}</span>
+          </div>
+          @if (isUnread(notification)) {
+          <span class="notification-card__badge"></span>
+          }
+        </article>
         }
 
-        @if (notifications.length === 0) {
-          <div class="notifications-empty">
-            <span class="material-symbols-rounded" aria-hidden="true">notifications_off</span>
-            <p>No tienes notificaciones pendientes</p>
-          </div>
+        @if (notifications().length === 0) {
+        <div class="notifications-empty">
+          <span class="material-symbols-rounded" aria-hidden="true">notifications_off</span>
+          <p>{{ LABELS.NO_NOTIFICATIONS }}</p>
+        </div>
         }
       </div>
     </section>
@@ -104,18 +89,14 @@
 
       <div class="quick-stats__grid">
         <article class="stat-card">
-          <span class="stat-card__icon material-symbols-rounded" aria-hidden="true"
-            >trending_up</span
-          >
+          <span class="stat-card__icon material-symbols-rounded" aria-hidden="true">trending_up</span>
           <div class="stat-card__content">
             <span class="stat-card__label">Este mes</span>
             <span class="stat-card__value">Revisa tu dashboard</span>
           </div>
         </article>
         <article class="stat-card">
-          <span class="stat-card__icon material-symbols-rounded" aria-hidden="true"
-            >account_balance</span
-          >
+          <span class="stat-card__icon material-symbols-rounded" aria-hidden="true">account_balance</span>
           <div class="stat-card__content">
             <span class="stat-card__label">Cuentas conectadas</span>
             <span class="stat-card__value">Ver conexiones</span>

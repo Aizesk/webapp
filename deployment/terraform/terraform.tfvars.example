@@ -1,0 +1,34 @@
+# ===========================================
+# EXAMPLE TFVARS — Copy to terraform.tfvars
+# ===========================================
+# DO NOT commit terraform.tfvars to git!
+
+# AWS Academy Learner Lab
+aws_account_id = "123456789012"  # From AWS Details > Account ID
+aws_region     = "us-east-1"     # Check your Learner Lab region
+environment    = "prod"
+
+# Availability Zones (must match region)
+availability_zones = ["us-east-1a", "us-east-1b"]
+
+# Database
+db_username = "aizesk"
+db_password = "CHANGE-ME-strong-password-here"
+db_name     = "aizesk"
+
+# JWT
+jwt_secret = "CHANGE-ME-production-jwt-secret-minimum-256-bits"
+
+# Stripe (use live keys for production)
+stripe_api_key        = "sk_live_..."
+stripe_webhook_secret = "whsec_..."
+
+# Stripe Price IDs (from Stripe Dashboard > Products > Price IDs)
+stripe_price_professional_monthly = "price_..."
+stripe_price_professional_annual  = "price_..."
+stripe_price_enterprise_monthly   = "price_..."
+stripe_price_enterprise_annual    = "price_..."
+
+# Shopify
+shopify_client_id     = ""
+shopify_client_secret = ""

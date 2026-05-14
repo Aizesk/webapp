@@ -1,0 +1,75 @@
+# ===========================================
+# CI/CD - Deploy Frontend to S3 + CloudFront
+# ===========================================
+# Builds Angular app, uploads to S3, invalidates CloudFront cache
+# Triggered on push to main branch or manual dispatch
+
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'angular.json'
+      - 'package.json'
+      - 'tsconfig*.json'
+  workflow_dispatch:
+
+env:
+  AWS_REGION: eu-west-1
+  S3_BUCKET: aizesk-frontend-prod
+  CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build for production
+        run: npx ng build --configuration=production
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy to S3
+        run: |
+          # Angular build output directory
+          BUILD_DIR="dist/frontend/browser"
+
+          # Sync files to S3
+          aws s3 sync $BUILD_DIR s3://${{ env.S3_BUCKET }} \
+            --delete \
+            --cache-control "public, max-age=31536000, immutable" \
+            --exclude "index.html" \
+            --exclude "*.json"
+
+          # Upload index.html and JSON with no-cache
+          aws s3 cp $BUILD_DIR/index.html s3://${{ env.S3_BUCKET }}/index.html \
+            --cache-control "no-cache, no-store, must-revalidate"
+
+          # Upload any JSON files (like manifest) with short cache
+          find $BUILD_DIR -name "*.json" -exec aws s3 cp {} s3://${{ env.S3_BUCKET }}/{} \
+            --cache-control "public, max-age=3600" \; 2>/dev/null || true
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/index.html" "/*.json"

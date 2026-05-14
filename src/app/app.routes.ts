@@ -4,6 +4,7 @@ import { HomePageComponent } from './features/home/home-page.component';
 import { LoginPageComponent } from './features/auth/login/login-page.component';
 import { SigninPageComponent } from './features/auth/signin/signin-page.component';
 import { RecoveryPasswordPageComponent } from './features/auth/recoverypassword/recovery-password-page.component';
+import { ResetPasswordPageComponent } from './features/auth/resetpassword/reset-password-page.component';
 import { MainDashboardPageComponent } from './features/main-dashboard/main-dashboard-page.component';
 import { TransactionsPageComponent } from './features/transactions/transactions-page.component';
 import { EditTransactionPageComponent } from './features/transactions/edit-transaction/edit-transaction-page.component';
@@ -13,7 +14,7 @@ import { PlatformConnectionsPageComponent } from './features/platform-connection
 import { ReportsPageComponent } from './features/reports/reports-page.component';
 import { SubscriptionsPageComponent } from './features/subscriptions/subscriptions-page.component';
 import { ProfilePageComponent } from './features/profile/profile-page.component';
-import { AdminPageComponent } from './features/admin/admin-page.component';
+import { NotificationsPageComponent } from './features/notifications/notifications-page.component';
 import { authGuard, publicOnlyGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -39,6 +40,11 @@ export const routes: Routes = [
     path: 'recovery-password',
     component: RecoveryPasswordPageComponent,
     title: 'Aizesk | Recuperar contraseña',
+  },
+  {
+    path: 'reset-password',
+    component: ResetPasswordPageComponent,
+    title: 'Aizesk | Restablecer contraseña',
   },
   // Protected routes (require authentication)
   {
@@ -87,7 +93,7 @@ export const routes: Routes = [
     path: 'reports',
     component: ReportsPageComponent,
     canActivate: [authGuard],
-    title: 'Aizesk | Informes',
+    title: 'Aizesk | Reportes',
   },
   {
     path: 'subscriptions',
@@ -96,16 +102,16 @@ export const routes: Routes = [
     title: 'Aizesk | Suscripciones',
   },
   {
+    path: 'notifications',
+    component: NotificationsPageComponent,
+    canActivate: [authGuard],
+    title: 'Aizesk | Notificaciones',
+  },
+  {
     path: 'profile',
     component: ProfilePageComponent,
     canActivate: [authGuard],
     title: 'Aizesk | Perfil',
-  },
-  {
-    path: 'admin',
-    component: AdminPageComponent,
-    canActivate: [authGuard],
-    title: 'Aizesk | Administración',
   },
   {
     path: '**',

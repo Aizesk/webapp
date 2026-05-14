@@ -1,0 +1,1939 @@
+﻿aws_ssm_parameter.jwt_secret: Refreshing state... [id=/aizesk/auth/jwt-secret]
+aws_ssm_parameter.stripe_webhook_secret: Refreshing state... [id=/aizesk/stripe/webhook-secret]
+aws_ssm_parameter.db_password: Refreshing state... [id=/aizesk/database/password]
+aws_ssm_parameter.stripe_api_key: Refreshing state... [id=/aizesk/stripe/api-key]
+aws_ecs_cluster.main: Refreshing state... [id=arn:aws:ecs:us-east-1:946693320543:cluster/aizesk-cluster]
+aws_vpc.main: Refreshing state... [id=vpc-04b1ad2f0639d05d6]
+aws_ssm_parameter.db_username: Refreshing state... [id=/aizesk/database/username]
+aws_db_parameter_group.main: Refreshing state... [id=aizesk-mysql-params]
+aws_s3_bucket.frontend: Refreshing state... [id=aizesk-frontend-prod]
+aws_ecr_repository.services["user-service"]: Refreshing state... [id=aizesk/user-service]
+aws_ecr_repository.services["platform-connection-service"]: Refreshing state... [id=aizesk/platform-connection-service]
+aws_ecr_repository.services["reporting-service"]: Refreshing state... [id=aizesk/reporting-service]
+aws_ecr_repository.services["auth-service"]: Refreshing state... [id=aizesk/auth-service]
+aws_ecr_repository.services["subscription-service"]: Refreshing state... [id=aizesk/subscription-service]
+aws_ecr_repository.services["notification-service"]: Refreshing state... [id=aizesk/notification-service]
+aws_ecr_repository.services["transaction-service"]: Refreshing state... [id=aizesk/transaction-service]
+aws_cloudwatch_log_group.services["transaction-service"]: Refreshing state... [id=/ecs/aizesk/transaction-service]
+aws_cloudwatch_log_group.services["notification-service"]: Refreshing state... [id=/ecs/aizesk/notification-service]
+aws_cloudwatch_log_group.services["platform-connection-service"]: Refreshing state... [id=/ecs/aizesk/platform-connection-service]
+aws_cloudwatch_log_group.services["reporting-service"]: Refreshing state... [id=/ecs/aizesk/reporting-service]
+aws_cloudwatch_log_group.services["subscription-service"]: Refreshing state... [id=/ecs/aizesk/subscription-service]
+aws_cloudwatch_log_group.services["auth-service"]: Refreshing state... [id=/ecs/aizesk/auth-service]
+aws_cloudwatch_log_group.services["user-service"]: Refreshing state... [id=/ecs/aizesk/user-service]
+aws_ecr_lifecycle_policy.services["notification-service"]: Refreshing state... [id=aizesk/notification-service]
+aws_ecr_lifecycle_policy.services["auth-service"]: Refreshing state... [id=aizesk/auth-service]
+aws_ecr_lifecycle_policy.services["platform-connection-service"]: Refreshing state... [id=aizesk/platform-connection-service]
+aws_ecr_lifecycle_policy.services["reporting-service"]: Refreshing state... [id=aizesk/reporting-service]
+aws_ecr_lifecycle_policy.services["subscription-service"]: Refreshing state... [id=aizesk/subscription-service]
+aws_ecr_lifecycle_policy.services["user-service"]: Refreshing state... [id=aizesk/user-service]
+aws_ecr_lifecycle_policy.services["transaction-service"]: Refreshing state... [id=aizesk/transaction-service]
+aws_internet_gateway.main: Refreshing state... [id=igw-0a13d733a04fd68cd]
+aws_security_group.alb: Refreshing state... [id=sg-096b85d691a878f9a]
+aws_subnet.private[1]: Refreshing state... [id=subnet-0e6a10f8fe31c47dd]
+aws_subnet.private[0]: Refreshing state... [id=subnet-0b11fcb3edcd7c0e7]
+aws_lb_target_group.services["notification-service"]: Refreshing state... [id=arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-notification/333c000c4db35bdf]
+aws_lb_target_group.services["transaction-service"]: Refreshing state... [id=arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-transaction/cbd245616a7cce08]
+aws_lb_target_group.services["subscription-service"]: Refreshing state... [id=arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-subscription/b741ef482c6ebee1]
+aws_lb_target_group.services["auth-service"]: Refreshing state... [id=arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-auth/f4123ed7fda2a630]
+aws_lb_target_group.services["user-service"]: Refreshing state... [id=arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-user/42550a32d51ab17d]
+aws_lb_target_group.services["reporting-service"]: Refreshing state... [id=arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-reporting/d902edd25013cb4b]
+aws_lb_target_group.services["platform-connection-service"]: Refreshing state... [id=arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-platform-connection/6702a82c280a20b9]
+aws_subnet.public[0]: Refreshing state... [id=subnet-0d8be75abeb3ba9a9]
+aws_subnet.public[1]: Refreshing state... [id=subnet-0ed76cc389a11e2e1]
+aws_route_table.public: Refreshing state... [id=rtb-04705c5a836c97d42]
+aws_s3_bucket_versioning.frontend: Refreshing state... [id=aizesk-frontend-prod]
+aws_s3_bucket_public_access_block.frontend: Refreshing state... [id=aizesk-frontend-prod]
+aws_security_group.ecs_tasks: Refreshing state... [id=sg-0ac1606f609b48718]
+aws_db_subnet_group.main: Refreshing state... [id=aizesk-db-subnet-group]
+aws_route_table_association.public[0]: Refreshing state... [id=rtbassoc-03ba98fe7115ab634]
+aws_route_table_association.public[1]: Refreshing state... [id=rtbassoc-09f0579b5fac00e01]
+aws_security_group.rds: Refreshing state... [id=sg-01c007e589f06eb9e]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  - destroy
+
+Terraform will perform the following actions:
+
+  # aws_cloudwatch_log_group.services["auth-service"] will be destroyed
+  - resource "aws_cloudwatch_log_group" "services" {
+      - arn               = "arn:aws:logs:us-east-1:946693320543:log-group:/ecs/aizesk/auth-service" -> null
+      - id                = "/ecs/aizesk/auth-service" -> null
+      - log_group_class   = "STANDARD" -> null
+      - name              = "/ecs/aizesk/auth-service" -> null
+      - retention_in_days = 14 -> null
+      - skip_destroy      = false -> null
+      - tags              = {
+          - "Service" = "auth-service"
+        } -> null
+      - tags_all          = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Project"     = "aizesk"
+          - "Service"     = "auth-service"
+        } -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # aws_cloudwatch_log_group.services["notification-service"] will be destroyed
+  - resource "aws_cloudwatch_log_group" "services" {
+      - arn               = "arn:aws:logs:us-east-1:946693320543:log-group:/ecs/aizesk/notification-service" -> null
+      - id                = "/ecs/aizesk/notification-service" -> null
+      - log_group_class   = "STANDARD" -> null
+      - name              = "/ecs/aizesk/notification-service" -> null
+      - retention_in_days = 14 -> null
+      - skip_destroy      = false -> null
+      - tags              = {
+          - "Service" = "notification-service"
+        } -> null
+      - tags_all          = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Project"     = "aizesk"
+          - "Service"     = "notification-service"
+        } -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # aws_cloudwatch_log_group.services["platform-connection-service"] will be destroyed
+  - resource "aws_cloudwatch_log_group" "services" {
+      - arn               = "arn:aws:logs:us-east-1:946693320543:log-group:/ecs/aizesk/platform-connection-service" -> null
+      - id                = "/ecs/aizesk/platform-connection-service" -> null
+      - log_group_class   = "STANDARD" -> null
+      - name              = "/ecs/aizesk/platform-connection-service" -> null
+      - retention_in_days = 14 -> null
+      - skip_destroy      = false -> null
+      - tags              = {
+          - "Service" = "platform-connection-service"
+        } -> null
+      - tags_all          = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Project"     = "aizesk"
+          - "Service"     = "platform-connection-service"
+        } -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # aws_cloudwatch_log_group.services["reporting-service"] will be destroyed
+  - resource "aws_cloudwatch_log_group" "services" {
+      - arn               = "arn:aws:logs:us-east-1:946693320543:log-group:/ecs/aizesk/reporting-service" -> null
+      - id                = "/ecs/aizesk/reporting-service" -> null
+      - log_group_class   = "STANDARD" -> null
+      - name              = "/ecs/aizesk/reporting-service" -> null
+      - retention_in_days = 14 -> null
+      - skip_destroy      = false -> null
+      - tags              = {
+          - "Service" = "reporting-service"
+        } -> null
+      - tags_all          = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Project"     = "aizesk"
+          - "Service"     = "reporting-service"
+        } -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # aws_cloudwatch_log_group.services["subscription-service"] will be destroyed
+  - resource "aws_cloudwatch_log_group" "services" {
+      - arn               = "arn:aws:logs:us-east-1:946693320543:log-group:/ecs/aizesk/subscription-service" -> null
+      - id                = "/ecs/aizesk/subscription-service" -> null
+      - log_group_class   = "STANDARD" -> null
+      - name              = "/ecs/aizesk/subscription-service" -> null
+      - retention_in_days = 14 -> null
+      - skip_destroy      = false -> null
+      - tags              = {
+          - "Service" = "subscription-service"
+        } -> null
+      - tags_all          = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Project"     = "aizesk"
+          - "Service"     = "subscription-service"
+        } -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # aws_cloudwatch_log_group.services["transaction-service"] will be destroyed
+  - resource "aws_cloudwatch_log_group" "services" {
+      - arn               = "arn:aws:logs:us-east-1:946693320543:log-group:/ecs/aizesk/transaction-service" -> null
+      - id                = "/ecs/aizesk/transaction-service" -> null
+      - log_group_class   = "STANDARD" -> null
+      - name              = "/ecs/aizesk/transaction-service" -> null
+      - retention_in_days = 14 -> null
+      - skip_destroy      = false -> null
+      - tags              = {
+          - "Service" = "transaction-service"
+        } -> null
+      - tags_all          = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Project"     = "aizesk"
+          - "Service"     = "transaction-service"
+        } -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # aws_cloudwatch_log_group.services["user-service"] will be destroyed
+  - resource "aws_cloudwatch_log_group" "services" {
+      - arn               = "arn:aws:logs:us-east-1:946693320543:log-group:/ecs/aizesk/user-service" -> null
+      - id                = "/ecs/aizesk/user-service" -> null
+      - log_group_class   = "STANDARD" -> null
+      - name              = "/ecs/aizesk/user-service" -> null
+      - retention_in_days = 14 -> null
+      - skip_destroy      = false -> null
+      - tags              = {
+          - "Service" = "user-service"
+        } -> null
+      - tags_all          = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Project"     = "aizesk"
+          - "Service"     = "user-service"
+        } -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # aws_db_parameter_group.main will be destroyed
+  - resource "aws_db_parameter_group" "main" {
+      - arn          = "arn:aws:rds:us-east-1:946693320543:pg:aizesk-mysql-params" -> null
+      - description  = "Managed by Terraform" -> null
+      - family       = "mysql8.0" -> null
+      - id           = "aizesk-mysql-params" -> null
+      - name         = "aizesk-mysql-params" -> null
+      - skip_destroy = false -> null
+      - tags         = {
+          - "Name" = "aizesk-mysql-params"
+        } -> null
+      - tags_all     = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-mysql-params"
+          - "Project"     = "aizesk"
+        } -> null
+        # (1 unchanged attribute hidden)
+
+      - parameter {
+          - apply_method = "immediate" -> null
+          - name         = "character_set_server" -> null
+          - value        = "utf8mb4" -> null
+        }
+      - parameter {
+          - apply_method = "immediate" -> null
+          - name         = "collation_server" -> null
+          - value        = "utf8mb4_unicode_ci" -> null
+        }
+      - parameter {
+          - apply_method = "pending-reboot" -> null
+          - name         = "default_authentication_plugin" -> null
+          - value        = "mysql_native_password" -> null
+        }
+    }
+
+  # aws_db_subnet_group.main will be destroyed
+  - resource "aws_db_subnet_group" "main" {
+      - arn                     = "arn:aws:rds:us-east-1:946693320543:subgrp:aizesk-db-subnet-group" -> null
+      - description             = "Managed by Terraform" -> null
+      - id                      = "aizesk-db-subnet-group" -> null
+      - name                    = "aizesk-db-subnet-group" -> null
+      - subnet_ids              = [
+          - "subnet-0d8be75abeb3ba9a9",
+          - "subnet-0ed76cc389a11e2e1",
+        ] -> null
+      - supported_network_types = [
+          - "IPV4",
+        ] -> null
+      - tags                    = {
+          - "Name" = "aizesk-db-subnet-group"
+        } -> null
+      - tags_all                = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-db-subnet-group"
+          - "Project"     = "aizesk"
+        } -> null
+      - vpc_id                  = "vpc-04b1ad2f0639d05d6" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # aws_ecr_lifecycle_policy.services["auth-service"] will be destroyed
+  - resource "aws_ecr_lifecycle_policy" "services" {
+      - id          = "aizesk/auth-service" -> null
+      - policy      = jsonencode(
+            {
+              - rules = [
+                  - {
+                      - action       = {
+                          - type = "expire"
+                        }
+                      - description  = "Keep only last 5 images"
+                      - rulePriority = 1
+                      - selection    = {
+                          - countNumber = 5
+                          - countType   = "imageCountMoreThan"
+                          - tagStatus   = "any"
+                        }
+                    },
+                ]
+            }
+        ) -> null
+      - registry_id = "946693320543" -> null
+      - repository  = "aizesk/auth-service" -> null
+    }
+
+  # aws_ecr_lifecycle_policy.services["notification-service"] will be destroyed
+  - resource "aws_ecr_lifecycle_policy" "services" {
+      - id          = "aizesk/notification-service" -> null
+      - policy      = jsonencode(
+            {
+              - rules = [
+                  - {
+                      - action       = {
+                          - type = "expire"
+                        }
+                      - description  = "Keep only last 5 images"
+                      - rulePriority = 1
+                      - selection    = {
+                          - countNumber = 5
+                          - countType   = "imageCountMoreThan"
+                          - tagStatus   = "any"
+                        }
+                    },
+                ]
+            }
+        ) -> null
+      - registry_id = "946693320543" -> null
+      - repository  = "aizesk/notification-service" -> null
+    }
+
+  # aws_ecr_lifecycle_policy.services["platform-connection-service"] will be destroyed
+  - resource "aws_ecr_lifecycle_policy" "services" {
+      - id          = "aizesk/platform-connection-service" -> null
+      - policy      = jsonencode(
+            {
+              - rules = [
+                  - {
+                      - action       = {
+                          - type = "expire"
+                        }
+                      - description  = "Keep only last 5 images"
+                      - rulePriority = 1
+                      - selection    = {
+                          - countNumber = 5
+                          - countType   = "imageCountMoreThan"
+                          - tagStatus   = "any"
+                        }
+                    },
+                ]
+            }
+        ) -> null
+      - registry_id = "946693320543" -> null
+      - repository  = "aizesk/platform-connection-service" -> null
+    }
+
+  # aws_ecr_lifecycle_policy.services["reporting-service"] will be destroyed
+  - resource "aws_ecr_lifecycle_policy" "services" {
+      - id          = "aizesk/reporting-service" -> null
+      - policy      = jsonencode(
+            {
+              - rules = [
+                  - {
+                      - action       = {
+                          - type = "expire"
+                        }
+                      - description  = "Keep only last 5 images"
+                      - rulePriority = 1
+                      - selection    = {
+                          - countNumber = 5
+                          - countType   = "imageCountMoreThan"
+                          - tagStatus   = "any"
+                        }
+                    },
+                ]
+            }
+        ) -> null
+      - registry_id = "946693320543" -> null
+      - repository  = "aizesk/reporting-service" -> null
+    }
+
+  # aws_ecr_lifecycle_policy.services["subscription-service"] will be destroyed
+  - resource "aws_ecr_lifecycle_policy" "services" {
+      - id          = "aizesk/subscription-service" -> null
+      - policy      = jsonencode(
+            {
+              - rules = [
+                  - {
+                      - action       = {
+                          - type = "expire"
+                        }
+                      - description  = "Keep only last 5 images"
+                      - rulePriority = 1
+                      - selection    = {
+                          - countNumber = 5
+                          - countType   = "imageCountMoreThan"
+                          - tagStatus   = "any"
+                        }
+                    },
+                ]
+            }
+        ) -> null
+      - registry_id = "946693320543" -> null
+      - repository  = "aizesk/subscription-service" -> null
+    }
+
+  # aws_ecr_lifecycle_policy.services["transaction-service"] will be destroyed
+  - resource "aws_ecr_lifecycle_policy" "services" {
+      - id          = "aizesk/transaction-service" -> null
+      - policy      = jsonencode(
+            {
+              - rules = [
+                  - {
+                      - action       = {
+                          - type = "expire"
+                        }
+                      - description  = "Keep only last 5 images"
+                      - rulePriority = 1
+                      - selection    = {
+                          - countNumber = 5
+                          - countType   = "imageCountMoreThan"
+                          - tagStatus   = "any"
+                        }
+                    },
+                ]
+            }
+        ) -> null
+      - registry_id = "946693320543" -> null
+      - repository  = "aizesk/transaction-service" -> null
+    }
+
+  # aws_ecr_lifecycle_policy.services["user-service"] will be destroyed
+  - resource "aws_ecr_lifecycle_policy" "services" {
+      - id          = "aizesk/user-service" -> null
+      - policy      = jsonencode(
+            {
+              - rules = [
+                  - {
+                      - action       = {
+                          - type = "expire"
+                        }
+                      - description  = "Keep only last 5 images"
+                      - rulePriority = 1
+                      - selection    = {
+                          - countNumber = 5
+                          - countType   = "imageCountMoreThan"
+                          - tagStatus   = "any"
+                        }
+                    },
+                ]
+            }
+        ) -> null
+      - registry_id = "946693320543" -> null
+      - repository  = "aizesk/user-service" -> null
+    }
+
+  # aws_ecr_repository.services["auth-service"] will be destroyed
+  - resource "aws_ecr_repository" "services" {
+      - arn                  = "arn:aws:ecr:us-east-1:946693320543:repository/aizesk/auth-service" -> null
+      - force_delete         = true -> null
+      - id                   = "aizesk/auth-service" -> null
+      - image_tag_mutability = "MUTABLE" -> null
+      - name                 = "aizesk/auth-service" -> null
+      - registry_id          = "946693320543" -> null
+      - repository_url       = "946693320543.dkr.ecr.us-east-1.amazonaws.com/aizesk/auth-service" -> null
+      - tags                 = {
+          - "Name"    = "aizesk-auth-service"
+          - "Service" = "auth-service"
+        } -> null
+      - tags_all             = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-auth-service"
+          - "Project"     = "aizesk"
+          - "Service"     = "auth-service"
+        } -> null
+
+      - encryption_configuration {
+          - encryption_type = "AES256" -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - image_scanning_configuration {
+          - scan_on_push = true -> null
+        }
+    }
+
+  # aws_ecr_repository.services["notification-service"] will be destroyed
+  - resource "aws_ecr_repository" "services" {
+      - arn                  = "arn:aws:ecr:us-east-1:946693320543:repository/aizesk/notification-service" -> null
+      - force_delete         = true -> null
+      - id                   = "aizesk/notification-service" -> null
+      - image_tag_mutability = "MUTABLE" -> null
+      - name                 = "aizesk/notification-service" -> null
+      - registry_id          = "946693320543" -> null
+      - repository_url       = "946693320543.dkr.ecr.us-east-1.amazonaws.com/aizesk/notification-service" -> null
+      - tags                 = {
+          - "Name"    = "aizesk-notification-service"
+          - "Service" = "notification-service"
+        } -> null
+      - tags_all             = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-notification-service"
+          - "Project"     = "aizesk"
+          - "Service"     = "notification-service"
+        } -> null
+
+      - encryption_configuration {
+          - encryption_type = "AES256" -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - image_scanning_configuration {
+          - scan_on_push = true -> null
+        }
+    }
+
+  # aws_ecr_repository.services["platform-connection-service"] will be destroyed
+  - resource "aws_ecr_repository" "services" {
+      - arn                  = "arn:aws:ecr:us-east-1:946693320543:repository/aizesk/platform-connection-service" -> null
+      - force_delete         = true -> null
+      - id                   = "aizesk/platform-connection-service" -> null
+      - image_tag_mutability = "MUTABLE" -> null
+      - name                 = "aizesk/platform-connection-service" -> null
+      - registry_id          = "946693320543" -> null
+      - repository_url       = "946693320543.dkr.ecr.us-east-1.amazonaws.com/aizesk/platform-connection-service" -> null
+      - tags                 = {
+          - "Name"    = "aizesk-platform-connection-service"
+          - "Service" = "platform-connection-service"
+        } -> null
+      - tags_all             = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-platform-connection-service"
+          - "Project"     = "aizesk"
+          - "Service"     = "platform-connection-service"
+        } -> null
+
+      - encryption_configuration {
+          - encryption_type = "AES256" -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - image_scanning_configuration {
+          - scan_on_push = true -> null
+        }
+    }
+
+  # aws_ecr_repository.services["reporting-service"] will be destroyed
+  - resource "aws_ecr_repository" "services" {
+      - arn                  = "arn:aws:ecr:us-east-1:946693320543:repository/aizesk/reporting-service" -> null
+      - force_delete         = true -> null
+      - id                   = "aizesk/reporting-service" -> null
+      - image_tag_mutability = "MUTABLE" -> null
+      - name                 = "aizesk/reporting-service" -> null
+      - registry_id          = "946693320543" -> null
+      - repository_url       = "946693320543.dkr.ecr.us-east-1.amazonaws.com/aizesk/reporting-service" -> null
+      - tags                 = {
+          - "Name"    = "aizesk-reporting-service"
+          - "Service" = "reporting-service"
+        } -> null
+      - tags_all             = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-reporting-service"
+          - "Project"     = "aizesk"
+          - "Service"     = "reporting-service"
+        } -> null
+
+      - encryption_configuration {
+          - encryption_type = "AES256" -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - image_scanning_configuration {
+          - scan_on_push = true -> null
+        }
+    }
+
+  # aws_ecr_repository.services["subscription-service"] will be destroyed
+  - resource "aws_ecr_repository" "services" {
+      - arn                  = "arn:aws:ecr:us-east-1:946693320543:repository/aizesk/subscription-service" -> null
+      - force_delete         = true -> null
+      - id                   = "aizesk/subscription-service" -> null
+      - image_tag_mutability = "MUTABLE" -> null
+      - name                 = "aizesk/subscription-service" -> null
+      - registry_id          = "946693320543" -> null
+      - repository_url       = "946693320543.dkr.ecr.us-east-1.amazonaws.com/aizesk/subscription-service" -> null
+      - tags                 = {
+          - "Name"    = "aizesk-subscription-service"
+          - "Service" = "subscription-service"
+        } -> null
+      - tags_all             = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-subscription-service"
+          - "Project"     = "aizesk"
+          - "Service"     = "subscription-service"
+        } -> null
+
+      - encryption_configuration {
+          - encryption_type = "AES256" -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - image_scanning_configuration {
+          - scan_on_push = true -> null
+        }
+    }
+
+  # aws_ecr_repository.services["transaction-service"] will be destroyed
+  - resource "aws_ecr_repository" "services" {
+      - arn                  = "arn:aws:ecr:us-east-1:946693320543:repository/aizesk/transaction-service" -> null
+      - force_delete         = true -> null
+      - id                   = "aizesk/transaction-service" -> null
+      - image_tag_mutability = "MUTABLE" -> null
+      - name                 = "aizesk/transaction-service" -> null
+      - registry_id          = "946693320543" -> null
+      - repository_url       = "946693320543.dkr.ecr.us-east-1.amazonaws.com/aizesk/transaction-service" -> null
+      - tags                 = {
+          - "Name"    = "aizesk-transaction-service"
+          - "Service" = "transaction-service"
+        } -> null
+      - tags_all             = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-transaction-service"
+          - "Project"     = "aizesk"
+          - "Service"     = "transaction-service"
+        } -> null
+
+      - encryption_configuration {
+          - encryption_type = "AES256" -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - image_scanning_configuration {
+          - scan_on_push = true -> null
+        }
+    }
+
+  # aws_ecr_repository.services["user-service"] will be destroyed
+  - resource "aws_ecr_repository" "services" {
+      - arn                  = "arn:aws:ecr:us-east-1:946693320543:repository/aizesk/user-service" -> null
+      - force_delete         = true -> null
+      - id                   = "aizesk/user-service" -> null
+      - image_tag_mutability = "MUTABLE" -> null
+      - name                 = "aizesk/user-service" -> null
+      - registry_id          = "946693320543" -> null
+      - repository_url       = "946693320543.dkr.ecr.us-east-1.amazonaws.com/aizesk/user-service" -> null
+      - tags                 = {
+          - "Name"    = "aizesk-user-service"
+          - "Service" = "user-service"
+        } -> null
+      - tags_all             = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-user-service"
+          - "Project"     = "aizesk"
+          - "Service"     = "user-service"
+        } -> null
+
+      - encryption_configuration {
+          - encryption_type = "AES256" -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - image_scanning_configuration {
+          - scan_on_push = true -> null
+        }
+    }
+
+  # aws_ecs_cluster.main will be destroyed
+  - resource "aws_ecs_cluster" "main" {
+      - arn      = "arn:aws:ecs:us-east-1:946693320543:cluster/aizesk-cluster" -> null
+      - id       = "arn:aws:ecs:us-east-1:946693320543:cluster/aizesk-cluster" -> null
+      - name     = "aizesk-cluster" -> null
+      - tags     = {
+          - "Name" = "aizesk-cluster"
+        } -> null
+      - tags_all = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-cluster"
+          - "Project"     = "aizesk"
+        } -> null
+
+      - setting {
+          - name  = "containerInsights" -> null
+          - value = "disabled" -> null
+        }
+    }
+
+  # aws_internet_gateway.main will be destroyed
+  - resource "aws_internet_gateway" "main" {
+      - arn      = "arn:aws:ec2:us-east-1:946693320543:internet-gateway/igw-0a13d733a04fd68cd" -> null
+      - id       = "igw-0a13d733a04fd68cd" -> null
+      - owner_id = "946693320543" -> null
+      - tags     = {
+          - "Name" = "aizesk-igw"
+        } -> null
+      - tags_all = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-igw"
+          - "Project"     = "aizesk"
+        } -> null
+      - vpc_id   = "vpc-04b1ad2f0639d05d6" -> null
+    }
+
+  # aws_lb_target_group.services["auth-service"] will be destroyed
+  - resource "aws_lb_target_group" "services" {
+      - arn                                = "arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-auth/f4123ed7fda2a630" -> null
+      - arn_suffix                         = "targetgroup/aizesk-auth/f4123ed7fda2a630" -> null
+      - deregistration_delay               = "300" -> null
+      - id                                 = "arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-auth/f4123ed7fda2a630" -> null
+      - ip_address_type                    = "ipv4" -> null
+      - lambda_multi_value_headers_enabled = false -> null
+      - load_balancer_arns                 = [] -> null
+      - load_balancing_algorithm_type      = "round_robin" -> null
+      - load_balancing_anomaly_mitigation  = "off" -> null
+      - load_balancing_cross_zone_enabled  = "use_load_balancer_configuration" -> null
+      - name                               = "aizesk-auth" -> null
+      - port                               = 8081 -> null
+      - protocol                           = "HTTP" -> null
+      - protocol_version                   = "HTTP1" -> null
+      - proxy_protocol_v2                  = false -> null
+      - slow_start                         = 120 -> null
+      - tags                               = {
+          - "Name"    = "aizesk-auth-service-tg"
+          - "Service" = "auth-service"
+        } -> null
+      - tags_all                           = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-auth-service-tg"
+          - "Project"     = "aizesk"
+          - "Service"     = "auth-service"
+        } -> null
+      - target_type                        = "ip" -> null
+      - vpc_id                             = "vpc-04b1ad2f0639d05d6" -> null
+        # (1 unchanged attribute hidden)
+
+      - health_check {
+          - enabled             = true -> null
+          - healthy_threshold   = 2 -> null
+          - interval            = 30 -> null
+          - matcher             = "200" -> null
+          - path                = "/actuator/health" -> null
+          - port                = "traffic-port" -> null
+          - protocol            = "HTTP" -> null
+          - timeout             = 10 -> null
+          - unhealthy_threshold = 3 -> null
+        }
+
+      - stickiness {
+          - cookie_duration = 86400 -> null
+          - enabled         = false -> null
+          - type            = "lb_cookie" -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - target_failover {}
+
+      - target_group_health {
+          - dns_failover {
+              - minimum_healthy_targets_count      = "1" -> null
+              - minimum_healthy_targets_percentage = "off" -> null
+            }
+          - unhealthy_state_routing {
+              - minimum_healthy_targets_count      = 1 -> null
+              - minimum_healthy_targets_percentage = "off" -> null
+            }
+        }
+
+      - target_health_state {}
+    }
+
+  # aws_lb_target_group.services["notification-service"] will be destroyed
+  - resource "aws_lb_target_group" "services" {
+      - arn                                = "arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-notification/333c000c4db35bdf" -> null
+      - arn_suffix                         = "targetgroup/aizesk-notification/333c000c4db35bdf" -> null
+      - deregistration_delay               = "300" -> null
+      - id                                 = "arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-notification/333c000c4db35bdf" -> null
+      - ip_address_type                    = "ipv4" -> null
+      - lambda_multi_value_headers_enabled = false -> null
+      - load_balancer_arns                 = [] -> null
+      - load_balancing_algorithm_type      = "round_robin" -> null
+      - load_balancing_anomaly_mitigation  = "off" -> null
+      - load_balancing_cross_zone_enabled  = "use_load_balancer_configuration" -> null
+      - name                               = "aizesk-notification" -> null
+      - port                               = 8086 -> null
+      - protocol                           = "HTTP" -> null
+      - protocol_version                   = "HTTP1" -> null
+      - proxy_protocol_v2                  = false -> null
+      - slow_start                         = 120 -> null
+      - tags                               = {
+          - "Name"    = "aizesk-notification-service-tg"
+          - "Service" = "notification-service"
+        } -> null
+      - tags_all                           = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-notification-service-tg"
+          - "Project"     = "aizesk"
+          - "Service"     = "notification-service"
+        } -> null
+      - target_type                        = "ip" -> null
+      - vpc_id                             = "vpc-04b1ad2f0639d05d6" -> null
+        # (1 unchanged attribute hidden)
+
+      - health_check {
+          - enabled             = true -> null
+          - healthy_threshold   = 2 -> null
+          - interval            = 30 -> null
+          - matcher             = "200" -> null
+          - path                = "/actuator/health" -> null
+          - port                = "traffic-port" -> null
+          - protocol            = "HTTP" -> null
+          - timeout             = 10 -> null
+          - unhealthy_threshold = 3 -> null
+        }
+
+      - stickiness {
+          - cookie_duration = 86400 -> null
+          - enabled         = false -> null
+          - type            = "lb_cookie" -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - target_failover {}
+
+      - target_group_health {
+          - dns_failover {
+              - minimum_healthy_targets_count      = "1" -> null
+              - minimum_healthy_targets_percentage = "off" -> null
+            }
+          - unhealthy_state_routing {
+              - minimum_healthy_targets_count      = 1 -> null
+              - minimum_healthy_targets_percentage = "off" -> null
+            }
+        }
+
+      - target_health_state {}
+    }
+
+  # aws_lb_target_group.services["platform-connection-service"] will be destroyed
+  - resource "aws_lb_target_group" "services" {
+      - arn                                = "arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-platform-connection/6702a82c280a20b9" -> null
+      - arn_suffix                         = "targetgroup/aizesk-platform-connection/6702a82c280a20b9" -> null
+      - deregistration_delay               = "300" -> null
+      - id                                 = "arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-platform-connection/6702a82c280a20b9" -> null
+      - ip_address_type                    = "ipv4" -> null
+      - lambda_multi_value_headers_enabled = false -> null
+      - load_balancer_arns                 = [] -> null
+      - load_balancing_algorithm_type      = "round_robin" -> null
+      - load_balancing_anomaly_mitigation  = "off" -> null
+      - load_balancing_cross_zone_enabled  = "use_load_balancer_configuration" -> null
+      - name                               = "aizesk-platform-connection" -> null
+      - port                               = 8085 -> null
+      - protocol                           = "HTTP" -> null
+      - protocol_version                   = "HTTP1" -> null
+      - proxy_protocol_v2                  = false -> null
+      - slow_start                         = 120 -> null
+      - tags                               = {
+          - "Name"    = "aizesk-platform-connection-service-tg"
+          - "Service" = "platform-connection-service"
+        } -> null
+      - tags_all                           = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-platform-connection-service-tg"
+          - "Project"     = "aizesk"
+          - "Service"     = "platform-connection-service"
+        } -> null
+      - target_type                        = "ip" -> null
+      - vpc_id                             = "vpc-04b1ad2f0639d05d6" -> null
+        # (1 unchanged attribute hidden)
+
+      - health_check {
+          - enabled             = true -> null
+          - healthy_threshold   = 2 -> null
+          - interval            = 30 -> null
+          - matcher             = "200" -> null
+          - path                = "/actuator/health" -> null
+          - port                = "traffic-port" -> null
+          - protocol            = "HTTP" -> null
+          - timeout             = 10 -> null
+          - unhealthy_threshold = 3 -> null
+        }
+
+      - stickiness {
+          - cookie_duration = 86400 -> null
+          - enabled         = false -> null
+          - type            = "lb_cookie" -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - target_failover {}
+
+      - target_group_health {
+          - dns_failover {
+              - minimum_healthy_targets_count      = "1" -> null
+              - minimum_healthy_targets_percentage = "off" -> null
+            }
+          - unhealthy_state_routing {
+              - minimum_healthy_targets_count      = 1 -> null
+              - minimum_healthy_targets_percentage = "off" -> null
+            }
+        }
+
+      - target_health_state {}
+    }
+
+  # aws_lb_target_group.services["reporting-service"] will be destroyed
+  - resource "aws_lb_target_group" "services" {
+      - arn                                = "arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-reporting/d902edd25013cb4b" -> null
+      - arn_suffix                         = "targetgroup/aizesk-reporting/d902edd25013cb4b" -> null
+      - deregistration_delay               = "300" -> null
+      - id                                 = "arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-reporting/d902edd25013cb4b" -> null
+      - ip_address_type                    = "ipv4" -> null
+      - lambda_multi_value_headers_enabled = false -> null
+      - load_balancer_arns                 = [] -> null
+      - load_balancing_algorithm_type      = "round_robin" -> null
+      - load_balancing_anomaly_mitigation  = "off" -> null
+      - load_balancing_cross_zone_enabled  = "use_load_balancer_configuration" -> null
+      - name                               = "aizesk-reporting" -> null
+      - port                               = 8087 -> null
+      - protocol                           = "HTTP" -> null
+      - protocol_version                   = "HTTP1" -> null
+      - proxy_protocol_v2                  = false -> null
+      - slow_start                         = 120 -> null
+      - tags                               = {
+          - "Name"    = "aizesk-reporting-service-tg"
+          - "Service" = "reporting-service"
+        } -> null
+      - tags_all                           = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-reporting-service-tg"
+          - "Project"     = "aizesk"
+          - "Service"     = "reporting-service"
+        } -> null
+      - target_type                        = "ip" -> null
+      - vpc_id                             = "vpc-04b1ad2f0639d05d6" -> null
+        # (1 unchanged attribute hidden)
+
+      - health_check {
+          - enabled             = true -> null
+          - healthy_threshold   = 2 -> null
+          - interval            = 30 -> null
+          - matcher             = "200" -> null
+          - path                = "/actuator/health" -> null
+          - port                = "traffic-port" -> null
+          - protocol            = "HTTP" -> null
+          - timeout             = 10 -> null
+          - unhealthy_threshold = 3 -> null
+        }
+
+      - stickiness {
+          - cookie_duration = 86400 -> null
+          - enabled         = false -> null
+          - type            = "lb_cookie" -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - target_failover {}
+
+      - target_group_health {
+          - dns_failover {
+              - minimum_healthy_targets_count      = "1" -> null
+              - minimum_healthy_targets_percentage = "off" -> null
+            }
+          - unhealthy_state_routing {
+              - minimum_healthy_targets_count      = 1 -> null
+              - minimum_healthy_targets_percentage = "off" -> null
+            }
+        }
+
+      - target_health_state {}
+    }
+
+  # aws_lb_target_group.services["subscription-service"] will be destroyed
+  - resource "aws_lb_target_group" "services" {
+      - arn                                = "arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-subscription/b741ef482c6ebee1" -> null
+      - arn_suffix                         = "targetgroup/aizesk-subscription/b741ef482c6ebee1" -> null
+      - deregistration_delay               = "300" -> null
+      - id                                 = "arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-subscription/b741ef482c6ebee1" -> null
+      - ip_address_type                    = "ipv4" -> null
+      - lambda_multi_value_headers_enabled = false -> null
+      - load_balancer_arns                 = [] -> null
+      - load_balancing_algorithm_type      = "round_robin" -> null
+      - load_balancing_anomaly_mitigation  = "off" -> null
+      - load_balancing_cross_zone_enabled  = "use_load_balancer_configuration" -> null
+      - name                               = "aizesk-subscription" -> null
+      - port                               = 8084 -> null
+      - protocol                           = "HTTP" -> null
+      - protocol_version                   = "HTTP1" -> null
+      - proxy_protocol_v2                  = false -> null
+      - slow_start                         = 120 -> null
+      - tags                               = {
+          - "Name"    = "aizesk-subscription-service-tg"
+          - "Service" = "subscription-service"
+        } -> null
+      - tags_all                           = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-subscription-service-tg"
+          - "Project"     = "aizesk"
+          - "Service"     = "subscription-service"
+        } -> null
+      - target_type                        = "ip" -> null
+      - vpc_id                             = "vpc-04b1ad2f0639d05d6" -> null
+        # (1 unchanged attribute hidden)
+
+      - health_check {
+          - enabled             = true -> null
+          - healthy_threshold   = 2 -> null
+          - interval            = 30 -> null
+          - matcher             = "200" -> null
+          - path                = "/actuator/health" -> null
+          - port                = "traffic-port" -> null
+          - protocol            = "HTTP" -> null
+          - timeout             = 10 -> null
+          - unhealthy_threshold = 3 -> null
+        }
+
+      - stickiness {
+          - cookie_duration = 86400 -> null
+          - enabled         = false -> null
+          - type            = "lb_cookie" -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - target_failover {}
+
+      - target_group_health {
+          - dns_failover {
+              - minimum_healthy_targets_count      = "1" -> null
+              - minimum_healthy_targets_percentage = "off" -> null
+            }
+          - unhealthy_state_routing {
+              - minimum_healthy_targets_count      = 1 -> null
+              - minimum_healthy_targets_percentage = "off" -> null
+            }
+        }
+
+      - target_health_state {}
+    }
+
+  # aws_lb_target_group.services["transaction-service"] will be destroyed
+  - resource "aws_lb_target_group" "services" {
+      - arn                                = "arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-transaction/cbd245616a7cce08" -> null
+      - arn_suffix                         = "targetgroup/aizesk-transaction/cbd245616a7cce08" -> null
+      - deregistration_delay               = "300" -> null
+      - id                                 = "arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-transaction/cbd245616a7cce08" -> null
+      - ip_address_type                    = "ipv4" -> null
+      - lambda_multi_value_headers_enabled = false -> null
+      - load_balancer_arns                 = [] -> null
+      - load_balancing_algorithm_type      = "round_robin" -> null
+      - load_balancing_anomaly_mitigation  = "off" -> null
+      - load_balancing_cross_zone_enabled  = "use_load_balancer_configuration" -> null
+      - name                               = "aizesk-transaction" -> null
+      - port                               = 8083 -> null
+      - protocol                           = "HTTP" -> null
+      - protocol_version                   = "HTTP1" -> null
+      - proxy_protocol_v2                  = false -> null
+      - slow_start                         = 120 -> null
+      - tags                               = {
+          - "Name"    = "aizesk-transaction-service-tg"
+          - "Service" = "transaction-service"
+        } -> null
+      - tags_all                           = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-transaction-service-tg"
+          - "Project"     = "aizesk"
+          - "Service"     = "transaction-service"
+        } -> null
+      - target_type                        = "ip" -> null
+      - vpc_id                             = "vpc-04b1ad2f0639d05d6" -> null
+        # (1 unchanged attribute hidden)
+
+      - health_check {
+          - enabled             = true -> null
+          - healthy_threshold   = 2 -> null
+          - interval            = 30 -> null
+          - matcher             = "200" -> null
+          - path                = "/actuator/health" -> null
+          - port                = "traffic-port" -> null
+          - protocol            = "HTTP" -> null
+          - timeout             = 10 -> null
+          - unhealthy_threshold = 3 -> null
+        }
+
+      - stickiness {
+          - cookie_duration = 86400 -> null
+          - enabled         = false -> null
+          - type            = "lb_cookie" -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - target_failover {}
+
+      - target_group_health {
+          - dns_failover {
+              - minimum_healthy_targets_count      = "1" -> null
+              - minimum_healthy_targets_percentage = "off" -> null
+            }
+          - unhealthy_state_routing {
+              - minimum_healthy_targets_count      = 1 -> null
+              - minimum_healthy_targets_percentage = "off" -> null
+            }
+        }
+
+      - target_health_state {}
+    }
+
+  # aws_lb_target_group.services["user-service"] will be destroyed
+  - resource "aws_lb_target_group" "services" {
+      - arn                                = "arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-user/42550a32d51ab17d" -> null
+      - arn_suffix                         = "targetgroup/aizesk-user/42550a32d51ab17d" -> null
+      - deregistration_delay               = "300" -> null
+      - id                                 = "arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-user/42550a32d51ab17d" -> null
+      - ip_address_type                    = "ipv4" -> null
+      - lambda_multi_value_headers_enabled = false -> null
+      - load_balancer_arns                 = [] -> null
+      - load_balancing_algorithm_type      = "round_robin" -> null
+      - load_balancing_anomaly_mitigation  = "off" -> null
+      - load_balancing_cross_zone_enabled  = "use_load_balancer_configuration" -> null
+      - name                               = "aizesk-user" -> null
+      - port                               = 8082 -> null
+      - protocol                           = "HTTP" -> null
+      - protocol_version                   = "HTTP1" -> null
+      - proxy_protocol_v2                  = false -> null
+      - slow_start                         = 120 -> null
+      - tags                               = {
+          - "Name"    = "aizesk-user-service-tg"
+          - "Service" = "user-service"
+        } -> null
+      - tags_all                           = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-user-service-tg"
+          - "Project"     = "aizesk"
+          - "Service"     = "user-service"
+        } -> null
+      - target_type                        = "ip" -> null
+      - vpc_id                             = "vpc-04b1ad2f0639d05d6" -> null
+        # (1 unchanged attribute hidden)
+
+      - health_check {
+          - enabled             = true -> null
+          - healthy_threshold   = 2 -> null
+          - interval            = 30 -> null
+          - matcher             = "200" -> null
+          - path                = "/actuator/health" -> null
+          - port                = "traffic-port" -> null
+          - protocol            = "HTTP" -> null
+          - timeout             = 10 -> null
+          - unhealthy_threshold = 3 -> null
+        }
+
+      - stickiness {
+          - cookie_duration = 86400 -> null
+          - enabled         = false -> null
+          - type            = "lb_cookie" -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - target_failover {}
+
+      - target_group_health {
+          - dns_failover {
+              - minimum_healthy_targets_count      = "1" -> null
+              - minimum_healthy_targets_percentage = "off" -> null
+            }
+          - unhealthy_state_routing {
+              - minimum_healthy_targets_count      = 1 -> null
+              - minimum_healthy_targets_percentage = "off" -> null
+            }
+        }
+
+      - target_health_state {}
+    }
+
+  # aws_route_table.public will be destroyed
+  - resource "aws_route_table" "public" {
+      - arn              = "arn:aws:ec2:us-east-1:946693320543:route-table/rtb-04705c5a836c97d42" -> null
+      - id               = "rtb-04705c5a836c97d42" -> null
+      - owner_id         = "946693320543" -> null
+      - propagating_vgws = [] -> null
+      - route            = [
+          - {
+              - cidr_block                 = "0.0.0.0/0"
+              - gateway_id                 = "igw-0a13d733a04fd68cd"
+                # (11 unchanged attributes hidden)
+            },
+        ] -> null
+      - tags             = {
+          - "Name" = "aizesk-public-rt"
+        } -> null
+      - tags_all         = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-public-rt"
+          - "Project"     = "aizesk"
+        } -> null
+      - vpc_id           = "vpc-04b1ad2f0639d05d6" -> null
+    }
+
+  # aws_route_table_association.public[0] will be destroyed
+  - resource "aws_route_table_association" "public" {
+      - id             = "rtbassoc-03ba98fe7115ab634" -> null
+      - route_table_id = "rtb-04705c5a836c97d42" -> null
+      - subnet_id      = "subnet-0d8be75abeb3ba9a9" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # aws_route_table_association.public[1] will be destroyed
+  - resource "aws_route_table_association" "public" {
+      - id             = "rtbassoc-09f0579b5fac00e01" -> null
+      - route_table_id = "rtb-04705c5a836c97d42" -> null
+      - subnet_id      = "subnet-0ed76cc389a11e2e1" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # aws_s3_bucket.frontend will be destroyed
+  - resource "aws_s3_bucket" "frontend" {
+      - arn                         = "arn:aws:s3:::aizesk-frontend-prod" -> null
+      - bucket                      = "aizesk-frontend-prod" -> null
+      - bucket_domain_name          = "aizesk-frontend-prod.s3.amazonaws.com" -> null
+      - bucket_regional_domain_name = "aizesk-frontend-prod.s3.us-east-1.amazonaws.com" -> null
+      - force_destroy               = true -> null
+      - hosted_zone_id              = "Z3AQBSTGFYJSTF" -> null
+      - id                          = "aizesk-frontend-prod" -> null
+      - object_lock_enabled         = false -> null
+      - region                      = "us-east-1" -> null
+      - request_payer               = "BucketOwner" -> null
+      - tags                        = {
+          - "Name" = "aizesk-frontend"
+        } -> null
+      - tags_all                    = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-frontend"
+          - "Project"     = "aizesk"
+        } -> null
+        # (3 unchanged attributes hidden)
+
+      - grant {
+          - id          = "3e7ddc37a5d3e30eb6745a9cc87eb4002af37d5dde894ee0f9e33b3c9c84688c" -> null
+          - permissions = [
+              - "FULL_CONTROL",
+            ] -> null
+          - type        = "CanonicalUser" -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - server_side_encryption_configuration {
+          - rule {
+              - bucket_key_enabled = false -> null
+
+              - apply_server_side_encryption_by_default {
+                  - sse_algorithm     = "AES256" -> null
+                    # (1 unchanged attribute hidden)
+                }
+            }
+        }
+
+      - versioning {
+          - enabled    = false -> null
+          - mfa_delete = false -> null
+        }
+    }
+
+  # aws_s3_bucket_public_access_block.frontend will be destroyed
+  - resource "aws_s3_bucket_public_access_block" "frontend" {
+      - block_public_acls       = true -> null
+      - block_public_policy     = true -> null
+      - bucket                  = "aizesk-frontend-prod" -> null
+      - id                      = "aizesk-frontend-prod" -> null
+      - ignore_public_acls      = true -> null
+      - restrict_public_buckets = true -> null
+    }
+
+  # aws_s3_bucket_versioning.frontend will be destroyed
+  - resource "aws_s3_bucket_versioning" "frontend" {
+      - bucket                = "aizesk-frontend-prod" -> null
+      - id                    = "aizesk-frontend-prod" -> null
+        # (1 unchanged attribute hidden)
+
+      - versioning_configuration {
+          - status     = "Disabled" -> null
+            # (1 unchanged attribute hidden)
+        }
+    }
+
+  # aws_security_group.alb will be destroyed
+  - resource "aws_security_group" "alb" {
+      - arn                    = "arn:aws:ec2:us-east-1:946693320543:security-group/sg-096b85d691a878f9a" -> null
+      - description            = "Security group for Application Load Balancer" -> null
+      - egress                 = [
+          - {
+              - cidr_blocks      = [
+                  - "0.0.0.0/0",
+                ]
+              - from_port        = 0
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "-1"
+              - security_groups  = []
+              - self             = false
+              - to_port          = 0
+                # (1 unchanged attribute hidden)
+            },
+        ] -> null
+      - id                     = "sg-096b85d691a878f9a" -> null
+      - ingress                = [
+          - {
+              - cidr_blocks      = [
+                  - "0.0.0.0/0",
+                ]
+              - description      = "HTTP from internet"
+              - from_port        = 80
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "tcp"
+              - security_groups  = []
+              - self             = false
+              - to_port          = 80
+            },
+          - {
+              - cidr_blocks      = [
+                  - "0.0.0.0/0",
+                ]
+              - description      = "HTTPS from internet"
+              - from_port        = 443
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "tcp"
+              - security_groups  = []
+              - self             = false
+              - to_port          = 443
+            },
+        ] -> null
+      - name                   = "aizesk-alb-20260216195430923700000002" -> null
+      - name_prefix            = "aizesk-alb-" -> null
+      - owner_id               = "946693320543" -> null
+      - revoke_rules_on_delete = false -> null
+      - tags                   = {
+          - "Name" = "aizesk-alb-sg"
+        } -> null
+      - tags_all               = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-alb-sg"
+          - "Project"     = "aizesk"
+        } -> null
+      - vpc_id                 = "vpc-04b1ad2f0639d05d6" -> null
+    }
+
+  # aws_security_group.ecs_tasks will be destroyed
+  - resource "aws_security_group" "ecs_tasks" {
+      - arn                    = "arn:aws:ec2:us-east-1:946693320543:security-group/sg-0ac1606f609b48718" -> null
+      - description            = "Security group for ECS Fargate tasks" -> null
+      - egress                 = [
+          - {
+              - cidr_blocks      = [
+                  - "0.0.0.0/0",
+                ]
+              - from_port        = 0
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "-1"
+              - security_groups  = []
+              - self             = false
+              - to_port          = 0
+                # (1 unchanged attribute hidden)
+            },
+        ] -> null
+      - id                     = "sg-0ac1606f609b48718" -> null
+      - ingress                = [
+          - {
+              - cidr_blocks      = []
+              - description      = "Inter-service communication"
+              - from_port        = 8081
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "tcp"
+              - security_groups  = []
+              - self             = true
+              - to_port          = 8087
+            },
+          - {
+              - cidr_blocks      = []
+              - description      = "Traffic from ALB"
+              - from_port        = 8081
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "tcp"
+              - security_groups  = [
+                  - "sg-096b85d691a878f9a",
+                ]
+              - self             = false
+              - to_port          = 8087
+            },
+        ] -> null
+      - name                   = "aizesk-ecs-20260216195434942900000004" -> null
+      - name_prefix            = "aizesk-ecs-" -> null
+      - owner_id               = "946693320543" -> null
+      - revoke_rules_on_delete = false -> null
+      - tags                   = {
+          - "Name" = "aizesk-ecs-sg"
+        } -> null
+      - tags_all               = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-ecs-sg"
+          - "Project"     = "aizesk"
+        } -> null
+      - vpc_id                 = "vpc-04b1ad2f0639d05d6" -> null
+    }
+
+  # aws_security_group.rds will be destroyed
+  - resource "aws_security_group" "rds" {
+      - arn                    = "arn:aws:ec2:us-east-1:946693320543:security-group/sg-01c007e589f06eb9e" -> null
+      - description            = "Security group for RDS MySQL" -> null
+      - egress                 = [] -> null
+      - id                     = "sg-01c007e589f06eb9e" -> null
+      - ingress                = [
+          - {
+              - cidr_blocks      = []
+              - description      = "MySQL from ECS tasks"
+              - from_port        = 3306
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "tcp"
+              - security_groups  = [
+                  - "sg-0ac1606f609b48718",
+                ]
+              - self             = false
+              - to_port          = 3306
+            },
+        ] -> null
+      - name                   = "aizesk-rds-20260216195438404500000005" -> null
+      - name_prefix            = "aizesk-rds-" -> null
+      - owner_id               = "946693320543" -> null
+      - revoke_rules_on_delete = false -> null
+      - tags                   = {
+          - "Name" = "aizesk-rds-sg"
+        } -> null
+      - tags_all               = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-rds-sg"
+          - "Project"     = "aizesk"
+        } -> null
+      - vpc_id                 = "vpc-04b1ad2f0639d05d6" -> null
+    }
+
+  # aws_ssm_parameter.db_password will be destroyed
+  - resource "aws_ssm_parameter" "db_password" {
+      - arn             = "arn:aws:ssm:us-east-1:946693320543:parameter/aizesk/database/password" -> null
+      - data_type       = "text" -> null
+      - id              = "/aizesk/database/password" -> null
+      - key_id          = "alias/aws/ssm" -> null
+      - name            = "/aizesk/database/password" -> null
+      - tags            = {
+          - "Name" = "aizesk-db-password"
+        } -> null
+      - tags_all        = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-db-password"
+          - "Project"     = "aizesk"
+        } -> null
+      - tier            = "Standard" -> null
+      - type            = "SecureString" -> null
+      - value           = (sensitive value) -> null
+      - value_wo        = (write-only attribute) -> null
+      - version         = 1 -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # aws_ssm_parameter.db_username will be destroyed
+  - resource "aws_ssm_parameter" "db_username" {
+      - arn             = "arn:aws:ssm:us-east-1:946693320543:parameter/aizesk/database/username" -> null
+      - data_type       = "text" -> null
+      - id              = "/aizesk/database/username" -> null
+      - key_id          = "alias/aws/ssm" -> null
+      - name            = "/aizesk/database/username" -> null
+      - tags            = {
+          - "Name" = "aizesk-db-username"
+        } -> null
+      - tags_all        = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-db-username"
+          - "Project"     = "aizesk"
+        } -> null
+      - tier            = "Standard" -> null
+      - type            = "SecureString" -> null
+      - value           = (sensitive value) -> null
+      - value_wo        = (write-only attribute) -> null
+      - version         = 1 -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # aws_ssm_parameter.jwt_secret will be destroyed
+  - resource "aws_ssm_parameter" "jwt_secret" {
+      - arn             = "arn:aws:ssm:us-east-1:946693320543:parameter/aizesk/auth/jwt-secret" -> null
+      - data_type       = "text" -> null
+      - id              = "/aizesk/auth/jwt-secret" -> null
+      - key_id          = "alias/aws/ssm" -> null
+      - name            = "/aizesk/auth/jwt-secret" -> null
+      - tags            = {
+          - "Name" = "aizesk-jwt-secret"
+        } -> null
+      - tags_all        = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-jwt-secret"
+          - "Project"     = "aizesk"
+        } -> null
+      - tier            = "Standard" -> null
+      - type            = "SecureString" -> null
+      - value           = (sensitive value) -> null
+      - value_wo        = (write-only attribute) -> null
+      - version         = 1 -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # aws_ssm_parameter.stripe_api_key will be destroyed
+  - resource "aws_ssm_parameter" "stripe_api_key" {
+      - arn             = "arn:aws:ssm:us-east-1:946693320543:parameter/aizesk/stripe/api-key" -> null
+      - data_type       = "text" -> null
+      - id              = "/aizesk/stripe/api-key" -> null
+      - key_id          = "alias/aws/ssm" -> null
+      - name            = "/aizesk/stripe/api-key" -> null
+      - tags            = {
+          - "Name" = "aizesk-stripe-api-key"
+        } -> null
+      - tags_all        = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-stripe-api-key"
+          - "Project"     = "aizesk"
+        } -> null
+      - tier            = "Standard" -> null
+      - type            = "SecureString" -> null
+      - value           = (sensitive value) -> null
+      - value_wo        = (write-only attribute) -> null
+      - version         = 1 -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # aws_ssm_parameter.stripe_webhook_secret will be destroyed
+  - resource "aws_ssm_parameter" "stripe_webhook_secret" {
+      - arn             = "arn:aws:ssm:us-east-1:946693320543:parameter/aizesk/stripe/webhook-secret" -> null
+      - data_type       = "text" -> null
+      - id              = "/aizesk/stripe/webhook-secret" -> null
+      - key_id          = "alias/aws/ssm" -> null
+      - name            = "/aizesk/stripe/webhook-secret" -> null
+      - tags            = {
+          - "Name" = "aizesk-stripe-webhook-secret"
+        } -> null
+      - tags_all        = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-stripe-webhook-secret"
+          - "Project"     = "aizesk"
+        } -> null
+      - tier            = "Standard" -> null
+      - type            = "SecureString" -> null
+      - value           = (sensitive value) -> null
+      - value_wo        = (write-only attribute) -> null
+      - version         = 1 -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # aws_subnet.private[0] will be destroyed
+  - resource "aws_subnet" "private" {
+      - arn                                            = "arn:aws:ec2:us-east-1:946693320543:subnet/subnet-0b11fcb3edcd7c0e7" -> null
+      - assign_ipv6_address_on_creation                = false -> null
+      - availability_zone                              = "us-east-1a" -> null
+      - availability_zone_id                           = "use1-az2" -> null
+      - cidr_block                                     = "10.0.10.0/24" -> null
+      - enable_dns64                                   = false -> null
+      - enable_lni_at_device_index                     = 0 -> null
+      - enable_resource_name_dns_a_record_on_launch    = false -> null
+      - enable_resource_name_dns_aaaa_record_on_launch = false -> null
+      - id                                             = "subnet-0b11fcb3edcd7c0e7" -> null
+      - ipv6_native                                    = false -> null
+      - map_customer_owned_ip_on_launch                = false -> null
+      - map_public_ip_on_launch                        = false -> null
+      - owner_id                                       = "946693320543" -> null
+      - private_dns_hostname_type_on_launch            = "ip-name" -> null
+      - tags                                           = {
+          - "Name" = "aizesk-private-us-east-1a"
+          - "Type" = "private"
+        } -> null
+      - tags_all                                       = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-private-us-east-1a"
+          - "Project"     = "aizesk"
+          - "Type"        = "private"
+        } -> null
+      - vpc_id                                         = "vpc-04b1ad2f0639d05d6" -> null
+        # (4 unchanged attributes hidden)
+    }
+
+  # aws_subnet.private[1] will be destroyed
+  - resource "aws_subnet" "private" {
+      - arn                                            = "arn:aws:ec2:us-east-1:946693320543:subnet/subnet-0e6a10f8fe31c47dd" -> null
+      - assign_ipv6_address_on_creation                = false -> null
+      - availability_zone                              = "us-east-1b" -> null
+      - availability_zone_id                           = "use1-az4" -> null
+      - cidr_block                                     = "10.0.11.0/24" -> null
+      - enable_dns64                                   = false -> null
+      - enable_lni_at_device_index                     = 0 -> null
+      - enable_resource_name_dns_a_record_on_launch    = false -> null
+      - enable_resource_name_dns_aaaa_record_on_launch = false -> null
+      - id                                             = "subnet-0e6a10f8fe31c47dd" -> null
+      - ipv6_native                                    = false -> null
+      - map_customer_owned_ip_on_launch                = false -> null
+      - map_public_ip_on_launch                        = false -> null
+      - owner_id                                       = "946693320543" -> null
+      - private_dns_hostname_type_on_launch            = "ip-name" -> null
+      - tags                                           = {
+          - "Name" = "aizesk-private-us-east-1b"
+          - "Type" = "private"
+        } -> null
+      - tags_all                                       = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-private-us-east-1b"
+          - "Project"     = "aizesk"
+          - "Type"        = "private"
+        } -> null
+      - vpc_id                                         = "vpc-04b1ad2f0639d05d6" -> null
+        # (4 unchanged attributes hidden)
+    }
+
+  # aws_subnet.public[0] will be destroyed
+  - resource "aws_subnet" "public" {
+      - arn                                            = "arn:aws:ec2:us-east-1:946693320543:subnet/subnet-0d8be75abeb3ba9a9" -> null
+      - assign_ipv6_address_on_creation                = false -> null
+      - availability_zone                              = "us-east-1a" -> null
+      - availability_zone_id                           = "use1-az2" -> null
+      - cidr_block                                     = "10.0.0.0/24" -> null
+      - enable_dns64                                   = false -> null
+      - enable_lni_at_device_index                     = 0 -> null
+      - enable_resource_name_dns_a_record_on_launch    = false -> null
+      - enable_resource_name_dns_aaaa_record_on_launch = false -> null
+      - id                                             = "subnet-0d8be75abeb3ba9a9" -> null
+      - ipv6_native                                    = false -> null
+      - map_customer_owned_ip_on_launch                = false -> null
+      - map_public_ip_on_launch                        = true -> null
+      - owner_id                                       = "946693320543" -> null
+      - private_dns_hostname_type_on_launch            = "ip-name" -> null
+      - tags                                           = {
+          - "Name" = "aizesk-public-us-east-1a"
+          - "Type" = "public"
+        } -> null
+      - tags_all                                       = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-public-us-east-1a"
+          - "Project"     = "aizesk"
+          - "Type"        = "public"
+        } -> null
+      - vpc_id                                         = "vpc-04b1ad2f0639d05d6" -> null
+        # (4 unchanged attributes hidden)
+    }
+
+  # aws_subnet.public[1] will be destroyed
+  - resource "aws_subnet" "public" {
+      - arn                                            = "arn:aws:ec2:us-east-1:946693320543:subnet/subnet-0ed76cc389a11e2e1" -> null
+      - assign_ipv6_address_on_creation                = false -> null
+      - availability_zone                              = "us-east-1b" -> null
+      - availability_zone_id                           = "use1-az4" -> null
+      - cidr_block                                     = "10.0.1.0/24" -> null
+      - enable_dns64                                   = false -> null
+      - enable_lni_at_device_index                     = 0 -> null
+      - enable_resource_name_dns_a_record_on_launch    = false -> null
+      - enable_resource_name_dns_aaaa_record_on_launch = false -> null
+      - id                                             = "subnet-0ed76cc389a11e2e1" -> null
+      - ipv6_native                                    = false -> null
+      - map_customer_owned_ip_on_launch                = false -> null
+      - map_public_ip_on_launch                        = true -> null
+      - owner_id                                       = "946693320543" -> null
+      - private_dns_hostname_type_on_launch            = "ip-name" -> null
+      - tags                                           = {
+          - "Name" = "aizesk-public-us-east-1b"
+          - "Type" = "public"
+        } -> null
+      - tags_all                                       = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-public-us-east-1b"
+          - "Project"     = "aizesk"
+          - "Type"        = "public"
+        } -> null
+      - vpc_id                                         = "vpc-04b1ad2f0639d05d6" -> null
+        # (4 unchanged attributes hidden)
+    }
+
+  # aws_vpc.main will be destroyed
+  - resource "aws_vpc" "main" {
+      - arn                                  = "arn:aws:ec2:us-east-1:946693320543:vpc/vpc-04b1ad2f0639d05d6" -> null
+      - assign_generated_ipv6_cidr_block     = false -> null
+      - cidr_block                           = "10.0.0.0/16" -> null
+      - default_network_acl_id               = "acl-0e2262e7156574088" -> null
+      - default_route_table_id               = "rtb-0987c0f971142a721" -> null
+      - default_security_group_id            = "sg-0d1c6f663da4d2acc" -> null
+      - dhcp_options_id                      = "dopt-03885976e5904f9b7" -> null
+      - enable_dns_hostnames                 = true -> null
+      - enable_dns_support                   = true -> null
+      - enable_network_address_usage_metrics = false -> null
+      - id                                   = "vpc-04b1ad2f0639d05d6" -> null
+      - instance_tenancy                     = "default" -> null
+      - ipv6_netmask_length                  = 0 -> null
+      - main_route_table_id                  = "rtb-0987c0f971142a721" -> null
+      - owner_id                             = "946693320543" -> null
+      - tags                                 = {
+          - "Name" = "aizesk-vpc"
+        } -> null
+      - tags_all                             = {
+          - "Environment" = "prod"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "aizesk-vpc"
+          - "Project"     = "aizesk"
+        } -> null
+        # (4 unchanged attributes hidden)
+    }
+
+Plan: 0 to add, 0 to change, 51 to destroy.
+
+Changes to Outputs:
+  - aws_region          = "us-east-1" -> null
+  - ecr_repository_urls = {
+      - auth-service                = "946693320543.dkr.ecr.us-east-1.amazonaws.com/aizesk/auth-service"
+      - notification-service        = "946693320543.dkr.ecr.us-east-1.amazonaws.com/aizesk/notification-service"
+      - platform-connection-service = "946693320543.dkr.ecr.us-east-1.amazonaws.com/aizesk/platform-connection-service"
+      - reporting-service           = "946693320543.dkr.ecr.us-east-1.amazonaws.com/aizesk/reporting-service"
+      - subscription-service        = "946693320543.dkr.ecr.us-east-1.amazonaws.com/aizesk/subscription-service"
+      - transaction-service         = "946693320543.dkr.ecr.us-east-1.amazonaws.com/aizesk/transaction-service"
+      - user-service                = "946693320543.dkr.ecr.us-east-1.amazonaws.com/aizesk/user-service"
+    } -> null
+  - ecs_cluster_name    = "aizesk-cluster" -> null
+  - s3_frontend_bucket  = "aizesk-frontend-prod" -> null
+  - vpc_id              = "vpc-04b1ad2f0639d05d6" -> null
+aws_route_table_association.public[0]: Destroying... [id=rtbassoc-03ba98fe7115ab634]
+aws_ecr_lifecycle_policy.services["transaction-service"]: Destroying... [id=aizesk/transaction-service]
+aws_ecr_lifecycle_policy.services["reporting-service"]: Destroying... [id=aizesk/reporting-service]
+aws_cloudwatch_log_group.services["platform-connection-service"]: Destroying... [id=/ecs/aizesk/platform-connection-service]
+aws_ecr_lifecycle_policy.services["auth-service"]: Destroying... [id=aizesk/auth-service]
+aws_cloudwatch_log_group.services["auth-service"]: Destroying... [id=/ecs/aizesk/auth-service]
+aws_ecr_lifecycle_policy.services["notification-service"]: Destroying... [id=aizesk/notification-service]
+aws_security_group.rds: Destroying... [id=sg-01c007e589f06eb9e]
+aws_lb_target_group.services["notification-service"]: Destroying... [id=arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-notification/333c000c4db35bdf]
+aws_lb_target_group.services["reporting-service"]: Destroying... [id=arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-reporting/d902edd25013cb4b]
+aws_ecr_lifecycle_policy.services["notification-service"]: Destruction complete after 0s
+aws_lb_target_group.services["auth-service"]: Destroying... [id=arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-auth/f4123ed7fda2a630]
+aws_cloudwatch_log_group.services["platform-connection-service"]: Destruction complete after 0s
+aws_lb_target_group.services["reporting-service"]: Destruction complete after 0s
+aws_lb_target_group.services["notification-service"]: Destruction complete after 0s
+aws_s3_bucket_public_access_block.frontend: Destroying... [id=aizesk-frontend-prod]
+aws_ecr_lifecycle_policy.services["transaction-service"]: Destruction complete after 0s
+aws_ecr_lifecycle_policy.services["auth-service"]: Destruction complete after 0s
+aws_ecr_lifecycle_policy.services["subscription-service"]: Destroying... [id=aizesk/subscription-service]
+aws_ssm_parameter.stripe_api_key: Destroying... [id=/aizesk/stripe/api-key]
+aws_route_table_association.public[1]: Destroying... [id=rtbassoc-09f0579b5fac00e01]
+aws_ssm_parameter.db_password: Destroying... [id=/aizesk/database/password]
+aws_cloudwatch_log_group.services["auth-service"]: Destruction complete after 0s
+aws_cloudwatch_log_group.services["subscription-service"]: Destroying... [id=/ecs/aizesk/subscription-service]
+aws_ecr_lifecycle_policy.services["reporting-service"]: Destruction complete after 0s
+aws_s3_bucket_versioning.frontend: Destroying... [id=aizesk-frontend-prod]
+aws_s3_bucket_versioning.frontend: Destruction complete after 0s
+aws_lb_target_group.services["platform-connection-service"]: Destroying... [id=arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-platform-connection/6702a82c280a20b9]
+aws_lb_target_group.services["auth-service"]: Destruction complete after 0s
+aws_ecs_cluster.main: Destroying... [id=arn:aws:ecs:us-east-1:946693320543:cluster/aizesk-cluster]
+aws_ecr_lifecycle_policy.services["subscription-service"]: Destruction complete after 0s
+aws_cloudwatch_log_group.services["transaction-service"]: Destroying... [id=/ecs/aizesk/transaction-service]
+aws_lb_target_group.services["platform-connection-service"]: Destruction complete after 1s
+aws_db_subnet_group.main: Destroying... [id=aizesk-db-subnet-group]
+aws_cloudwatch_log_group.services["subscription-service"]: Destruction complete after 1s
+aws_lb_target_group.services["subscription-service"]: Destroying... [id=arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-subscription/b741ef482c6ebee1]
+aws_cloudwatch_log_group.services["transaction-service"]: Destruction complete after 1s
+aws_subnet.private[1]: Destroying... [id=subnet-0e6a10f8fe31c47dd]
+aws_lb_target_group.services["subscription-service"]: Destruction complete after 0s
+aws_cloudwatch_log_group.services["reporting-service"]: Destroying... [id=/ecs/aizesk/reporting-service]
+aws_route_table_association.public[0]: Destruction complete after 1s
+aws_db_parameter_group.main: Destroying... [id=aizesk-mysql-params]
+aws_ssm_parameter.stripe_api_key: Destruction complete after 1s
+aws_lb_target_group.services["transaction-service"]: Destroying... [id=arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-transaction/cbd245616a7cce08]
+aws_ssm_parameter.db_password: Destruction complete after 1s
+aws_ssm_parameter.stripe_webhook_secret: Destroying... [id=/aizesk/stripe/webhook-secret]
+aws_s3_bucket_public_access_block.frontend: Destruction complete after 1s
+aws_lb_target_group.services["user-service"]: Destroying... [id=arn:aws:elasticloadbalancing:us-east-1:946693320543:targetgroup/aizesk-user/42550a32d51ab17d]
+aws_cloudwatch_log_group.services["reporting-service"]: Destruction complete after 0s
+aws_ssm_parameter.jwt_secret: Destroying... [id=/aizesk/auth/jwt-secret]
+aws_route_table_association.public[1]: Destruction complete after 1s
+aws_ssm_parameter.db_username: Destroying... [id=/aizesk/database/username]
+aws_lb_target_group.services["transaction-service"]: Destruction complete after 0s
+aws_ecr_lifecycle_policy.services["platform-connection-service"]: Destroying... [id=aizesk/platform-connection-service]
+aws_ssm_parameter.stripe_webhook_secret: Destruction complete after 0s
+aws_cloudwatch_log_group.services["notification-service"]: Destroying... [id=/ecs/aizesk/notification-service]
+aws_lb_target_group.services["user-service"]: Destruction complete after 0s
+aws_ecr_lifecycle_policy.services["user-service"]: Destroying... [id=aizesk/user-service]
+aws_ssm_parameter.jwt_secret: Destruction complete after 0s
+aws_subnet.private[0]: Destroying... [id=subnet-0b11fcb3edcd7c0e7]
+aws_ecs_cluster.main: Destruction complete after 1s
+aws_cloudwatch_log_group.services["user-service"]: Destroying... [id=/ecs/aizesk/user-service]
+aws_security_group.rds: Destruction complete after 1s
+aws_s3_bucket.frontend: Destroying... [id=aizesk-frontend-prod]
+aws_ecr_lifecycle_policy.services["platform-connection-service"]: Destruction complete after 0s
+aws_route_table.public: Destroying... [id=rtb-04705c5a836c97d42]
+aws_cloudwatch_log_group.services["notification-service"]: Destruction complete after 0s
+aws_security_group.ecs_tasks: Destroying... [id=sg-0ac1606f609b48718]
+aws_ssm_parameter.db_username: Destruction complete after 0s
+aws_ecr_lifecycle_policy.services["user-service"]: Destruction complete after 0s
+aws_ecr_repository.services["notification-service"]: Destroying... [id=aizesk/notification-service]
+aws_ecr_repository.services["platform-connection-service"]: Destroying... [id=aizesk/platform-connection-service]
+aws_db_parameter_group.main: Destruction complete after 0s
+aws_ecr_repository.services["auth-service"]: Destroying... [id=aizesk/auth-service]
+aws_db_subnet_group.main: Destruction complete after 0s
+aws_ecr_repository.services["transaction-service"]: Destroying... [id=aizesk/transaction-service]
+aws_cloudwatch_log_group.services["user-service"]: Destruction complete after 0s
+aws_ecr_repository.services["user-service"]: Destroying... [id=aizesk/user-service]
+aws_subnet.private[1]: Destruction complete after 1s
+aws_ecr_repository.services["subscription-service"]: Destroying... [id=aizesk/subscription-service]
+aws_ecr_repository.services["platform-connection-service"]: Destruction complete after 1s
+aws_ecr_repository.services["reporting-service"]: Destroying... [id=aizesk/reporting-service]
+aws_s3_bucket.frontend: Destruction complete after 1s
+aws_subnet.public[1]: Destroying... [id=subnet-0ed76cc389a11e2e1]
+aws_ecr_repository.services["notification-service"]: Destruction complete after 1s
+aws_subnet.public[0]: Destroying... [id=subnet-0d8be75abeb3ba9a9]
+aws_ecr_repository.services["auth-service"]: Destruction complete after 1s
+aws_ecr_repository.services["transaction-service"]: Destruction complete after 1s
+aws_ecr_repository.services["user-service"]: Destruction complete after 1s
+aws_ecr_repository.services["subscription-service"]: Destruction complete after 0s
+aws_subnet.private[0]: Destruction complete after 1s
+aws_ecr_repository.services["reporting-service"]: Destruction complete after 0s
+aws_security_group.ecs_tasks: Destruction complete after 1s
+aws_security_group.alb: Destroying... [id=sg-096b85d691a878f9a]
+aws_route_table.public: Destruction complete after 1s
+aws_internet_gateway.main: Destroying... [id=igw-0a13d733a04fd68cd]
+aws_subnet.public[0]: Destruction complete after 0s
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 00m10s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 00m10s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 00m10s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 00m20s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 00m20s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 00m20s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 00m30s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 00m30s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 00m30s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 00m40s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 00m40s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 00m40s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 00m50s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 00m50s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 00m50s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 01m00s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 01m00s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 01m00s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 01m10s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 01m10s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 01m10s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 01m20s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 01m20s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 01m20s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 01m30s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 01m30s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 01m30s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 01m40s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 01m40s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 01m40s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 01m50s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 01m50s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 01m50s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 02m00s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 02m00s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 02m00s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 02m10s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 02m10s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 02m10s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 02m20s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 02m20s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 02m20s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 02m30s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 02m30s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 02m30s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 02m40s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 02m40s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 02m40s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 02m50s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 02m50s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 02m50s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 03m00s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 03m00s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 03m00s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 03m10s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 03m10s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 03m10s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 03m20s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 03m20s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 03m20s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 03m30s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 03m30s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 03m30s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 03m40s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 03m40s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 03m40s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 03m50s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 03m50s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 03m50s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 04m00s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 04m00s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 04m00s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 04m10s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 04m10s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 04m10s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 04m20s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 04m20s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 04m20s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 04m30s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 04m30s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 04m30s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 04m40s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 04m40s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 04m40s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 04m50s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 04m50s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 04m50s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 05m00s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 05m00s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 05m00s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 05m10s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 05m10s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 05m10s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 05m20s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 05m20s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 05m20s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 05m30s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 05m30s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 05m30s elapsed]
+aws_subnet.public[1]: Still destroying... [id=subnet-0ed76cc389a11e2e1, 05m40s elapsed]
+aws_security_group.alb: Still destroying... [id=sg-096b85d691a878f9a, 05m40s elapsed]
+aws_internet_gateway.main: Still destroying... [id=igw-0a13d733a04fd68cd, 05m40s elapsed]
+
+Interrupt received.
+Please wait for Terraform to exit or data loss may occur.
+Gracefully shutting down...
+
+Stopping operation...

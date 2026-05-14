@@ -270,6 +270,27 @@
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* Type badges */
+.type-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.type-badge.income {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.type-badge.expense {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
 @media (max-width: 1024px) {
   .page-content {
     grid-template-columns: 1fr;

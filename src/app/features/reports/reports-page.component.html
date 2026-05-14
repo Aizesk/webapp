@@ -1,131 +1,304 @@
-<section class="reports">
-  <app-top-navbar
-    [navItems]="navItems"
-    brandTagline="Escenarios claros para decidir"
-    [notificationCount]="1"
-  ></app-top-navbar>
+<section class="reports-center">
+  <app-top-navbar [navItems]="navItems" brandTagline="Centro de Reportes"></app-top-navbar>
 
-  <div class="reports__actions">
-    <app-button variant="ghost" size="sm">Exportar todo</app-button>
-    <app-button variant="primary" size="sm">Nuevo informe</app-button>
-  </div>
-
-  <section class="hero">
-    <div class="hero__copy">
-      <p class="eyebrow">Inteligencia de ingresos</p>
-      <h1>Informes generados y recomendaciones listos para tu equipo</h1>
-      <p class="subtitle">
-        Filtra por periodo, automatiza el envío y comparte con stakeholders en segundos. Las
-        plantillas inteligentes se adaptan a tus fuentes de datos conectadas.
+  <header class="reports-header">
+    <div class="reports-header__content">
+      <h1 class="reports-header__title">Centro de Reportes</h1>
+      <p class="reports-header__subtitle">
+        Genera, exporta y analiza el rendimiento de tus canales digitales (Amazon, Shopify) y
+        registros manuales.
       </p>
-      <div class="hero__cta">
-        <app-button variant="primary" size="sm">Programar briefing semanal</app-button>
-        <app-button variant="ghost" size="sm">Ver historial completo</app-button>
-      </div>
     </div>
-    <div class="hero__filters">
-      <p class="label">Periodo de análisis</p>
-      <div class="filter-chips">
-        <button
-          *ngFor="let filter of periodFilters"
-          type="button"
-          class="filter-chip"
-          [class.filter-chip--active]="selectedPeriod === filter.value"
-          (click)="handlePeriodChange(filter.value)"
-        >
-          {{ filter.label }}
-        </button>
-      </div>
-      <p class="helper">Los cálculos se regeneran automáticamente cuando actualices tus transacciones.</p>
+  </header>
+
+  <section class="report-selector">
+    <h2 class="section-title">Selecciona el tipo de reporte</h2>
+
+    <div class="report-cards-grid">
+      <!-- Main report types: Global and Manual -->
+      <article
+        *ngFor="let report of mainReportTypes; trackBy: trackByReportType"
+        class="report-card"
+        [class.report-card--selected]="selectedReportType() === report.id"
+        [style.--accent-color]="report.accentColor"
+        [style.--accent-color-light]="report.accentColorLight"
+        (click)="selectReportType(report.id)"
+        role="button"
+        tabindex="0"
+        (keydown.enter)="selectReportType(report.id)"
+        (keydown.space)="selectReportType(report.id)"
+      >
+        <div class="report-card__icon">
+          <span class="material-symbols-rounded">{{ report.icon }}</span>
+        </div>
+        <div class="report-card__content">
+          <h3 class="report-card__title">{{ report.name }}</h3>
+          <p class="report-card__description">{{ report.description }}</p>
+        </div>
+        <div class="report-card__check" *ngIf="selectedReportType() === report.id">
+          <span class="material-symbols-rounded">check</span>
+        </div>
+      </article>
+
+      <!-- Platforms dropdown card -->
+      <article
+        class="report-card report-card--dropdown"
+        [class.report-card--selected]="isPlatformReportSelected()"
+        [class.report-card--expanded]="showPlatformDropdown()"
+        [style.--accent-color]="selectedPlatformReport()?.accentColor || '#10B981'"
+        [style.--accent-color-light]="
+          selectedPlatformReport()?.accentColorLight || 'rgba(16, 185, 129, 0.1)'
+        "
+        (click)="togglePlatformDropdown()"
+        role="button"
+        tabindex="0"
+        (keydown.enter)="togglePlatformDropdown()"
+        (keydown.space)="togglePlatformDropdown()"
+      >
+        <div class="report-card__icon">
+          <span class="material-symbols-rounded">{{
+            selectedPlatformReport()?.icon || 'hub'
+          }}</span>
+        </div>
+        <div class="report-card__content">
+          <h3 class="report-card__title">
+            {{ selectedPlatformReport()?.name || 'Plataformas conectadas' }}
+          </h3>
+          <p class="report-card__description">
+            {{
+              selectedPlatformReport()?.description ||
+                'Reportes de Amazon, Shopify y otras plataformas.'
+            }}
+          </p>
+        </div>
+        <div class="report-card__arrow">
+          <span class="material-symbols-rounded">{{
+            showPlatformDropdown() ? 'expand_less' : 'expand_more'
+          }}</span>
+        </div>
+        <div class="report-card__check" *ngIf="isPlatformReportSelected()">
+          <span class="material-symbols-rounded">check</span>
+        </div>
+      </article>
+    </div>
+
+    <!-- Platform dropdown options -->
+    <div class="platform-dropdown" *ngIf="showPlatformDropdown()">
+      <article
+        *ngFor="let platform of platformReportTypes; trackBy: trackByReportType"
+        class="platform-option"
+        [class.platform-option--selected]="selectedReportType() === platform.id"
+        [style.--accent-color]="platform.accentColor"
+        [style.--accent-color-light]="platform.accentColorLight"
+        (click)="selectReportType(platform.id); $event.stopPropagation()"
+        role="button"
+        tabindex="0"
+        (keydown.enter)="selectReportType(platform.id)"
+        (keydown.space)="selectReportType(platform.id)"
+      >
+        <div class="platform-option__icon">
+          <span class="material-symbols-rounded">{{ platform.icon }}</span>
+        </div>
+        <div class="platform-option__content">
+          <h4 class="platform-option__title">{{ platform.name }}</h4>
+          <p class="platform-option__description">{{ platform.description }}</p>
+        </div>
+        <div class="platform-option__check" *ngIf="selectedReportType() === platform.id">
+          <span class="material-symbols-rounded">check</span>
+        </div>
+      </article>
     </div>
   </section>
 
-  <section class="content">
-    <section class="generated">
-      <div class="section-header">
-        <div>
-          <p class="eyebrow">Informes activos</p>
-          <h2>Listos para descargar o automatizar</h2>
+  <section
+    class="config-panel"
+    [class.config-panel--visible]="isConfigPanelVisible()"
+    [style.--accent-color]="selectedReport()?.accentColor"
+  >
+    <div class="config-panel__inner" *ngIf="isConfigPanelVisible()">
+      <header class="config-panel__header">
+        <h3 class="config-panel__title">
+          Configurar: <span class="config-panel__report-name">{{ selectedReport()?.name }}</span>
+        </h3>
+      </header>
+
+      <div class="config-panel__body">
+        <div class="config-group">
+          <label class="config-group__label">Título del reporte (opcional)</label>
+          <input
+            type="text"
+            class="config-input"
+            placeholder="Ej: Reporte mensual ventas"
+            [value]="reportTitle()"
+            (input)="onTitleChange($event)"
+          />
         </div>
-        <app-button variant="ghost" size="sm">Ver plantillas guardadas</app-button>
-      </div>
 
-      <div class="reports-grid">
-        <article class="report-card" *ngFor="let report of generatedReports">
-          <header class="report-card__header">
-            <div>
-              <p class="report-title">{{ report.name }}</p>
-              <p class="report-description">{{ report.description }}</p>
-            </div>
-            <span class="report-format">{{ report.format }}</span>
-          </header>
-
-          <div class="report-stats">
-            <p class="report-amount" [class.report-amount--down]="report.trend === 'down'">
-              {{ report.amount }}
-            </p>
-            <span>{{ report.frequency }}</span>
-            <span>{{ report.updatedAt }}</span>
+        <div class="config-group">
+          <label class="config-group__label">Rango de fechas</label>
+          <div class="config-chips">
+            <button
+              *ngFor="let range of dateRanges"
+              type="button"
+              class="config-chip"
+              [class.config-chip--selected]="selectedDateRange() === range.id"
+              (click)="selectDateRange(range.id)"
+            >
+              {{ range.label }}
+            </button>
           </div>
 
-          <ul class="report-highlights">
-            <li *ngFor="let highlight of report.highlights">{{ highlight }}</li>
-          </ul>
-
-          <footer class="report-card__footer">
-            <div class="report-meta">
-              <span>{{ report.sharedWith }} colaboradores</span>
+          <div class="custom-date-range" *ngIf="isCustomDateRange()">
+            <div class="date-input-group">
+              <label class="date-label">Desde</label>
+              <input
+                type="date"
+                class="date-input"
+                [value]="customStartDate()"
+                (input)="onCustomStartDateChange($event)"
+              />
             </div>
-            <div class="report-actions">
-              <app-button variant="primary" size="sm" (click)="handleDownload(report)">
-                Descargar
-              </app-button>
-              <button type="button" class="text-button" (click)="handleSchedule(report)">
-                Programar envío
-              </button>
+            <div class="date-input-group">
+              <label class="date-label">Hasta</label>
+              <input
+                type="date"
+                class="date-input"
+                [value]="customEndDate()"
+                (input)="onCustomEndDateChange($event)"
+              />
             </div>
-          </footer>
-        </article>
-      </div>
-    </section>
-
-    <aside class="sidebar">
-      <article class="panel metrics">
-        <p class="eyebrow">Estado general</p>
-        <h3>Métricas rápidas</h3>
-        <ul>
-          <li *ngFor="let metric of quickMetrics">
-            <div>
-              <p class="metric-label">{{ metric.label }}</p>
-              <p class="metric-value">{{ metric.value }}</p>
-            </div>
-            <span
-              class="metric-trend"
-              [class.metric-trend--positive]="metric.positive"
-              [class.metric-trend--negative]="!metric.positive"
-            >
-              {{ metric.trendLabel }}
-            </span>
-          </li>
-        </ul>
-      </article>
-
-      <article class="panel suggestions">
-        <p class="eyebrow">Siguientes pasos</p>
-        <h3>Nuevos informes sugeridos</h3>
-        <div class="suggestions__list">
-          <article class="suggestion" *ngFor="let template of suggestedTemplates">
-            <header>
-              <p class="suggestion-title">{{ template.title }}</p>
-              <span class="chip">{{ template.complexity }}</span>
-            </header>
-            <p class="suggestion-description">{{ template.benefit }}</p>
-            <app-button variant="ghost" size="sm" (click)="handleTemplate(template)">
-              Probar plantilla
-            </app-button>
-          </article>
+          </div>
         </div>
-      </article>
-    </aside>
+
+        <div class="config-group">
+          <label class="config-group__label">Formato de exportación</label>
+          <div class="format-options">
+            <label
+              *ngFor="let format of exportFormats"
+              class="format-option"
+              [class.format-option--selected]="selectedFormat() === format.id"
+            >
+              <input
+                type="radio"
+                name="exportFormat"
+                [value]="format.id"
+                [checked]="selectedFormat() === format.id"
+                (change)="selectFormat(format.id)"
+              />
+              <div class="format-option__icon">
+                <span class="material-symbols-rounded">{{ format.icon }}</span>
+              </div>
+              <div class="format-option__content">
+                <span class="format-option__label">{{ format.label }}</span>
+                <span class="format-option__desc">{{ format.description }}</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="config-actions">
+          <button
+            type="button"
+            class="btn-generate"
+            [disabled]="isGenerating()"
+            (click)="generateReport()"
+          >
+            <span *ngIf="isGenerating()" class="btn-generate__spinner">
+              <span class="material-symbols-rounded spinning">sync</span>
+            </span>
+            <span>{{ isGenerating() ? 'Generando...' : 'Generar Reporte' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="history-section">
+    <header class="history-section__header">
+      <h2 class="section-title">Historial de reportes</h2>
+      <button type="button" class="btn-link" (click)="loadReportHistory()">
+        <span class="material-symbols-rounded">refresh</span>
+        Actualizar
+      </button>
+    </header>
+
+    <div class="history-loading" *ngIf="isLoading()">
+      <span class="material-symbols-rounded spinning">sync</span>
+      Cargando historial...
+    </div>
+
+    <div class="history-empty" *ngIf="!isLoading() && reportHistory().length === 0">
+      <span class="material-symbols-rounded">description</span>
+      <p>No hay reportes generados aún</p>
+    </div>
+
+    <div class="history-table-wrapper" *ngIf="!isLoading() && reportHistory().length > 0">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Período</th>
+            <th>Formato</th>
+            <th>Solicitado</th>
+            <th>Estado</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let report of reportHistory(); trackBy: trackByHistory">
+            <td class="history-table__name">{{ report.typeDisplayName }}</td>
+            <td>{{ report.dateRangeDisplay }}</td>
+            <td>
+              <span class="format-badge" [class]="'format-badge--' + report.format.toLowerCase()">
+                <span class="format-badge__icon">
+                  <span class="material-symbols-rounded">{{ getFormatIcon(report.format) }}</span>
+                </span>
+                {{ report.format }}
+              </span>
+            </td>
+            <td class="history-table__date">
+              {{ report.requestedAt | date: 'dd MMM yyyy, HH:mm' }}
+            </td>
+            <td>
+              <span class="status-badge" [class]="'status-badge--' + report.status.toLowerCase()">
+                <span
+                  class="status-badge__icon"
+                  [class.spinning]="report.status === 'PROCESSING' || report.status === 'PENDING'"
+                >
+                  <span class="material-symbols-rounded">{{ getStatusIcon(report.status) }}</span>
+                </span>
+                {{ getStatusLabel(report.status) }}
+              </span>
+            </td>
+            <td>
+              <button
+                *ngIf="report.downloadable"
+                type="button"
+                class="btn-download"
+                (click)="downloadReport(report)"
+              >
+                <span class="material-symbols-rounded">download</span>
+                Descargar
+              </button>
+              <button
+                *ngIf="report.status === 'PENDING' || report.status === 'PROCESSING'"
+                type="button"
+                class="btn-refresh"
+                (click)="refreshReportStatus(report)"
+              >
+                <span class="material-symbols-rounded">refresh</span>
+              </button>
+              <span
+                *ngIf="report.status === 'FAILED'"
+                class="error-hint"
+                [title]="report.errorMessage"
+              >
+                <span class="material-symbols-rounded">info</span>
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 </section>

@@ -1,96 +1,332 @@
 <section class="subscriptions">
-  <app-top-navbar
-    [navItems]="navItems"
-    brandTagline="Gestiona tu suscripción"
-    [notificationCount]="3"
-  >
-  </app-top-navbar>
+  <app-top-navbar [navItems]="navItems" [brandTagline]="LABELS.PAGE_SUBTITLE"></app-top-navbar>
+
+  <!-- Checkout Message Banner -->
+  @if (checkoutMessage()) {
+    <div class="checkout-message checkout-message--{{ checkoutMessage()?.type }}">
+      <span class="material-symbols-rounded" aria-hidden="true">
+        @if (checkoutMessage()?.type === 'success') {
+          check_circle
+        } @else if (checkoutMessage()?.type === 'cancelled') {
+          info
+        } @else {
+          error
+        }
+      </span>
+      <span>{{ checkoutMessage()?.text }}</span>
+      <button type="button" class="checkout-message__close" (click)="checkoutMessage.set(null)">
+        <span class="material-symbols-rounded">close</span>
+      </button>
+    </div>
+  }
+
+  <!-- Current Subscription Summary -->
+  @if (currentSubscription()) {
+    <div class="current-subscription-banner">
+      <div class="current-subscription-banner__content">
+        <div class="current-subscription-banner__info">
+          <span class="material-symbols-rounded" aria-hidden="true">verified</span>
+          <div>
+            <h3>Tu suscripción actual</h3>
+            <p>
+              <strong>{{ currentPlan()?.name }}</strong> ·
+              {{ currentSubscription()?.usage?.transactionsUsed | number }} /
+              {{
+                currentPlan()?.transactionLimit === -1
+                  ? '∞'
+                  : (currentPlan()?.transactionLimit | number)
+              }}
+              {{ LABELS.TRANSACTIONS }}
+            </p>
+          </div>
+        </div>
+        <div class="current-subscription-banner__actions">
+          @if (currentSubscription()?.status === 'ACTIVE') {
+            <span class="status-badge status-badge--active">{{ LABELS.STATUS_ACTIVE }}</span>
+            @if (!isFreePlan()) {
+              <button
+                type="button"
+                class="btn btn--danger-outline"
+                (click)="openCancelModal()"
+                [disabled]="isProcessing()"
+              >
+                {{ LABELS.CANCEL }}
+              </button>
+            }
+          } @else if (currentSubscription()?.status === 'CANCELLED') {
+            <span class="status-badge status-badge--cancelled">{{ LABELS.STATUS_CANCELLED }}</span>
+            @if (currentSubscription()?.endDate) {
+              <span class="access-until-info">
+                Acceso hasta {{ currentSubscription()?.endDate | date: 'dd/MM/yyyy' }}
+              </span>
+            }
+            <button
+              type="button"
+              class="btn btn--secondary"
+              (click)="reactivateSubscription()"
+              [disabled]="isProcessing()"
+            >
+              {{ LABELS.REACTIVATE }}
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  }
 
   <div class="hero">
     <div class="hero__content">
-      <p class="eyebrow">PLANES Y PRECIOS</p>
-      <h1>Elige el plan perfecto para ti</h1>
-      <p class="subtitle">
-        Gestiona tus ingresos de múltiples plataformas con las herramientas que necesitas. Cancela
-        en cualquier momento.
-      </p>
+      <p class="eyebrow">{{ LABELS.PAGE_TITLE | uppercase }}</p>
+      <h1>{{ LABELS.PAGE_CTA }}</h1>
+      <p class="subtitle">{{ LABELS.PAGE_DESCRIPTION }}</p>
     </div>
 
     <div class="billing-toggle">
       <button
         type="button"
         class="billing-toggle__option"
-        [class.billing-toggle__option--active]="selectedBilling === 'monthly'"
-        (click)="toggleBilling('monthly')"
+        [class.billing-toggle__option--active]="selectedBilling() === BILLING.MONTHLY"
+        (click)="toggleBilling(BILLING.MONTHLY)"
       >
-        Mensual
+        {{ LABELS.BILLING_MONTHLY }}
       </button>
       <button
         type="button"
         class="billing-toggle__option"
-        [class.billing-toggle__option--active]="selectedBilling === 'yearly'"
-        (click)="toggleBilling('yearly')"
+        [class.billing-toggle__option--active]="selectedBilling() === BILLING.YEARLY"
+        (click)="toggleBilling(BILLING.YEARLY)"
       >
-        Anual
-        <span class="billing-toggle__badge">Ahorra 20%</span>
+        {{ LABELS.BILLING_YEARLY }}
+        <span class="billing-toggle__badge">{{ LABELS.BILLING_SAVE }}</span>
       </button>
     </div>
   </div>
 
-  <div class="plans-grid">
-    <article
-      class="plan-card"
-      *ngFor="let plan of displayedPlans"
-      [class.plan-card--recommended]="plan.recommended"
-      [style.--plan-color]="plan.color"
-    >
-      <span class="plan-card__badge" *ngIf="plan.recommended">Recomendado</span>
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>Cargando planes...</p>
+    </div>
+  } @else {
+    <div class="plans-grid">
+      @for (plan of displayedPlans(); track plan.id) {
+        <article
+          class="plan-card"
+          [class.plan-card--recommended]="plan.isPopular"
+          [class.plan-card--current]="isCurrentPlan(plan.id)"
+          [style.--plan-color]="plan.color"
+        >
+          @if (plan.isPopular) {
+            <span class="plan-card__badge">{{ LABELS.RECOMMENDED }}</span>
+          }
+          @if (isCurrentPlan(plan.id)) {
+            <span class="plan-card__badge plan-card__badge--current">{{
+              LABELS.CURRENT_PLAN
+            }}</span>
+          }
 
-      <div class="plan-card__header">
-        <h2 class="plan-card__name">{{ plan.name }}</h2>
-        <p class="plan-card__description">{{ plan.description }}</p>
-      </div>
+          <div class="plan-card__header">
+            <h2 class="plan-card__name">{{ plan.name }}</h2>
+            <p class="plan-card__description">{{ plan.description }}</p>
+          </div>
 
-      <div class="plan-card__pricing">
-        <div class="price">
-          <span class="price__currency">$</span>
-          <span class="price__amount">{{ plan.price }}</span>
-          <span class="price__period">/{{ selectedBilling === 'monthly' ? 'mes' : 'año' }}</span>
-        </div>
-        <p class="price__note" *ngIf="selectedBilling === 'yearly' && plan.price > 0">
-          {{ plan.price / 12 | currency: 'USD' : 'symbol' : '1.2-2' }}/mes facturado anualmente
-        </p>
-      </div>
+          <div class="plan-card__pricing">
+            <div class="price">
+              <span class="price__currency">€</span>
+              <span class="price__amount">{{ plan.displayPrice }}</span>
+              <span class="price__period">{{
+                selectedBilling() === BILLING.MONTHLY ? LABELS.PER_MONTH : LABELS.PER_YEAR
+              }}</span>
+            </div>
+            @if (selectedBilling() === BILLING.YEARLY && plan.monthlyPrice > 0) {
+              <p class="price__note">
+                €{{ plan.monthlyPrice | number: '1.2-2' }}{{ LABELS.PER_MONTH }}
+                {{ LABELS.BILLED_ANNUALLY }}
+              </p>
+            }
+          </div>
 
-      <ul class="plan-card__features">
-        <li *ngFor="let feature of plan.features">
-          <span class="material-symbols-rounded feature-icon" aria-hidden="true">check_circle</span>
-          {{ feature }}
-        </li>
-      </ul>
+          <ul class="plan-card__features">
+            @for (feature of plan.features; track feature) {
+              <li>
+                <span class="material-symbols-rounded feature-icon" aria-hidden="true"
+                  >check_circle</span
+                >
+                {{ feature }}
+              </li>
+            }
+          </ul>
 
-      <button
-        type="button"
-        class="plan-card__button"
-        [class.plan-card__button--selected]="isPlanSelected(plan.id)"
-        (click)="selectPlan(plan.id)"
-      >
-        {{
-          isPlanSelected(plan.id)
-            ? 'Plan Seleccionado'
-            : plan.price === 0
-              ? 'Comenzar Gratis'
-              : 'Seleccionar Plan'
-        }}
-      </button>
-    </article>
-  </div>
+          <button
+            type="button"
+            class="plan-card__button"
+            [class.plan-card__button--selected]="isPlanSelected(plan.id)"
+            [class.plan-card__button--current]="isCurrentPlan(plan.id)"
+            [disabled]="isCurrentPlan(plan.id) || isProcessing()"
+            (click)="selectPlan(plan.id)"
+          >
+            @if (isProcessing() && isPlanSelected(plan.id)) {
+              <span class="loading-spinner-small"></span>
+              Procesando...
+            } @else {
+              {{ getButtonText(plan) }}
+            }
+          </button>
+        </article>
+      }
+    </div>
+  }
 
   <div class="faq-section">
-    <h2>¿Tienes preguntas?</h2>
+    <h2>{{ LABELS.FAQ_TITLE }}</h2>
     <p class="faq-intro">
-      Estamos aquí para ayudarte. Contáctanos en
-      <a href="mailto:soporte@aizesk.com">soporte@aizesk.com</a>
+      {{ LABELS.FAQ_CONTACT }}
+      <a href="mailto:soporte@aizesk.com">soporte&#64;aizesk.com</a>
     </p>
   </div>
+
+  <!-- Modal: Change Plan Confirmation -->
+  @if (showModal() === 'change-plan') {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div
+        class="modal"
+        [class.modal--warning]="isDowngradeToFree()"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="modal__header">
+          <span
+            class="material-symbols-rounded modal__icon"
+            [class.modal__icon--upgrade]="isUpgrade()"
+            [class.modal__icon--downgrade]="!isUpgrade() && !isDowngradeToFree()"
+            [class.modal__icon--warning]="isDowngradeToFree()"
+          >
+            {{ isUpgrade() ? 'upgrade' : isDowngradeToFree() ? 'info' : 'swap_vert' }}
+          </span>
+          <h2>
+            {{
+              isDowngradeToFree()
+                ? LABELS.MODAL_DOWNGRADE_FREE_TITLE
+                : LABELS.MODAL_CHANGE_PLAN_TITLE
+            }}
+          </h2>
+        </div>
+
+        <div class="modal__body">
+          @if (isDowngradeToFree()) {
+            <!-- Downgrade to FREE: special messaging -->
+            <p class="modal__description">{{ LABELS.MODAL_DOWNGRADE_FREE_DESCRIPTION }}</p>
+            <p class="modal__warning modal__warning--info">
+              {{ LABELS.MODAL_DOWNGRADE_FREE_WARNING }}
+            </p>
+            @if (currentSubscription()?.endDate) {
+              <p class="modal__info">
+                <span class="material-symbols-rounded">event</span>
+                Tu acceso premium finaliza el
+                <strong>{{ currentSubscription()?.endDate | date: 'dd/MM/yyyy' }}</strong>
+              </p>
+            }
+            <p class="modal__note">{{ LABELS.MODAL_DOWNGRADE_FREE_INFO }}</p>
+          } @else {
+            <!-- Regular upgrade/downgrade -->
+            <p class="modal__description">
+              {{
+                isUpgrade() ? LABELS.MODAL_UPGRADE_DESCRIPTION : LABELS.MODAL_DOWNGRADE_DESCRIPTION
+              }}
+              <strong>{{ pendingPlanName() }}</strong>
+            </p>
+
+            @if (pendingPlanChange()?.monthlyPrice === 0) {
+              <p class="modal__price-info">{{ LABELS.PRICE_FREE }}</p>
+            } @else {
+              <p class="modal__price-info">
+                {{ isUpgrade() ? LABELS.PRICE_INCREASE : LABELS.PRICE_DECREASE }}
+                <strong
+                  >€{{ pendingPlanPrice() | number: '1.2-2'
+                  }}{{
+                    selectedBilling() === BILLING.MONTHLY ? LABELS.PER_MONTH : LABELS.PER_YEAR
+                  }}</strong
+                >
+              </p>
+              <p class="modal__note modal__note--payment">
+                <span class="material-symbols-rounded">lock</span>
+                {{ LABELS.MODAL_PAYMENT_REDIRECT }}
+              </p>
+            }
+
+            @if (pendingPlanChange()?.monthlyPrice === 0) {
+              <p class="modal__note">{{ LABELS.MODAL_CHANGE_BENEFITS }}</p>
+            }
+          }
+        </div>
+
+        <div class="modal__actions">
+          <button type="button" class="btn btn--outline" (click)="closeModal()">
+            {{ LABELS.MODAL_CANCEL }}
+          </button>
+          <button
+            type="button"
+            class="btn btn--primary"
+            [class.btn--upgrade]="isUpgrade()"
+            [class.btn--warning]="isDowngradeToFree()"
+            (click)="confirmPlanChange()"
+            [disabled]="isProcessing()"
+          >
+            @if (isProcessing()) {
+              <span class="loading-spinner-small"></span>
+            }
+            {{
+              isDowngradeToFree()
+                ? LABELS.MODAL_DOWNGRADE_FREE_CONFIRM
+                : requiresPayment()
+                  ? LABELS.MODAL_CONFIRM_PAYMENT
+                  : LABELS.MODAL_CONFIRM
+            }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Modal: Cancel Subscription Confirmation -->
+  @if (showModal() === 'cancel') {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal modal--danger" (click)="$event.stopPropagation()">
+        <div class="modal__header">
+          <span class="material-symbols-rounded modal__icon modal__icon--danger">warning</span>
+          <h2>{{ LABELS.MODAL_CANCEL_TITLE }}</h2>
+        </div>
+
+        <div class="modal__body">
+          <p class="modal__description">{{ LABELS.MODAL_CANCEL_DESCRIPTION }}</p>
+          <p class="modal__warning">{{ LABELS.MODAL_CANCEL_WARNING }}</p>
+          @if (currentSubscription()?.endDate) {
+            <p class="modal__info">
+              <span class="material-symbols-rounded">event</span>
+              Tu acceso premium finaliza el
+              <strong>{{ currentSubscription()?.endDate | date: 'dd/MM/yyyy' }}</strong>
+            </p>
+          }
+          <p class="modal__note">{{ LABELS.MODAL_CANCEL_INFO }}</p>
+        </div>
+
+        <div class="modal__actions">
+          <button type="button" class="btn btn--secondary" (click)="closeModal()">
+            {{ LABELS.MODAL_CANCEL_KEEP }}
+          </button>
+          <button
+            type="button"
+            class="btn btn--danger"
+            (click)="confirmCancelSubscription()"
+            [disabled]="isProcessing()"
+          >
+            @if (isProcessing()) {
+              <span class="loading-spinner-small"></span>
+            }
+            {{ LABELS.MODAL_CANCEL_CONFIRM }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
 </section>

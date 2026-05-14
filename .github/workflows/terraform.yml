@@ -1,0 +1,93 @@
+# ===========================================
+# CI/CD - Terraform Plan & Apply
+# ===========================================
+# Manages AWS infrastructure via Terraform
+# Plan runs on PR, Apply runs on manual dispatch
+
+name: Terraform
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'deployment/terraform/**'
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Terraform action'
+        required: true
+        type: choice
+        options:
+          - plan
+          - apply
+          - destroy
+
+env:
+  AWS_REGION: eu-west-1
+  TF_WORKING_DIR: deployment/terraform
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.TF_WORKING_DIR }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.7.0'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Create terraform.tfvars
+        run: |
+          cat > terraform.tfvars <<EOF
+          aws_region            = "${{ env.AWS_REGION }}"
+          environment           = "prod"
+          db_username           = "${{ secrets.DB_USERNAME }}"
+          db_password           = "${{ secrets.DB_PASSWORD }}"
+          jwt_secret            = "${{ secrets.JWT_SECRET }}"
+          stripe_api_key        = "${{ secrets.STRIPE_API_KEY }}"
+          stripe_webhook_secret = "${{ secrets.STRIPE_WEBHOOK_SECRET }}"
+          stripe_price_professional_monthly = "${{ secrets.STRIPE_PRICE_PROFESSIONAL_MONTHLY }}"
+          stripe_price_professional_annual  = "${{ secrets.STRIPE_PRICE_PROFESSIONAL_ANNUAL }}"
+          stripe_price_enterprise_monthly   = "${{ secrets.STRIPE_PRICE_ENTERPRISE_MONTHLY }}"
+          stripe_price_enterprise_annual    = "${{ secrets.STRIPE_PRICE_ENTERPRISE_ANNUAL }}"
+          shopify_client_id     = "${{ secrets.SHOPIFY_CLIENT_ID }}"
+          shopify_client_secret = "${{ secrets.SHOPIFY_CLIENT_SECRET }}"
+          EOF
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive || true
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        if: github.event_name == 'pull_request' || inputs.action == 'plan'
+        run: terraform plan -no-color -out=tfplan
+        continue-on-error: true
+
+      - name: Terraform Apply
+        if: github.event_name == 'workflow_dispatch' && inputs.action == 'apply'
+        run: terraform apply -auto-approve
+
+      - name: Terraform Destroy
+        if: github.event_name == 'workflow_dispatch' && inputs.action == 'destroy'
+        run: terraform destroy -auto-approve
+
+      - name: Show Outputs
+        if: github.event_name == 'workflow_dispatch' && inputs.action == 'apply'
+        run: terraform output

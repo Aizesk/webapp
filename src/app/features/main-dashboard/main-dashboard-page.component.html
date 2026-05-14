@@ -1,346 +1,646 @@
-<section class="dashboard dashboard--fintech">
-  <app-top-navbar
-    [navItems]="navItems"
-    brandTagline="Tu control financiero"
-    [notificationCount]="2"
-  ></app-top-navbar>
+﻿<section class="dashboard">
+  <app-top-navbar [navItems]="navItems" brandTagline="Panel de Control"></app-top-navbar>
 
   <ng-container *ngIf="dashboardVm$ | async as vm; else dashboardLoading">
     <div class="dashboard__content">
-      <!-- ═══════════════════════════════════════════════════════════════════
-           TOP ROW: KPI Cards - Compact & Professional
-           ═══════════════════════════════════════════════════════════════════ -->
-      <header class="kpi-row">
-        <article class="kpi-card" *ngFor="let card of vm.summaryCards">
-          <div class="kpi-card__header">
-            <span class="kpi-card__label">{{ card.label }}</span>
-            <span class="kpi-card__trend" [ngClass]="card.trendColor">{{ card.trend }}</span>
-          </div>
-          <span class="kpi-card__value">{{
-            card.value | currency: 'EUR' : 'symbol' : '1.0-0'
-          }}</span>
-          <div class="kpi-card__sparkline" *ngIf="card.sparklinePath">
-            <svg viewBox="0 0 100 24" preserveAspectRatio="none">
-              <path [attr.d]="card.sparklinePath" />
-            </svg>
-          </div>
-        </article>
+      <!-- HEADER: Title + Date Range Selector -->
+      <header class="dashboard-header">
+        <div class="dashboard-header__info">
+          <h1 class="dashboard-header__title">Panel de Control Financiero</h1>
+          <p class="dashboard-header__subtitle">
+            Visualiza el rendimiento de tus canales de venta en tiempo real
+          </p>
+        </div>
       </header>
 
-      <!-- ═══════════════════════════════════════════════════════════════════
-           MIDDLE ROW: Main Combo Chart + Donut Chart
-           ═══════════════════════════════════════════════════════════════════ -->
-      <div class="charts-row">
-        <!-- Main Combo Chart: Bars (Income) + Line (Expense) with Dual Y-Axis -->
-        <section class="panel panel--main-chart">
-          <header class="panel__header">
-            <div>
-              <p class="panel__eyebrow">Rendimiento Financiero</p>
-              <h2 class="panel__title">Ingresos vs Gastos — Últimos 6 meses</h2>
-            </div>
-            <div class="panel__legend">
-              <span class="legend-item"> <span class="legend-bar"></span> Ingresos </span>
-              <span class="legend-item"> <span class="legend-line"></span> Gastos </span>
-            </div>
-          </header>
-
-          <!-- Combo Chart Container with Dual Y-Axis -->
-          <div class="combo-chart">
-            <!-- Left Y-Axis: Income Scale -->
-            <div class="combo-chart__y-axis combo-chart__y-axis--left">
-              <span class="combo-chart__axis-title">Ingresos</span>
-              <div class="combo-chart__ticks">
-                <span *ngFor="let tick of vm.incomeAxisTicks">€{{ tick }}k</span>
-              </div>
-            </div>
-
-            <!-- Chart Area -->
-            <div class="combo-chart__area">
-              <!-- Gridlines -->
-              <div class="combo-chart__gridlines">
-                <div class="combo-chart__gridline" *ngFor="let tick of vm.incomeAxisTicks"></div>
-              </div>
-
-              <!-- Bars + Line SVG -->
-              <svg
-                class="combo-chart__svg"
-                viewBox="0 0 520 240"
-                preserveAspectRatio="xMidYMid meet"
+      <!-- ADVANCED FILTER BAR -->
+      <section class="filter-bar">
+        <!-- Date Range Selector with DatePicker -->
+        <div class="filter-group filter-group--date">
+          <span class="filter-label">Período</span>
+          <div class="date-range-controls">
+            <!-- Quick Filters -->
+            <div class="date-range-buttons">
+              <button
+                *ngFor="let range of dateRanges; trackBy: trackByRange"
+                type="button"
+                class="filter-chip"
+                [class.filter-chip--active]="selectedDateRange() === range.id"
+                [class.filter-chip--custom]="range.id === 'CUSTOM'"
+                (click)="selectDateRange(range.id)"
               >
-                <!-- Gradient Definition -->
-                <defs>
-                  <linearGradient id="incomeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" style="stop-color: #007bff; stop-opacity: 1" />
-                    <stop offset="100%" style="stop-color: #0056b3; stop-opacity: 1" />
-                  </linearGradient>
-                </defs>
-
-                <!-- Income Bars -->
-                <g class="combo-chart__bars">
-                  <g *ngFor="let point of vm.comboChartData; let i = index">
-                    <rect
-                      class="combo-bar"
-                      [attr.x]="i * 80 + 25"
-                      [attr.y]="point.barY"
-                      width="50"
-                      [attr.height]="point.barHeight"
-                      fill="url(#incomeGradient)"
-                    >
-                      <title>{{ point.label }}: €{{ point.income | number: '1.0-0' }}</title>
-                    </rect>
-                  </g>
-                </g>
-
-                <!-- Expense Line (Straight, no curves) -->
-                <polyline class="combo-line" [attr.points]="vm.expenseLinePath" fill="none" />
-
-                <!-- Expense Data Points -->
-                <g class="combo-chart__points">
-                  <circle
-                    *ngFor="let point of vm.comboChartData; let i = index"
-                    class="combo-point"
-                    [attr.cx]="i * 80 + 50"
-                    [attr.cy]="point.expenseY"
-                    r="5"
-                  >
-                    <title>Gastos {{ point.label }}: €{{ point.expense | number: '1.0-0' }}</title>
-                  </circle>
-                </g>
-              </svg>
-
-              <!-- X-Axis Labels -->
-              <div class="combo-chart__x-labels">
-                <span *ngFor="let point of vm.monthlyIncomeVsExpense">{{ point.label }}</span>
-              </div>
+                <span *ngIf="range.id === 'CUSTOM'" class="material-symbols-rounded"
+                  >calendar_month</span
+                >
+                {{
+                  range.id === 'CUSTOM' && selectedDateRange() === 'CUSTOM'
+                    ? currentDateRangeLabel()
+                    : range.label
+                }}
+              </button>
             </div>
 
-            <!-- Right Y-Axis: Expense Scale -->
-            <div class="combo-chart__y-axis combo-chart__y-axis--right">
-              <span class="combo-chart__axis-title combo-chart__axis-title--expense">Gastos</span>
-              <div class="combo-chart__ticks combo-chart__ticks--right">
-                <span *ngFor="let tick of vm.expenseAxisTicks">€{{ tick }}k</span>
-              </div>
+            <!-- Custom Date Range Picker (inline) -->
+            <div class="custom-date-picker" *ngIf="showDatePicker()">
+              <mat-form-field appearance="outline" class="date-field">
+                <mat-label>Desde</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="pickerFrom"
+                  [value]="customDateFrom()"
+                  (dateChange)="setCustomDateFrom($event.value)"
+                  placeholder="dd/mm/aaaa"
+                />
+                <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+                <mat-datepicker #pickerFrom></mat-datepicker>
+              </mat-form-field>
+
+              <span class="date-separator">—</span>
+
+              <mat-form-field appearance="outline" class="date-field">
+                <mat-label>Hasta</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="pickerTo"
+                  [value]="customDateTo()"
+                  (dateChange)="setCustomDateTo($event.value)"
+                  placeholder="dd/mm/aaaa"
+                  [min]="customDateFrom()"
+                />
+                <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
+                <mat-datepicker #pickerTo></mat-datepicker>
+              </mat-form-field>
+
+              <button
+                type="button"
+                class="ghost-button ghost-button--small"
+                (click)="cancelCustomDateRange()"
+              >
+                Cancelar
+              </button>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <!-- Donut Chart: Income by Source -->
-        <section class="panel panel--donut">
-          <header class="panel__header">
-            <div>
-              <p class="panel__eyebrow">Desglose</p>
-              <h2 class="panel__title">Ingresos por Fuente</h2>
+      <!-- PLATFORM SELECTOR -->
+      <section class="platform-selector-wrapper">
+        <div class="platform-selector-grid">
+          <!-- Main platforms: Global and Manual -->
+          <article
+            *ngFor="let platform of mainPlatforms; trackBy: trackByPlatform"
+            class="platform-card"
+            [class.platform-card--selected]="selectedPlatform() === platform.id"
+            [style.--accent-color]="platform.accentColor"
+            [style.--accent-color-light]="platform.accentColorLight"
+            (click)="selectPlatform(platform.id)"
+            role="button"
+            tabindex="0"
+          >
+            <div class="platform-card__icon">
+              <span class="material-symbols-rounded">{{ platform.icon }}</span>
             </div>
-          </header>
+            <span class="platform-card__name">{{ platform.name }}</span>
+            <div class="platform-card__check" *ngIf="selectedPlatform() === platform.id">
+              <span class="material-symbols-rounded">check</span>
+            </div>
+          </article>
 
-          <div class="donut-chart">
-            <svg viewBox="0 0 200 200" class="donut-chart__svg">
-              <!-- Background ring for visual context -->
-              <circle cx="100" cy="100" r="70" fill="none" stroke="#e5e7eb" stroke-width="28" />
+          <!-- Platforms dropdown card -->
+          <article
+            class="platform-card platform-card--dropdown"
+            [class.platform-card--selected]="isPlatformConnectionSelected()"
+            [class.platform-card--expanded]="showPlatformDropdown()"
+            [style.--accent-color]="selectedPlatformConnection()?.accentColor || '#10B981'"
+            [style.--accent-color-light]="
+              selectedPlatformConnection()?.accentColorLight || 'rgba(16, 185, 129, 0.1)'
+            "
+            (click)="togglePlatformDropdown()"
+            role="button"
+            tabindex="0"
+          >
+            <div class="platform-card__icon">
+              <span class="material-symbols-rounded">{{
+                selectedPlatformConnection()?.icon || 'hub'
+              }}</span>
+            </div>
+            <span class="platform-card__name">{{
+              selectedPlatformConnection()?.name || 'Plataformas'
+            }}</span>
+            <div class="platform-card__arrow">
+              <span class="material-symbols-rounded">{{
+                showPlatformDropdown() ? 'expand_less' : 'expand_more'
+              }}</span>
+            </div>
+            <div class="platform-card__check" *ngIf="isPlatformConnectionSelected()">
+              <span class="material-symbols-rounded">check</span>
+            </div>
+          </article>
+        </div>
 
-              <!-- Donut Segments -->
-              <g class="donut-chart__segments">
-                @for (segment of vm.donutSegments; track segment.label; let i = $index) {
-                  <circle
-                    class="donut-segment"
-                    cx="100"
-                    cy="100"
-                    r="70"
-                    fill="none"
-                    [attr.stroke]="segment.color"
-                    stroke-width="28"
-                    [attr.stroke-dasharray]="segment.dashArray"
-                    [attr.stroke-dashoffset]="segment.dashOffset"
-                    stroke-linecap="butt"
-                  >
-                    <title>
-                      {{ segment.label }}: €{{ segment.amount | number: '1.0-0' }} ({{
-                        segment.percentage
-                      }}%)
-                    </title>
-                  </circle>
-                }
-              </g>
+        <!-- Platform dropdown options -->
+        <div class="platform-dropdown" *ngIf="showPlatformDropdown()">
+          <article
+            *ngFor="let platform of platformConnections; trackBy: trackByPlatform"
+            class="platform-option"
+            [class.platform-option--selected]="selectedPlatform() === platform.id"
+            [style.--accent-color]="platform.accentColor"
+            [style.--accent-color-light]="platform.accentColorLight"
+            (click)="selectPlatform(platform.id); $event.stopPropagation()"
+            role="button"
+            tabindex="0"
+          >
+            <div class="platform-option__icon">
+              <span class="material-symbols-rounded">{{ platform.icon }}</span>
+            </div>
+            <span class="platform-option__name">{{ platform.name }}</span>
+            <div class="platform-option__check" *ngIf="selectedPlatform() === platform.id">
+              <span class="material-symbols-rounded">check</span>
+            </div>
+          </article>
+        </div>
+      </section>
 
-              <!-- Center Text -->
-              <text x="100" y="92" class="donut-chart__center-label">Total</text>
-              <text x="100" y="112" class="donut-chart__center-value">
-                {{ vm.totalChannelRevenue | currency: 'EUR' : 'symbol' : '1.0-0' }}
-              </text>
-            </svg>
-
-            <!-- Donut Legend -->
-            <ul class="donut-legend">
-              @for (segment of vm.donutSegments; track segment.label) {
-                <li class="donut-legend__item">
-                  <span class="donut-legend__color" [style.background]="segment.color"></span>
-                  <span class="donut-legend__label">{{ segment.label }}</span>
-                  <span class="donut-legend__value">{{ segment.percentage }}%</span>
-                </li>
-              }
-            </ul>
+      <!-- KPI CARDS ROW -->
+      <section class="kpi-row">
+        <article
+          *ngFor="let kpi of vm.kpiCards"
+          class="kpi-card"
+          [style.--kpi-accent]="kpi.accentColor"
+        >
+          <div class="kpi-card__icon">
+            <span class="material-symbols-rounded">{{ kpi.icon }}</span>
           </div>
-        </section>
-      </div>
+          <div class="kpi-card__content">
+            <span class="kpi-card__label">{{ kpi.label }}</span>
+            <span class="kpi-card__value">{{
+              kpi.value | currency: 'EUR' : 'symbol' : '1.0-0'
+            }}</span>
+          </div>
+          <span
+            class="kpi-card__trend"
+            [class.kpi-card__trend--positive]="kpi.trendPositive"
+            [class.kpi-card__trend--negative]="!kpi.trendPositive"
+          >
+            <span class="material-symbols-rounded">
+              {{ kpi.trendPositive ? 'arrow_upward' : 'arrow_downward' }}
+            </span>
+            {{ kpi.trend }}
+          </span>
+        </article>
+      </section>
 
-      <!-- ═══════════════════════════════════════════════════════════════════
-           BOTTOM ROW: Professional Data Grid
-           ═══════════════════════════════════════════════════════════════════ -->
-      <section class="panel panel--table">
+      <!-- MAIN CHART: Income vs Expense Line Chart -->
+      <section class="panel panel--chart">
         <header class="panel__header">
           <div>
-            <p class="panel__eyebrow">Historial Detallado</p>
-            <h2 class="panel__title">Transacciones Recientes</h2>
+            <p class="panel__eyebrow">Rendimiento Financiero</p>
+            <h2 class="panel__title">Evolucion de Ingresos y Gastos</h2>
           </div>
-          <div class="panel__actions">
-            <button type="button" class="btn btn--secondary">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                <path
-                  d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"
-                />
-              </svg>
-              Exportar
-            </button>
-            <button type="button" class="btn btn--ghost">Ver todas</button>
+          <div class="panel__legend">
+            <span class="legend-item">
+              <span class="legend-dot" style="background: #10b981"></span>
+              Ingresos
+            </span>
+            <span class="legend-item">
+              <span class="legend-dot" style="background: #ef4444"></span>
+              Gastos
+            </span>
           </div>
         </header>
 
-        <div class="data-grid-container">
-          <table class="data-grid">
-            <thead class="data-grid__head">
-              <tr>
-                <th class="data-grid__th">Fecha</th>
-                <th class="data-grid__th">Concepto</th>
-                <th class="data-grid__th">Fuente / Destino</th>
-                <th class="data-grid__th">Categoría</th>
-                <th class="data-grid__th data-grid__th--center">Estado</th>
-                <th class="data-grid__th data-grid__th--right">Monto</th>
-              </tr>
-            </thead>
-            <tbody class="data-grid__body">
-              <tr
-                class="data-grid__row"
-                *ngFor="let tx of vm.transactions; let odd = odd"
-                [class.data-grid__row--zebra]="odd"
-              >
-                <td class="data-grid__td data-grid__td--date">{{ tx.timestamp }}</td>
-                <td class="data-grid__td data-grid__td--concept">
-                  <strong>{{ tx.title }}</strong>
-                </td>
-                <td class="data-grid__td">{{ tx.description }}</td>
-                <td class="data-grid__td">
-                  <span
-                    class="category-tag"
-                    [ngClass]="tx.positive ? 'category-tag--income' : 'category-tag--expense'"
-                  >
-                    {{ tx.positive ? 'Ingreso' : 'Gasto' }}
-                  </span>
-                </td>
-                <td class="data-grid__td data-grid__td--center">
-                  <span class="status-badge status-badge--completed">Completado</span>
-                </td>
-                <td
-                  class="data-grid__td data-grid__td--amount"
-                  [ngClass]="tx.positive ? 'positive' : 'negative'"
-                >
-                  {{ tx.positive ? '+' : '-'
-                  }}{{ tx.amount | currency: 'EUR' : 'symbol' : '1.2-2' }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Pagination -->
-        <footer class="data-grid__footer">
-          <span class="data-grid__info">Mostrando {{ vm.transactions.length }} transacciones</span>
-          <div class="data-grid__pagination">
-            <button type="button" class="pagination-btn" disabled>
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
-              </svg>
-            </button>
-            <span class="pagination-page pagination-page--active">1</span>
-            <button type="button" class="pagination-btn">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
-              </svg>
-            </button>
+        <div class="line-chart">
+          <div class="line-chart__y-axis">
+            <span *ngFor="let tick of vm.yAxisTicks" class="line-chart__tick">
+              {{ tick | number: '1.0-0' }}
+            </span>
           </div>
-        </footer>
+
+          <div class="line-chart__area">
+            <svg
+              class="line-chart__svg"
+              viewBox="0 0 600 200"
+              preserveAspectRatio="none"
+              (mousemove)="onChartMouseMove($event, vm.chartData)"
+              (mouseleave)="onChartMouseLeave()"
+            >
+              <!-- Gradient Definitions for Area Chart -->
+              <defs>
+                <linearGradient id="incomeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#10B981" stop-opacity="0.4" />
+                  <stop offset="100%" stop-color="#10B981" stop-opacity="0.02" />
+                </linearGradient>
+                <linearGradient id="expenseGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#EF4444" stop-opacity="0.3" />
+                  <stop offset="100%" stop-color="#EF4444" stop-opacity="0.02" />
+                </linearGradient>
+              </defs>
+
+              <!-- Grid Lines -->
+              <g class="line-chart__grid">
+                <line
+                  *ngFor="let tick of vm.yAxisTicks; let i = index"
+                  x1="40"
+                  [attr.y1]="i * 50"
+                  x2="580"
+                  [attr.y2]="i * 50"
+                  stroke="#E5E7EB"
+                  stroke-width="1"
+                />
+              </g>
+
+              <!-- Tooltip Vertical Guide Line -->
+              <line
+                *ngIf="tooltipState().visible"
+                class="line-chart__guide-line"
+                [attr.x1]="tooltipState().chartX"
+                y1="0"
+                [attr.x2]="tooltipState().chartX"
+                y2="200"
+                stroke="#6366F1"
+                stroke-width="1.5"
+                stroke-dasharray="4,3"
+                pointer-events="none"
+              />
+
+              <!-- Area Fills (Gradient) -->
+              <path
+                class="line-chart__area-fill line-chart__area-fill--income"
+                [attr.d]="vm.incomeAreaPath"
+                fill="url(#incomeGradient)"
+              />
+
+              <path
+                class="line-chart__area-fill line-chart__area-fill--expense"
+                [attr.d]="vm.expenseAreaPath"
+                fill="url(#expenseGradient)"
+              />
+
+              <!-- Smooth Spline Lines (No Points) -->
+              <path
+                class="line-chart__line line-chart__line--income"
+                [attr.d]="vm.incomePath"
+                fill="none"
+                stroke="#10B981"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+
+              <path
+                class="line-chart__line line-chart__line--expense"
+                [attr.d]="vm.expensePath"
+                fill="none"
+                stroke="#EF4444"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+
+            <!-- Floating Tooltip -->
+            <div
+              class="chart-tooltip"
+              *ngIf="tooltipState().visible"
+              [style.left.px]="tooltipState().x + 15"
+              [style.top.px]="tooltipState().y - 60"
+            >
+              <div class="chart-tooltip__date">{{ tooltipState().date }}</div>
+              <div class="chart-tooltip__row chart-tooltip__row--income">
+                <span class="chart-tooltip__dot" style="background: #10b981"></span>
+                <span class="chart-tooltip__label">Ingresos:</span>
+                <span class="chart-tooltip__value">{{
+                  tooltipState().income | currency: 'EUR' : 'symbol' : '1.0-0'
+                }}</span>
+              </div>
+              <div class="chart-tooltip__row chart-tooltip__row--expense">
+                <span class="chart-tooltip__dot" style="background: #ef4444"></span>
+                <span class="chart-tooltip__label">Gastos:</span>
+                <span class="chart-tooltip__value">{{
+                  tooltipState().expense | currency: 'EUR' : 'symbol' : '1.0-0'
+                }}</span>
+              </div>
+            </div>
+
+            <div class="line-chart__x-labels">
+              <span
+                *ngFor="let point of vm.chartData; let i = index"
+                [class]="getLabelClass(i, vm.chartData.length)"
+                >{{ point.label }}</span
+              >
+            </div>
+          </div>
+        </div>
       </section>
 
-      <!-- ═══════════════════════════════════════════════════════════════════
-           SIDE WIDGETS: Accounts & Reconciliation
-           ═══════════════════════════════════════════════════════════════════ -->
-      <aside class="widgets-row">
-        <section class="panel panel--widget">
+      <!-- BOTTOM ROW: Platform Breakdown + Top Expenses + Recent Transactions + Metrics -->
+      <div class="bottom-row">
+        <!-- Platform Breakdown with Donut Chart -->
+        <section class="panel panel--breakdown">
           <header class="panel__header">
-            <h3 class="panel__title">Cuentas Conectadas</h3>
-            <button type="button" class="btn btn--icon" aria-label="Añadir cuenta">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-              </svg>
-            </button>
+            <div>
+              <p class="panel__eyebrow">Distribucion</p>
+              <h2 class="panel__title">Ingresos por Plataforma</h2>
+            </div>
           </header>
-          <ul class="widget-list">
-            <li class="widget-list__item" *ngFor="let account of vm.accounts">
-              <div class="widget-list__icon">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                  <path
-                    d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"
-                  />
-                </svg>
+
+          <div class="breakdown-content">
+            <!-- Donut Chart -->
+            <div class="donut-chart-container" *ngIf="vm.donutData.segments.length > 0">
+              <svg class="donut-chart" viewBox="0 0 200 200">
+                <circle cx="100" cy="100" r="70" fill="none" stroke="#f1f5f9" stroke-width="20" />
+                <path
+                  *ngFor="let segment of vm.donutData.segments"
+                  [attr.d]="segment.path"
+                  fill="none"
+                  [attr.stroke]="segment.color"
+                  stroke-width="20"
+                  class="donut-segment"
+                />
+                <text x="100" y="95" text-anchor="middle" class="donut-total-label">Total</text>
+                <text x="100" y="115" text-anchor="middle" class="donut-total-value">
+                  {{ vm.donutData.total | currency: 'EUR' : 'symbol' : '1.0-0' }}
+                </text>
+              </svg>
+              <div class="donut-legend">
+                <div *ngFor="let segment of vm.donutData.segments" class="donut-legend-item">
+                  <span class="donut-legend-dot" [style.background]="segment.color"></span>
+                  <span class="donut-legend-label">{{ segment.platform }}</span>
+                  <span class="donut-legend-value"
+                    >{{ segment.percentage | number: '1.0-0' }}%</span
+                  >
+                </div>
               </div>
-              <span class="widget-list__name">{{ account.name }}</span>
-              <span class="widget-list__status" [ngClass]="account.statusColor">{{
-                account.status
-              }}</span>
-            </li>
-          </ul>
+            </div>
+
+            <!-- Breakdown List -->
+            <div class="breakdown-list">
+              <article
+                *ngFor="let item of vm.platformBreakdown; trackBy: trackByBreakdown"
+                class="breakdown-item"
+                [style.--platform-color]="item.color"
+              >
+                <div class="breakdown-item__icon">
+                  <span class="material-symbols-rounded">{{ item.icon }}</span>
+                </div>
+                <div class="breakdown-item__info">
+                  <span class="breakdown-item__name">{{ item.platform }}</span>
+                  <div class="breakdown-item__bar">
+                    <div
+                      class="breakdown-item__progress"
+                      [style.width.%]="item.percentage"
+                      [style.background]="item.color"
+                    ></div>
+                  </div>
+                </div>
+                <div class="breakdown-item__values">
+                  <span class="breakdown-item__amount">{{
+                    item.income | currency: 'EUR' : 'symbol' : '1.0-0'
+                  }}</span>
+                  <span class="breakdown-item__percentage">{{ item.percentage }}%</span>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <div class="breakdown-total">
+            <span class="breakdown-total__label">Total Ingresos</span>
+            <span class="breakdown-total__value">{{
+              vm.totalIncome | currency: 'EUR' : 'symbol' : '1.0-0'
+            }}</span>
+          </div>
         </section>
 
-        <section class="panel panel--widget">
+        <!-- Top Categories Analysis (Income/Expenses Toggle) -->
+        <section class="panel panel--top-expenses">
           <header class="panel__header">
-            <h3 class="panel__title">Conciliación Bancaria</h3>
-            <span class="panel__badge panel__badge--subtle">En tiempo real</span>
+            <div>
+              <p class="panel__eyebrow">Análisis</p>
+              <h2 class="panel__title">Top por Categoría</h2>
+            </div>
+            <div class="category-toggle">
+              <button
+                class="toggle-btn"
+                [class.active]="categoryViewMode() === 'expenses'"
+                (click)="setCategoryViewMode('expenses')"
+              >
+                <span class="material-symbols-rounded">trending_down</span>
+                Gastos
+              </button>
+              <button
+                class="toggle-btn"
+                [class.active]="categoryViewMode() === 'incomes'"
+                (click)="setCategoryViewMode('incomes')"
+              >
+                <span class="material-symbols-rounded">trending_up</span>
+                Ingresos
+              </button>
+            </div>
           </header>
-          <ul class="widget-list widget-list--reconciliation">
-            <li
-              class="widget-list__item widget-list__item--recon"
-              *ngFor="let item of vm.reconciliation"
-            >
-              <div class="recon-header">
-                <span class="recon-account">{{ item.account }}</span>
-                <span class="recon-status" [ngClass]="item.status">
-                  {{ item.status === 'aligned' ? '✓ Conciliado' : '⚠ Revisar' }}
+
+          <!-- Expenses View -->
+          <ng-container *ngIf="categoryViewMode() === 'expenses'">
+            <div class="top-expenses-list" *ngIf="vm.topExpenses.length > 0; else noExpenses">
+              <article
+                *ngFor="let expense of vm.topExpenses"
+                class="expense-item"
+                [style.--category-color]="expense.color"
+              >
+                <div class="expense-item__header">
+                  <div class="expense-item__icon">
+                    <span class="material-symbols-rounded">{{ expense.icon }}</span>
+                  </div>
+                  <div class="expense-item__info">
+                    <span class="expense-item__category">{{ expense.category }}</span>
+                    <span class="expense-item__amount">{{
+                      expense.amount | currency: 'EUR' : 'symbol' : '1.0-0'
+                    }}</span>
+                  </div>
+                </div>
+                <div class="expense-item__bar-container">
+                  <div class="expense-item__bar-bg">
+                    <div
+                      class="expense-item__bar"
+                      [style.width.%]="expense.percentage"
+                      [style.background]="expense.color"
+                    ></div>
+                  </div>
+                  <span class="expense-item__percentage"
+                    >{{ expense.percentage | number: '1.0-0' }}%</span
+                  >
+                </div>
+              </article>
+            </div>
+            <ng-template #noExpenses>
+              <div class="empty-state">
+                <span class="material-symbols-rounded">receipt_long</span>
+                <p>Sin gastos en este periodo</p>
+              </div>
+            </ng-template>
+            <div class="category-total" *ngIf="vm.topExpenses.length > 0">
+              <span class="category-total__label">Total Gastos</span>
+              <span class="category-total__value expense">{{
+                vm.totalExpenseForCategories | currency: 'EUR' : 'symbol' : '1.0-0'
+              }}</span>
+            </div>
+          </ng-container>
+
+          <!-- Incomes View -->
+          <ng-container *ngIf="categoryViewMode() === 'incomes'">
+            <div class="top-expenses-list" *ngIf="vm.topIncomes.length > 0; else noIncomes">
+              <article
+                *ngFor="let income of vm.topIncomes"
+                class="expense-item"
+                [style.--category-color]="income.color"
+              >
+                <div class="expense-item__header">
+                  <div class="expense-item__icon">
+                    <span class="material-symbols-rounded">{{ income.icon }}</span>
+                  </div>
+                  <div class="expense-item__info">
+                    <span class="expense-item__category">{{ income.category }}</span>
+                    <span class="expense-item__amount">{{
+                      income.amount | currency: 'EUR' : 'symbol' : '1.0-0'
+                    }}</span>
+                  </div>
+                </div>
+                <div class="expense-item__bar-container">
+                  <div class="expense-item__bar-bg">
+                    <div
+                      class="expense-item__bar income"
+                      [style.width.%]="income.percentage"
+                      [style.background]="income.color"
+                    ></div>
+                  </div>
+                  <span class="expense-item__percentage"
+                    >{{ income.percentage | number: '1.0-0' }}%</span
+                  >
+                </div>
+              </article>
+            </div>
+            <ng-template #noIncomes>
+              <div class="empty-state">
+                <span class="material-symbols-rounded">payments</span>
+                <p>Sin ingresos en este periodo</p>
+              </div>
+            </ng-template>
+            <div class="category-total" *ngIf="vm.topIncomes.length > 0">
+              <span class="category-total__label">Total Ingresos</span>
+              <span class="category-total__value income">{{
+                vm.totalIncomeForCategories | currency: 'EUR' : 'symbol' : '1.0-0'
+              }}</span>
+            </div>
+          </ng-container>
+        </section>
+
+        <!-- Recent Transactions -->
+        <section class="panel panel--recent-transactions">
+          <header class="panel__header">
+            <div>
+              <p class="panel__eyebrow">Actividad Reciente</p>
+              <h2 class="panel__title">Últimos Movimientos</h2>
+            </div>
+            <a routerLink="/transactions" class="panel__link">
+              Ver todos
+              <span class="material-symbols-rounded">arrow_forward</span>
+            </a>
+          </header>
+
+          <div
+            class="recent-transactions-list"
+            *ngIf="vm.recentTransactions.length > 0; else noTransactions"
+          >
+            <article *ngFor="let tx of vm.recentTransactions" class="transaction-row">
+              <div class="transaction-row__icon" [class]="tx.positive ? 'income' : 'expense'">
+                <span class="material-symbols-rounded">
+                  {{ tx.positive ? 'arrow_upward' : 'arrow_downward' }}
                 </span>
               </div>
-              <div class="recon-values">
-                <div class="recon-metric">
-                  <span class="recon-label">Sistema</span>
-                  <span class="recon-value">{{
-                    item.recorded | currency: 'EUR' : 'symbol' : '1.0-0'
-                  }}</span>
-                </div>
-                <div class="recon-metric">
-                  <span class="recon-label">Banco</span>
-                  <span class="recon-value">{{
-                    item.bank | currency: 'EUR' : 'symbol' : '1.0-0'
-                  }}</span>
-                </div>
-                <div
-                  class="recon-diff"
-                  [ngClass]="item.status === 'warning' ? 'recon-diff--warning' : 'recon-diff--ok'"
-                >
-                  {{ item.recorded - item.bank >= 0 ? '+' : ''
-                  }}{{ item.recorded - item.bank | currency: 'EUR' : 'symbol' : '1.0-0' }}
-                </div>
+              <div class="transaction-row__info">
+                <span class="transaction-row__concept">{{ tx.title }}</span>
+                <span class="transaction-row__meta">{{ tx.description }} · {{ tx.origin }}</span>
               </div>
-            </li>
-          </ul>
+              <div class="transaction-row__amount" [class]="tx.positive ? 'income' : 'expense'">
+                {{ tx.positive ? '+' : '-' }}{{ tx.amount | currency: 'EUR' : 'symbol' : '1.2-2' }}
+              </div>
+            </article>
+          </div>
+          <ng-template #noTransactions>
+            <div class="empty-state">
+              <span class="material-symbols-rounded">history</span>
+              <p>Sin transacciones recientes</p>
+            </div>
+          </ng-template>
         </section>
-      </aside>
+
+        <section class="panel panel--metrics">
+          <header class="panel__header">
+            <div>
+              <p class="panel__eyebrow">Metricas Clave</p>
+              <h2 class="panel__title">Resumen del Periodo</h2>
+            </div>
+          </header>
+
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <span class="material-symbols-rounded metric-card__icon" style="color: #10b981"
+                >payments</span
+              >
+              <div class="metric-card__content">
+                <span class="metric-card__value">{{
+                  vm.totalIncome | currency: 'EUR' : 'symbol' : '1.0-0'
+                }}</span>
+                <span class="metric-card__label">Ingresos Totales</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <span class="material-symbols-rounded metric-card__icon" style="color: #ef4444"
+                >receipt_long</span
+              >
+              <div class="metric-card__content">
+                <span class="metric-card__value">{{
+                  vm.totalExpense | currency: 'EUR' : 'symbol' : '1.0-0'
+                }}</span>
+                <span class="metric-card__label">Gastos Totales</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <span class="material-symbols-rounded metric-card__icon" style="color: #2563eb"
+                >savings</span
+              >
+              <div class="metric-card__content">
+                <span class="metric-card__value" [class.negative]="vm.totalBalance < 0">
+                  {{ vm.totalBalance | currency: 'EUR' : 'symbol' : '1.0-0' }}
+                </span>
+                <span class="metric-card__label">Balance Neto</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <span class="material-symbols-rounded metric-card__icon" style="color: #8b5cf6"
+                >store</span
+              >
+              <div class="metric-card__content">
+                <span class="metric-card__value">{{ vm.platformBreakdown.length }}</span>
+                <span class="metric-card__label">Canales Activos</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="quick-actions">
+            <a routerLink="/reports" class="quick-action-btn">
+              <span class="material-symbols-rounded">description</span>
+              Generar Informe
+            </a>
+            <a routerLink="/transactions" class="quick-action-btn">
+              <span class="material-symbols-rounded">receipt</span>
+              Ver Transacciones
+            </a>
+          </div>
+        </section>
+      </div>
     </div>
   </ng-container>
 </section>

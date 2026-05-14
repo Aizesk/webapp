@@ -1,47 +1,265 @@
-.metrics {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-  margin: 1.75rem 0;
+/* ========== HEADER STYLES ========== */
+.transactions-content {
+  padding: 0;
 }
 
-.metric-card {
-  background: var(--surface-elevated);
-  border-radius: 18px;
-  padding: 1.25rem;
-  box-shadow: 0 12px 20px var(--shadow-color);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+.transactions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0;
+  margin-bottom: 0.5rem;
 }
 
-.metric-card__label {
-  font-size: 0.95rem;
-  color: var(--nav-link-color);
+.transactions-header .primary-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 42px;
+  padding: 0 1.5rem;
+  box-shadow: 0 4px 12px rgba(15, 98, 254, 0.2);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.metric-card__value {
+.transactions-header__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.transactions-header__title {
+  margin: 0;
   font-size: 1.75rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin: 0.35rem 0;
 }
 
-.metric-card__trend {
-  font-size: 0.85rem;
-  font-weight: 600;
+.transactions-header__subtitle {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--text-muted);
 }
 
-.metric-card__trend.positive {
-  color: #0f9b57;
-}
-
-.metric-card__trend.negative {
-  color: #ff5470;
-}
-
-.content {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
+/* ========== FILTER BAR ========== */
+.filter-bar {
+  display: flex;
+  align-items: flex-end;
   gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 1rem 1.25rem;
+  background: var(--surface-elevated);
+  border-radius: 16px;
+  margin-bottom: 1rem;
+  box-shadow: 0 8px 20px var(--shadow-color);
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-group--search {
+  flex: 1;
+  min-width: 250px;
+}
+
+.filter-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.date-range-buttons,
+.origin-buttons {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-chip:hover {
+  background: var(--surface-hover);
+  border-color: var(--accent-primary);
+}
+
+.filter-chip--active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #fff;
+}
+
+.filter-chip--origin {
+  padding: 0.5rem 0.75rem;
+}
+
+.filter-chip--origin .material-symbols-rounded {
+  font-size: 1.125rem;
+}
+
+.filter-chip__label {
+  display: none;
+}
+
+@media (min-width: 1200px) {
+  .filter-chip__label {
+    display: inline;
+  }
+}
+
+/* ========== CUSTOM DATE PICKER ========== */
+.filter-group--date {
+  flex: 0 0 auto;
+}
+
+.date-range-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.filter-chip--custom {
+  display: inline-flex;
+  gap: 0.375rem;
+}
+
+.filter-chip--custom .material-symbols-rounded {
+  font-size: 1rem;
+}
+
+.custom-date-picker {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.date-field {
+  width: 145px;
+}
+
+.date-field .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+.date-separator {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+/* Override Material form field in filter bar */
+.custom-date-picker ::ng-deep .mat-mdc-form-field {
+  font-size: 0.8125rem;
+}
+
+.custom-date-picker ::ng-deep .mat-mdc-form-field-flex {
+  height: 40px;
+}
+
+.custom-date-picker ::ng-deep .mat-mdc-text-field-wrapper {
+  padding: 0 0.75rem;
+}
+
+.custom-date-picker ::ng-deep .mdc-notched-outline__leading,
+.custom-date-picker ::ng-deep .mdc-notched-outline__notch,
+.custom-date-picker ::ng-deep .mdc-notched-outline__trailing {
+  border-color: var(--border-strong) !important;
+}
+
+.custom-date-picker ::ng-deep .mat-mdc-form-field-infix {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  min-height: 40px;
+}
+
+.search-field {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+.search-field__icon {
+  position: absolute;
+  left: 1rem;
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  pointer-events: none;
+}
+
+.search-field input {
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  padding: 0.625rem 2.5rem 0.625rem 3rem;
+  width: 100%;
+  height: 42px;
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+}
+
+.search-field input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(15, 98, 254, 0.15);
+}
+
+.search-field__clear {
+  position: absolute;
+  right: 0.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+}
+
+.search-field__clear:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+/* ========== FULL-WIDTH TABLE PANEL ========== */
+.content {
+  display: block;
 }
 
 .table-panel {
@@ -50,6 +268,8 @@
   padding: 1.5rem;
   box-shadow: 0 20px 35px var(--shadow-color);
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  min-height: 400px;
 }
 
 .table-panel__toolbar {
@@ -64,13 +284,23 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  border: 1px dashed var(--border-strong);
+  gap: 0.75rem;
+  padding: 0.625rem 1rem;
+  border: 1px dashed var(--accent-primary);
   border-radius: 12px;
-  background: var(--surface-active);
-  margin-bottom: 0.75rem;
+  background: rgba(15, 98, 254, 0.05);
+  margin-bottom: 1rem;
   color: var(--text-primary);
+}
+
+.bulk-actions__count {
+  font-weight: 600;
+  color: var(--accent-primary);
+}
+
+.ghost-button--small {
+  padding: 0.375rem 0.875rem;
+  font-size: 0.8125rem;
 }
 
 .filter-field {
@@ -297,13 +527,50 @@ td {
 }
 
 .chip--manual {
-  background: rgba(14, 165, 233, 0.15);
-  color: #0f62fe;
+  background: rgba(139, 92, 246, 0.15);
+  color: #7c3aed;
+}
+
+.chip--platform {
+  background: rgba(249, 115, 22, 0.15);
+  color: #ea580c;
 }
 
 .chip--third {
   background: rgba(99, 102, 241, 0.15);
   color: #4338ca;
+}
+
+/* Transaction type chips */
+.chip--income {
+  background: rgba(16, 185, 129, 0.15);
+  color: #047857;
+}
+
+.chip--expense {
+  background: rgba(239, 68, 68, 0.15);
+  color: #dc2626;
+}
+
+.chip--transfer {
+  background: rgba(59, 130, 246, 0.15);
+  color: #1d4ed8;
+}
+
+/* Amount styling based on type */
+.amount--positive {
+  color: #047857;
+  font-weight: 600;
+}
+
+.amount--negative {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.cell--type .chip,
+.cell--origin .chip {
+  text-transform: capitalize;
 }
 
 .status {
@@ -355,7 +622,7 @@ td {
   text-align: center;
 }
 
-.cell--description {
+.cell--concept {
   white-space: normal;
   line-height: 1.35;
   word-break: break-word;
@@ -398,6 +665,11 @@ td {
   cursor: not-allowed;
 }
 
+.table-icon--danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
 .row-selected {
   background: var(--surface-active);
 }
@@ -434,6 +706,25 @@ td {
   color: var(--text-primary);
   display: grid;
   gap: 0.5rem;
+  padding: 2rem;
+}
+
+.empty-state__icon {
+  font-size: 3.5rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.empty-state h4 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.empty-state p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
 }
 
 .empty-state__actions {
